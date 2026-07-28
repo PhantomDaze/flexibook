@@ -66,7 +66,10 @@ public class AdaptiveBookScreen extends Screen {
         }
         relayout();
 
-        int btnY = topPos + theme.bookTexHeight() + 4;
+        // Shorter search row; buttons stay 20px tall and sit slightly lower for visual balance.
+        int btnY = topPos + theme.bookTexHeight() + 2;
+        int searchH = 14;
+        int searchY = btnY + (20 - searchH) / 2;
         this.prevButton = Button.builder(Component.translatable("flexibook.screen.prev"), b -> changePage(-1))
                 .bounds(leftPos, btnY, 50, 20)
                 .build();
@@ -76,7 +79,7 @@ public class AdaptiveBookScreen extends Screen {
         addRenderableWidget(prevButton);
         addRenderableWidget(nextButton);
 
-        this.searchBox = new EditBox(this.font, leftPos + 54, btnY, theme.bookTexWidth() - 108, 18,
+        this.searchBox = new EditBox(this.font, leftPos + 54, searchY, theme.bookTexWidth() - 108, searchH,
                 Component.translatable("flexibook.screen.search"));
         this.searchBox.setMaxLength(64);
         this.searchBox.setHint(Component.translatable("flexibook.screen.search_hint"));
@@ -118,17 +121,21 @@ public class AdaptiveBookScreen extends Screen {
      * Same path as vanilla books: dim the world without the in-world menu blur pass,
      * then draw the book texture as part of the screen background (not pre-blur content).
      */
+    /**
+     * Same path as vanilla {@code BookViewScreen}: dim without menu blur, then blit the book
+     * panel with the 7-arg {@link GuiGraphics#blit(ResourceLocation, int, int, int, int, int, int)}
+     * overload (u/v + size, texture sheet defaults to 256×256).
+     */
     @Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         this.renderTransparentBackground(graphics);
+        // GuiGraphics.blit(location, x, y, uOffset, vOffset, uWidth, vHeight) → sheet 256×256
         graphics.blit(
                 theme.bookTexture(),
                 leftPos,
                 topPos,
                 0,
                 0,
-                theme.bookTexWidth(),
-                theme.bookTexHeight(),
                 theme.bookTexWidth(),
                 theme.bookTexHeight()
         );
@@ -145,10 +152,11 @@ public class AdaptiveBookScreen extends Screen {
             title = title.copy().withStyle(Style.EMPTY.withFont(content.defaultFont().get()));
         }
         int titleX = leftPos + (theme.bookTexWidth() - font.width(title)) / 2;
-        graphics.drawString(font, title, titleX, topPos + 4, theme.pageTextColor(), false);
+        graphics.drawString(font, title, titleX, topPos + 5, theme.pageTextColor(), false);
 
         int contentX = leftPos + theme.contentLeft();
-        int contentY = topPos + theme.contentTop() + 8;
+        // Sit just under the title with a small gap.
+        int contentY = topPos + theme.contentTop() + 4;
 
         if (!pages.isEmpty()) {
             RenderedPage page = pages.get(pageIndex);
@@ -185,7 +193,8 @@ public class AdaptiveBookScreen extends Screen {
         // page number
         String pageLabel = Component.translatable("flexibook.screen.page", pageIndex + 1, Math.max(1, pages.size())).getString();
         int pageLabelX = leftPos + (theme.bookTexWidth() - font.width(pageLabel)) / 2;
-        graphics.drawString(font, pageLabel, pageLabelX, topPos + theme.bookTexHeight() - 12, theme.pageTextColor(), false);
+        // Footer band of the taller book texture (layout content height unchanged).
+        graphics.drawString(font, pageLabel, pageLabelX, topPos + theme.bookTexHeight() - 18, theme.pageTextColor(), false);
     }
 
     private void renderElement(GuiGraphics graphics, RenderedElement el, int originX, int originY) {
@@ -254,7 +263,7 @@ public class AdaptiveBookScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && !pages.isEmpty()) {
             int contentX = leftPos + theme.contentLeft();
-            int contentY = topPos + theme.contentTop() + 8;
+            int contentY = topPos + theme.contentTop() + 0;
             double localX = mouseX - contentX;
             double localY = mouseY - contentY;
             RenderedPage page = pages.get(pageIndex);
