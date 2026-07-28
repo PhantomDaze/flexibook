@@ -1,12 +1,18 @@
 package io.github.PhantomDaze.flexibook.api;
 
+import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
+import io.github.PhantomDaze.flexibook.client.theme.BookThemeRegistry;
+import io.github.PhantomDaze.flexibook.client.theme.BookThemes;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.LinkAction;
 import io.github.PhantomDaze.flexibook.content.LinkActionRegistry;
 import io.github.PhantomDaze.flexibook.registry.ModDataComponents;
 import io.github.PhantomDaze.flexibook.registry.ModItems;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -40,6 +46,48 @@ public final class FlexiBookAPI {
     /** Built-in demo actions used by the example book. */
     public static void registerDefaultActions() {
         LinkActionRegistry.registerDefaults();
+    }
+
+    // ── Themes ──────────────────────────────────────────────────────────────
+
+    /** Built-in parchment sample id: {@code flexibook:default}. */
+    public static ResourceLocation defaultThemeId() {
+        return BookThemes.DEFAULT_ID;
+    }
+
+    /** Built-in keep-aspect image sample id: {@code flexibook:contain}. */
+    public static ResourceLocation containThemeId() {
+        return BookThemes.CONTAIN_ID;
+    }
+
+    /**
+     * Registers or replaces a book theme. Safe from common setup (pure data).
+     * Resource-pack JSON under {@code assets/<ns>/flexibook/themes/<path>.json}
+     * can override the same id on client reload.
+     */
+    public static void registerTheme(ResourceLocation id, BookTheme theme) {
+        BookThemeRegistry.register(id, theme);
+    }
+
+    public static void registerTheme(String id, BookTheme theme) {
+        BookThemeRegistry.register(id, theme);
+    }
+
+    public static Optional<BookTheme> getTheme(ResourceLocation id) {
+        return BookThemeRegistry.getOptional(id);
+    }
+
+    /** Resolves id or falls back to the built-in default sample. */
+    public static BookTheme resolveTheme(ResourceLocation id) {
+        return BookThemeRegistry.resolve(id);
+    }
+
+    public static BookTheme resolveTheme(Optional<ResourceLocation> id) {
+        return BookThemeRegistry.resolve(id);
+    }
+
+    public static Collection<ResourceLocation> themeIds() {
+        return BookThemeRegistry.ids();
     }
 
     /**

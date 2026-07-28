@@ -22,12 +22,16 @@ import java.util.Optional;
  * <p>
  * Fonts: {@link #defaultFont(ResourceLocation)} sets the book-wide font;
  * {@link #font(String, ResourceLocation)} / markup {@code [font font="ns:id"]} set per-run fonts.
+ * <p>
+ * Theme: {@link #theme(ResourceLocation)} selects a registered book chrome/layout theme
+ * ({@code flexibook:default} when omitted).
  */
 public final class AdaptiveBookBuilder {
     private TranslatableText title = new TranslatableText("flexibook.book.untitled");
     private final List<BookElement> elements = new ArrayList<>();
     private String rawMarkup;
     private ResourceLocation defaultFont;
+    private ResourceLocation themeId;
 
     public AdaptiveBookBuilder(String guideId) {
         // guideId reserved for future TOC / identity; unused in v1 storage
@@ -56,6 +60,23 @@ public final class AdaptiveBookBuilder {
         ResourceLocation rl = ResourceLocation.tryParse(fontId);
         if (rl != null) {
             this.defaultFont = rl;
+        }
+        return this;
+    }
+
+    /**
+     * Theme id registered via {@link FlexiBookAPI#registerTheme} or
+     * {@code assets/<ns>/flexibook/themes/<path>.json}. Example: {@code flexibook:default}.
+     */
+    public AdaptiveBookBuilder theme(ResourceLocation themeId) {
+        this.themeId = themeId;
+        return this;
+    }
+
+    public AdaptiveBookBuilder theme(String themeId) {
+        ResourceLocation rl = ResourceLocation.tryParse(themeId);
+        if (rl != null) {
+            this.themeId = rl;
         }
         return this;
     }
@@ -175,10 +196,11 @@ public final class AdaptiveBookBuilder {
 
     public AdaptiveBookContent buildContent() {
         Optional<ResourceLocation> font = Optional.ofNullable(defaultFont);
+        Optional<ResourceLocation> theme = Optional.ofNullable(themeId);
         if (rawMarkup != null && elements.isEmpty()) {
-            return AdaptiveBookContent.ofMarkup(title, rawMarkup, font);
+            return AdaptiveBookContent.ofMarkup(title, rawMarkup, font, theme);
         }
-        return AdaptiveBookContent.ofElements(title, elements, font);
+        return AdaptiveBookContent.ofElements(title, elements, font, theme);
     }
 
     public ItemStack buildItem() {

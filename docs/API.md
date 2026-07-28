@@ -22,7 +22,7 @@
 10. [打开界面](#10-打开界面)
 11. [国际化（i18n）](#11-国际化i18n)
 12. [字体（每书 / 行内）](#12-字体每书--行内)
-13. [布局与主题（只读说明）](#13-布局与主题只读说明)
+13. [布局与主题](#13-布局与主题)
 14. [完整示例](#14-完整示例)
 15. [限制与常见问题](#15-限制与常见问题)
 16. [包与符号索引](#16-包与符号索引)
@@ -87,7 +87,8 @@ import io.github.PhantomDaze.flexibook.registry.ModItems;
 
 ```java
 import io.github.PhantomDaze.flexibook.client.ClientModEvents;
-// AdaptiveBookScreen / LinkHandler / BookTheme 仅客户端
+// AdaptiveBookScreen / LinkHandler / BookThemeReloadListener 仅客户端
+// BookTheme / BookThemeRegistry / BookThemes 为纯数据，公共侧可 registerTheme
 ```
 
 ---
@@ -100,6 +101,7 @@ ItemStack(flexibook:flexi_book)
             └── AdaptiveBookContent
                     ├── title: TranslatableText          // 打开时再翻译
                     ├── defaultFont: Optional<RL>        // 整本书默认字体
+                    ├── themeId: Optional<RL>            // 主题 id → BookThemeRegistry
                     └── payload（二选一，elements 优先）
                           ├── rawMarkup: String          // [h1]... 标签源
                           └── elements: List<BookElement>
@@ -111,6 +113,7 @@ ItemStack(flexibook:flexi_book)
 | **双形态存储** | 可存结构化 `BookElement` 列表，或 raw 标签字符串；两者都在时 **elements 胜出** |
 | **翻译延迟** | 标题与正文键在 **打开书 / 布局** 时按当前客户端语言解析，不在写入时固化译文 |
 | **字体分层** | 书级 `defaultFont` → 被 span/标题上的 `font` 覆盖；同一本书可混用多种字体 |
+| **主题注册** | `BookTheme` 按 `ResourceLocation` 注册；书上存 `theme` id，缺省 `flexibook:default` |
 | **安全链接** | `cmd` 只触发已注册的动作 ID；`url` 仅 http(s) 且经确认框 |
 | **自定义物品** | `flexibook:flexi_book`，**不**劫持原版 `written_book` |
 | **纯客户端 Screen** | 无 Menu；右键在客户端打开 `AdaptiveBookScreen` |
@@ -188,6 +191,9 @@ ItemStack stack = FlexiBookAPI.createBook(content);
 | `commandAction(String id)` | 构造 `LinkAction.CommandId`，供 Builder / 结构化元素使用 |
 | `urlAction(String url)` | 构造 `LinkAction.Url`（运行时仍校验 http(s)） |
 | `registerDefaultActions()` | 注册示例书用的 `flexibook:say_hi`；FlexiBook 自身已在模组入口调用，外部一般不必再调 |
+| `defaultThemeId()` / `containThemeId()` | 内置示例主题 id：`flexibook:default` / `flexibook:contain` |
+| `registerTheme(id, BookTheme)` | 注册或覆盖主题（公共侧可调；纯数据） |
+| `getTheme(id)` / `resolveTheme(id)` / `themeIds()` | 查询；`resolve` 未知 id 回退到 default 样例 |
 | `LecternCompat` | **空接口 + TODO**：v1 不支持讲台，勿依赖 |
 
 ### 4.1 `ActionContext`
@@ -223,6 +229,7 @@ public interface LinkActionRegistry.ActionContext {
 | `titleKey(String key, String... args)` | 书名翻译键 + 可选参数 |
 | `title(TranslatableText title)` | 直接设标题对象 |
 | `defaultFont(ResourceLocation)` / `defaultFont(String id)` | **整本书**默认字体（资源包 `assets/<ns>/font/<path>.json`） |
+| `theme(ResourceLocation)` / `theme(String id)` | 书用主题 id（写入组件字段 `theme`）；省略则打开时用 `flexibook:default` |
 | `h1(String key)` / `h2(String key)` | 一/二级标题（键） |
 | `h1(String key, ResourceLocation font)` / `h2(..., font)` | 标题使用指定字体 |
 | `p(String key)` | 段落，单 span 翻译键 |
@@ -279,17 +286,20 @@ public record AdaptiveBookContent(
     TranslatableText title,
     Optional<String> rawMarkup,              // codec 字段名 "raw"
     Optional<List<BookElement>> elements,    // codec 字段名 "elements"
-    Optional<ResourceLocation> defaultFont   // codec 字段名 "font"
+    Optional<ResourceLocation> defaultFont,  // codec 字段名 "font"
+    Optional<ResourceLocation> themeId       // codec 字段名 "theme"
 )
 ```
 
 | 工厂 / 成员 | 说明 |
 |-------------|------|
 | `EMPTY` | 空书标题键 + 空 elements |
-| `ofElements(title, list)` / `ofElements(title, list, font)` | 只存结构 |
-| `ofMarkup(title, markup)` / `ofMarkup(title, markup, font)` | 只存 raw |
+| `ofElements(title, list)` / `…(title, list, font)` / `…(title, list, font, theme)` | 只存结构 |
+| `ofMarkup(title, markup)` / `…(title, markup, font)` / `…(title, markup, font, theme)` | 只存 raw |
 | `withDefaultFont(ResourceLocation)` | 复制并设置书级字体 |
+| `withThemeId(ResourceLocation)` | 复制并设置主题 id |
 | `defaultFont()` | 整书默认字体；被 span/标题 font 覆盖 |
+| `themeId()` | 主题注册表 id；缺省/未知 → `flexibook:default` |
 | `resolveElements()` | 布局/渲染前统一得到 `List<BookElement>` |
 | `isEmpty()` | 解析后无元素且 raw 空白 |
 | `CODEC` / `STREAM_CODEC` | 持久化 + 网络同步 |
@@ -299,7 +309,8 @@ public record AdaptiveBookContent(
 ```jsonc
 {
   "title": { "key": "mymod.book.title", "args": [] },
-  "font": "mymod:fancy",   // 可选，整书默认
+  "font": "mymod:fancy",          // 可选，整书默认字体
+  "theme": "flexibook:contain",   // 可选，主题 id
   // 二选一：
   "raw": "[h1]mymod.book.ch1[/h1]\n[p]mymod.book.p1[/p]",
   // 或
@@ -769,9 +780,9 @@ AdaptiveBookContent.ofElements(title, elements, Optional.of(fontId));
 
 ---
 
-## 13. 布局与主题（只读说明）
+## 13. 布局与主题
 
-v1 **没有**稳定的「第三方替换 Layout 算法」SPI；下列便于理解表现与资源包换皮。
+布局算法仍为内部实现（无第三方替换 SPI）。**主题（BookTheme）已数据化注册**：代码注册 + 资源包 JSON。
 
 ### 13.1 自适应策略（摘要）
 
@@ -779,24 +790,103 @@ v1 **没有**稳定的「第三方替换 Layout 算法」SPI；下列便于理�
 2. 初始 `scale=1.0`、`columns=1`  
 3. 页数过多或过挤 → 降低 scale（约至 0.6）→ 再尝试 `columns=2`  
 4. CJK 占比高时起始 scale 略降  
-5. `LayoutCache`：内容哈希 + 语言 + GUI scale + theme revision；登出清空  
+5. `LayoutCache`：内容哈希 + 语言 + GUI scale + theme revision + font；登出 / 主题重载清空  
 
-默认内容区约（主题）：宽 160、高 154 逻辑像素（见 `BookTheme.baseParams()`）。
+默认内容区约（`flexibook:default`）：宽 160、高 185 逻辑像素（见 `BookTheme.baseParams()`）。
 
-### 13.2 资源包可替换纹理
+### 13.2 内置示例主题
+
+| id | 说明 |
+|----|------|
+| `flexibook:default` | 羊皮纸样例（现有默认间距/颜色/纹理；图片 **STRETCH**） |
+| `flexibook:contain` | 同上，图片 **CONTAIN**（等比居中） |
+
+代码常量：`BookThemes.DEFAULT` / `BookThemes.CONTAIN`。可被同 id 的资源 JSON 在客户端重载时覆盖。
+
+### 13.3 代码注册主题
+
+```java
+// 公共 setup 即可（纯数据，不碰 Screen）
+BookTheme dark = BookTheme.builder()          // 从 default 样例拷贝
+    .pageTextColor(0xE0E0E0)
+    .linkColor(0x7FDBFF)
+    .imageFit(ImageFit.CONTAIN)
+    .revision(1)
+    .build();
+FlexiBookAPI.registerTheme(
+    ResourceLocation.fromNamespaceAndPath("mymod", "dark"),
+    dark
+);
+
+// 书引用主题
+ItemStack book = FlexiBookAPI.builder("guide")
+    .titleKey("mymod.book.title")
+    .theme("mymod:dark")
+    .p("mymod.book.body")
+    .buildItem();
+// 或 content.withThemeId(...)
+```
+
+打开书时：`AdaptiveBookScreen` → `BookThemeRegistry.resolve(content.themeId())`；未知 id 警告并回退 `flexibook:default`。
+
+### 13.4 资源包 JSON 主题
+
+路径：`assets/<namespace>/flexibook/themes/<path>.json`  
+id：`<namespace>:<path>`（例：`assets/mymod/flexibook/themes/dark.json` → `mymod:dark`）
+
+本模组样例：
+
+- `assets/flexibook/flexibook/themes/default.json`
+- `assets/flexibook/flexibook/themes/contain.json`
+
+必填：`book_texture`、`widgets_texture`（`ResourceLocation` 字符串）。其余字段均有默认值，可只写要改的项：
+
+| 字段 | 默认（约） | 含义 |
+|------|------------|------|
+| `book_tex_width` / `book_tex_height` | 192 / 216 | 书页绘制尺寸 |
+| `texture_sheet_size` | 256 | 贴图 sheet（7 参数 blit） |
+| `content_left` / `content_top` | 16 / 10 | 正文原点相对书左上 |
+| `title_offset_y` | 5 | 标题 Y（相对 topPos） |
+| `content_offset_y` | 4 | 正文相对 `content_top` 的额外下移 |
+| `page_label_inset_y` | 18 | 页码距书底 |
+| `page_content_width` / `page_content_height` | 160 / 185 | 布局内容区 |
+| `line_height` / `paragraph_gap` / `heading_gap` | 9 / 3 / 5 | 排版 |
+| `gutter` / `bullet_indent` / `divider_height` | 10 / 10 / 6 | 双栏/列表/分隔线 |
+| `page_text_color` 等 | RGB int | 正文/链接/高亮/分隔线色 |
+| `image_fit` | `"stretch"` | `"stretch"` \| `"contain"` |
+| `revision` | 1 | 参与布局缓存键；改主题请递增 |
+
+客户端资源重载时 `BookThemeReloadListener` 会 bootstrap 内置样例再加载 JSON，并清空布局缓存。
+
+### 13.5 可替换纹理（被主题引用）
 
 | 路径 | 用途 |
 |------|------|
-| `assets/flexibook/textures/gui/book.png` | 书页背景（默认逻辑 192×192） |
+| `assets/flexibook/textures/gui/book.png` | 默认书页背景（256 sheet，绘制 192×216） |
 | `assets/flexibook/textures/gui/book_widgets.png` | 按钮等 |
 | `assets/flexibook/textures/gui/icon.png` | 示例/默认图 |
 | `assets/flexibook/textures/item/flexi_book.png` | 物品图标 |
 
-`BookTheme.DEFAULT` 指向上述 GUI 纹理；间距/颜色目前在代码常量中，**资源包不能改数字常量**，只能换图。
+自定义主题可把 `book_texture` / `widgets_texture` 指到你自己的路径。
 
-### 13.3 图片元素纹理
+### 13.6 图片元素纹理与比例
 
 `BookElement.Image.src` 必须是客户端能加载的纹理 `ResourceLocation`（通常 `textures/...png`）。缺失时渲染可能空白或粉黑，请自备资源。
+
+布局始终按元素声明的 **逻辑** `width`×`height` 占位（过宽会再按栏宽等比缩小）。PNG 真实分辨率可以与之不同；**绘制**时由主题的 `image_fit` 决定：
+
+| `ImageFit` | 行为 |
+|------------|------|
+| `STRETCH`（**default 样例**） | 整图拉伸铺满逻辑框；宽高比不一致时会变形 |
+| `CONTAIN`（**contain 样例**） | 读取 PNG 像素尺寸，等比缩放入框内并居中（可能上下/左右留白） |
+
+```java
+// 书级选用 keep-aspect 示例主题
+FlexiBookAPI.builder("guide").theme(FlexiBookAPI.containThemeId())...
+// 或自己的主题 .imageFit(ImageFit.CONTAIN)
+```
+
+`width`/`height` 仍表示「占位框」；`CONTAIN` 只改变框内像素，不改变翻页布局。
 
 ---
 
@@ -926,7 +1016,8 @@ A: 构建 FlexiBook 与兼容模组时建议 **JDK 21**（与 NeoForge 1.21.1 �
 | `parse` | `TagParser` | 可选；Builder 已封装 |
 | `data` | `ExampleBooks` | 参考实现，非 API 承诺 |
 | `layout` | 布局引擎 | 内部；勿强依赖 |
-| `client.*` | Screen / LinkHandler / Theme | **仅客户端** |
+| `client.theme` | `BookTheme` / `BookThemes` / `BookThemeRegistry` / `ImageFit` | 主题数据可公共注册；ReloadListener / Screen **仅客户端** |
+| `client.*` | Screen / LinkHandler / TextureSizeCache | **仅客户端** |
 | `item` | `FlexiBookItem` | 一般无需继承 |
 
 | 常量 | 值 |
@@ -935,6 +1026,8 @@ A: 构建 FlexiBook 与兼容模组时建议 **JDK 21**（与 NeoForge 1.21.1 �
 | Item id | `flexibook:flexi_book` |
 | Component id | `flexibook:adaptive_book_content` |
 | 示例动作 | `flexibook:say_hi` |
+| 默认主题 | `flexibook:default` |
+| 等比图主题 | `flexibook:contain` |
 
 ---
 
@@ -944,5 +1037,6 @@ A: 构建 FlexiBook 与兼容模组时建议 **JDK 21**（与 NeoForge 1.21.1 �
 |------|------|
 | 1.0.0 | 与模组 v1 首发 API 对齐的调用说明 |
 | 1.0.0+font | 书级 `defaultFont` + 行内/标题 `[font]` / `StyleFlags.font` |
+| 1.0.0+theme | 可注册 `BookTheme`；内容字段 `theme`；内置 default/contain 样例 + JSON 资源 |
 
 问题与扩展建议可对照根目录设计文档；讲台等能力以后续版本 changelog 为准。

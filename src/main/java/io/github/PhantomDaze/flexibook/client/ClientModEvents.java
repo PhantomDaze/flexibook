@@ -2,13 +2,17 @@ package io.github.PhantomDaze.flexibook.client;
 
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.client.screen.AdaptiveBookScreen;
+import io.github.PhantomDaze.flexibook.client.theme.BookThemeReloadListener;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 
 @EventBusSubscriber(modid = FlexiBookMod.MOD_ID, value = Dist.CLIENT)
 public final class ClientModEvents {
@@ -17,6 +21,13 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         BookLayoutEngine.clearCache();
+        TextureSizeCache.clear();
+    }
+
+    @SubscribeEvent
+    public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) (ResourceManager manager) -> TextureSizeCache.clear());
+        event.registerReloadListener(new BookThemeReloadListener());
     }
 
     /** Client-only open helper so item code does not classload Screen on dedicated server until invoked. */

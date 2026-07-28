@@ -1,7 +1,11 @@
 package io.github.PhantomDaze.flexibook.client.screen;
 
+import io.github.PhantomDaze.flexibook.client.TextureSizeCache;
 import io.github.PhantomDaze.flexibook.client.link.LinkHandler;
 import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
+import io.github.PhantomDaze.flexibook.client.theme.BookThemeRegistry;
+import io.github.PhantomDaze.flexibook.client.theme.ImageFit;
+import io.github.PhantomDaze.flexibook.client.theme.ImageFitMath;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.StyleFlags;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
@@ -25,6 +29,9 @@ import java.util.Optional;
  * Rendering order matches vanilla {@code BookViewScreen}: background (no menu blur)
  * is drawn in {@link #renderBackground}, then widgets via {@code super.render},
  * then page content so the blur pass never treats the book as world UI.
+ * <p>
+ * Theme is resolved from {@link AdaptiveBookContent#themeId()} via {@link BookThemeRegistry}
+ * unless an explicit {@link BookTheme} is passed to the constructor.
  */
 public class AdaptiveBookScreen extends Screen {
     private final ItemStack bookStack;
@@ -43,15 +50,20 @@ public class AdaptiveBookScreen extends Screen {
     private int leftPos;
     private int topPos;
 
+    /** Opens the book using the theme id stored on the content (or the default sample). */
     public AdaptiveBookScreen(ItemStack bookStack) {
-        this(bookStack, BookTheme.DEFAULT);
+        super(Component.translatable("flexibook.screen.title"));
+        this.bookStack = bookStack.copy();
+        this.content = bookStack.getOrDefault(ModDataComponents.ADAPTIVE_BOOK_CONTENT.get(), AdaptiveBookContent.EMPTY);
+        this.theme = BookThemeRegistry.resolve(this.content.themeId());
     }
 
+    /** Opens the book with an explicit theme (ignores content theme id). */
     public AdaptiveBookScreen(ItemStack bookStack, BookTheme theme) {
         super(Component.translatable("flexibook.screen.title"));
         this.bookStack = bookStack.copy();
-        this.theme = theme;
         this.content = bookStack.getOrDefault(ModDataComponents.ADAPTIVE_BOOK_CONTENT.get(), AdaptiveBookContent.EMPTY);
+        this.theme = theme != null ? theme : BookThemeRegistry.resolve(this.content.themeId());
     }
 
     @Override
@@ -152,11 +164,10 @@ public class AdaptiveBookScreen extends Screen {
             title = title.copy().withStyle(Style.EMPTY.withFont(content.defaultFont().get()));
         }
         int titleX = leftPos + (theme.bookTexWidth() - font.width(title)) / 2;
-        graphics.drawString(font, title, titleX, topPos + 5, theme.pageTextColor(), false);
+        graphics.drawString(font, title, titleX, topPos + theme.titleOffsetY(), theme.pageTextColor(), false);
 
         int contentX = leftPos + theme.contentLeft();
-        // Sit just under the title with a small gap.
-        int contentY = topPos + theme.contentTop() + 4;
+        int contentY = topPos + theme.contentTop() + theme.contentOffsetY();
 
         if (!pages.isEmpty()) {
             RenderedPage page = pages.get(pageIndex);
@@ -193,8 +204,8 @@ public class AdaptiveBookScreen extends Screen {
         // page number
         String pageLabel = Component.translatable("flexibook.screen.page", pageIndex + 1, Math.max(1, pages.size())).getString();
         int pageLabelX = leftPos + (theme.bookTexWidth() - font.width(pageLabel)) / 2;
-        // Footer band of the taller book texture (layout content height unchanged).
-        graphics.drawString(font, pageLabel, pageLabelX, topPos + theme.bookTexHeight() - 18, theme.pageTextColor(), false);
+        graphics.drawString(font, pageLabel, pageLabelX,
+                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), theme.pageTextColor(), false);
     }
 
     private void renderElement(GuiGraphics graphics, RenderedElement el, int originX, int originY) {
@@ -226,9 +237,11 @@ public class AdaptiveBookScreen extends Screen {
                 pose.popPose();
             }
             case RenderedElement.ImageBlock image -> {
-                int x = originX + Math.round(image.x());
-                int y = originY + Math.round(image.y());
-                graphics.blit(image.texture(), x, y, 0, 0, image.width(), image.height(), image.width(), image.height());
+                int boxX = originX + Math.round(image.x());
+                int boxY = originY + Math.round(image.y());
+                int boxW = image.width();
+                int boxH = image.height();
+                blitImage(graphics, image.texture(), boxX, boxY, boxW, boxH);
             }
             case RenderedElement.DividerLine divider -> {
                 int x = originX + Math.round(divider.x());
@@ -237,6 +250,43 @@ public class AdaptiveBookScreen extends Screen {
                 graphics.fill(x, y, x + w, y + 1, 0xFF000000 | theme.dividerColor());
             }
         }
+    }
+
+    /**
+     * Draw a book image into the layout box according to {@link BookTheme#imageFit()}.
+     * Layout still reserves {@code boxW×boxH}; only the pixels inside may letterbox.
+     */
+    private void blitImage(GuiGraphics graphics, net.minecraft.resources.ResourceLocation texture,
+                           int boxX, int boxY, int boxW, int boxH) {
+        if (boxW <= 0 || boxH <= 0) {
+            return;
+        }
+        if (theme.imageFit() == ImageFit.CONTAIN) {
+            var size = TextureSizeCache.getSize(texture);
+            if (size.isPresent()) {
+                int texW = size.get()[0];
+                int texH = size.get()[1];
+                ImageFitMath.Fit fit = ImageFitMath.contain(boxW, boxH, texW, texH);
+                // Full UV of the real texture → fitted screen rect (aspect preserved).
+                graphics.blit(
+                        texture,
+                        boxX + fit.offsetX(),
+                        boxY + fit.offsetY(),
+                        fit.drawW(),
+                        fit.drawH(),
+                        0f,
+                        0f,
+                        texW,
+                        texH,
+                        texW,
+                        texH
+                );
+                return;
+            }
+            // missing texture size → fall through to stretch
+        }
+        // STRETCH (default): fill the whole logical box; PNG may distort if aspect differs
+        graphics.blit(texture, boxX, boxY, 0, 0, boxW, boxH, boxW, boxH);
     }
 
     /**
@@ -263,7 +313,7 @@ public class AdaptiveBookScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && !pages.isEmpty()) {
             int contentX = leftPos + theme.contentLeft();
-            int contentY = topPos + theme.contentTop() + 0;
+            int contentY = topPos + theme.contentTop() + theme.contentOffsetY();
             double localX = mouseX - contentX;
             double localY = mouseY - contentY;
             RenderedPage page = pages.get(pageIndex);

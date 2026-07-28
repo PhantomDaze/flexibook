@@ -79,6 +79,18 @@ class AdaptiveBookBuilderTest {
     }
 
     @Test
+    void themeIdOnContent() {
+        var theme = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("flexibook", "contain");
+        AdaptiveBookContent content = new AdaptiveBookBuilder("guide")
+                .titleKey("demo.title")
+                .theme(theme)
+                .p("demo.p")
+                .buildContent();
+        assertEquals(Optional.of(theme), content.themeId());
+        assertEquals(Optional.of(theme), new AdaptiveBookBuilder("g").theme("flexibook:contain").buildContent().themeId());
+    }
+
+    @Test
     void apiFacadesCreateLinkActions() {
         assertInstanceOf(LinkAction.CommandId.class, FlexiBookAPI.commandAction("a:b"));
         assertInstanceOf(LinkAction.Url.class, FlexiBookAPI.urlAction("https://example.com"));

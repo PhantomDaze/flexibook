@@ -18,6 +18,7 @@ class ContentModelTest {
                 new TranslatableText("title.key"),
                 Optional.of("[p]raw.should.be.ignored[/p]"),
                 Optional.of(List.of(BookElement.Divider.INSTANCE)),
+                Optional.empty(),
                 Optional.empty()
         );
         List<BookElement> resolved = both.resolveElements();
@@ -95,6 +96,22 @@ class ContentModelTest {
         assertEquals(Optional.of(font), back.defaultFont());
         BookElement.Paragraph p = (BookElement.Paragraph) back.resolveElements().getFirst();
         assertEquals(Optional.of(font), p.spans().getFirst().style().font());
+    }
+
+    @Test
+    void contentCodecRoundTripThemeId() {
+        ResourceLocation theme = ResourceLocation.fromNamespaceAndPath("flexibook", "contain");
+        AdaptiveBookContent original = AdaptiveBookContent.ofMarkup(
+                new TranslatableText("demo.title"),
+                "[p]x[/p]",
+                Optional.empty(),
+                Optional.of(theme)
+        );
+        var encoded = AdaptiveBookContent.CODEC.encodeStart(JsonOps.INSTANCE, original).getOrThrow();
+        AdaptiveBookContent back = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, encoded).getOrThrow();
+        assertEquals(original, back);
+        assertEquals(Optional.of(theme), back.themeId());
+        assertEquals(Optional.of(theme), original.withThemeId(theme).themeId());
     }
 
     @Test

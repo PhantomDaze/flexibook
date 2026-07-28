@@ -101,7 +101,7 @@ DataComponent id：`flexibook:adaptive_book_content`。
 
 ## v1 范围与非目标
 
-**已做**：DataComponent、双形态存储、TagParser、自适应 layout + 缓存、单页 Screen、Builder、示例书双语、搜索、主题纹理入口。
+**已做**：DataComponent、双形态存储、TagParser、自适应 layout + 缓存、单页 Screen、Builder、示例书双语、搜索、可注册主题（`flexibook:default` / JSON）。
 
 **未做 / 简化**：
 
