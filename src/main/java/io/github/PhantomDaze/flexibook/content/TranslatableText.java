@@ -2,6 +2,7 @@ package io.github.PhantomDaze.flexibook.content;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.PhantomDaze.flexibook.layout.TranslationProvider;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -33,7 +34,6 @@ public record TranslatableText(String key, List<String> args) {
     }
 
     public Component resolve() {
-        // Literals (parser/builder fallthrough) are stored without looking like translation keys.
         if (!looksLikeKey(key)) {
             return Component.literal(key);
         }
@@ -45,6 +45,19 @@ public record TranslatableText(String key, List<String> args) {
 
     public String resolvePlain() {
         return resolve().getString();
+    }
+
+    /**
+     * Resolve using a provider (used by standalone editor / headless preview).
+     */
+    public String resolvePlain(TranslationProvider provider) {
+        if (provider == null) {
+            return resolvePlain();
+        }
+        if (!looksLikeKey(key)) {
+            return key;
+        }
+        return provider.get(key, args.toArray());
     }
 
     private static boolean looksLikeKey(String value) {

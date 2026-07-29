@@ -1,0 +1,15 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        " ": 4,
+        "‌": 0
+      }
+    },
+    {
+      "type": "unihex",
+      "hex_file": "flexibook:font/unifont_all-17.0.05.zip"
+    }
+  ]
+}

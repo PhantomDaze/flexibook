@@ -15,8 +15,10 @@ import java.util.Optional;
  * Dual-form book payload: either a tag markup string or a structured element list.
  * Structured elements win when both are present.
  * <p>
- * Optional {@link #defaultFont()} is the book-wide font id (resource-pack definition under
- * {@code assets/<ns>/font/<path>.json}). Per-span fonts on {@link StyleFlags} override it.
+ * Optional {@link #defaultFont()} is an explicit book-wide font override id (resource-pack definition under
+ * {@code assets/<ns>/font/<path>.json}). When absent, layout and rendering resolve to {@code flexibook:default}
+ * (never silent fallthrough to {@code minecraft:default}).
+ * Per-span/heading fonts on {@link StyleFlags} override the book default.
  * <p>
  * Optional {@link #themeId()} selects a registered {@code BookTheme}
  * ({@code assets/<ns>/flexibook/themes/<path>.json} or code registration). Missing/unknown
@@ -94,6 +96,11 @@ public record AdaptiveBookContent(
 
     public AdaptiveBookContent withThemeId(ResourceLocation theme) {
         return new AdaptiveBookContent(title, rawMarkup, elements, defaultFont, Optional.ofNullable(theme));
+    }
+
+    /** Returns explicit defaultFont if present, otherwise flexibook:default. Never minecraft:default. */
+    public ResourceLocation resolvedFont() {
+        return FlexiBookFonts.resolve(defaultFont);
     }
 
     public List<BookElement> resolveElements() {

@@ -173,7 +173,7 @@ class ContentModelTest {
     void translatableTextLooksLikeKey() {
         assertEquals("a.b", new TranslatableText("a.b").key());
         TranslatableText literal = new TranslatableText("hello world");
-        assertDoesNotThrow(literal::resolvePlain);
+        assertDoesNotThrow(() -> literal.resolvePlain());
         assertEquals("hello world", literal.resolvePlain());
     }
 }

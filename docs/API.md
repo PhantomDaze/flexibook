@@ -3,8 +3,7 @@
 面向其他模组与数据包作者的 **API / 数据 / 标签** 说明。  
 实现版本：`flexibook` **1.0.0** · Minecraft **1.21.1** · NeoForge **21.1.x**。
 
-设计背景与阶段规划见仓库根目录 [`Minecraft_FlexiBook_HTML_Subset_Scheme.md`](../Minecraft_FlexiBook_HTML_Subset_Scheme.md)。  
-快速上手见 [`README.md`](../README.md)。
+设计背景见 [`DESIGN.md`](./DESIGN.md)。快速上手见 [`../README.md`](../README.md)。文档索引见 [`README.md`](./README.md)。
 
 ---
 
@@ -23,9 +22,10 @@
 11. [国际化（i18n）](#11-国际化i18n)
 12. [字体（每书 / 行内）](#12-字体每书--行内)
 13. [布局与主题](#13-布局与主题)
-14. [完整示例](#14-完整示例)
-15. [限制与常见问题](#15-限制与常见问题)
-16. [包与符号索引](#16-包与符号索引)
+14. [数据化书籍注册](#14-数据化书籍注册)
+15. [完整示例](#15-完整示例)
+16. [限制与常见问题](#16-限制与常见问题)
+17. [包与符号索引](#17-包与符号索引)
 
 ---
 
@@ -112,7 +112,7 @@ ItemStack(flexibook:flexi_book)
 |------|------|
 | **双形态存储** | 可存结构化 `BookElement` 列表，或 raw 标签字符串；两者都在时 **elements 胜出** |
 | **翻译延迟** | 标题与正文键在 **打开书 / 布局** 时按当前客户端语言解析，不在写入时固化译文 |
-| **字体分层** | 书级 `defaultFont` → 被 span/标题上的 `font` 覆盖；同一本书可混用多种字体 |
+| **字体分层** | 行内/标题 `font` → 书级 `defaultFont` → 内置 `flexibook:default`（unihex）；绝不静默落到 `minecraft:default` |
 | **主题注册** | `BookTheme` 按 `ResourceLocation` 注册；书上存 `theme` id，缺省 `flexibook:default` |
 | **安全链接** | `cmd` 只触发已注册的动作 ID；`url` 仅 http(s) 且经确认框 |
 | **自定义物品** | `flexibook:flexi_book`，**不**劫持原版 `written_book` |
@@ -228,7 +228,7 @@ public interface LinkActionRegistry.ActionContext {
 |------|------|
 | `titleKey(String key, String... args)` | 书名翻译键 + 可选参数 |
 | `title(TranslatableText title)` | 直接设标题对象 |
-| `defaultFont(ResourceLocation)` / `defaultFont(String id)` | **整本书**默认字体（资源包 `assets/<ns>/font/<path>.json`） |
+| `defaultFont(ResourceLocation)` / `defaultFont(String id)` | **整本书**显式默认字体；省略则布局/绘制用 `flexibook:default` |
 | `theme(ResourceLocation)` / `theme(String id)` | 书用主题 id（写入组件字段 `theme`）；省略则打开时用 `flexibook:default` |
 | `h1(String key)` / `h2(String key)` | 一/二级标题（键） |
 | `h1(String key, ResourceLocation font)` / `h2(..., font)` | 标题使用指定字体 |
@@ -298,8 +298,9 @@ public record AdaptiveBookContent(
 | `ofMarkup(title, markup)` / `…(title, markup, font)` / `…(title, markup, font, theme)` | 只存 raw |
 | `withDefaultFont(ResourceLocation)` | 复制并设置书级字体 |
 | `withThemeId(ResourceLocation)` | 复制并设置主题 id |
-| `defaultFont()` | 整书默认字体；被 span/标题 font 覆盖 |
-| `themeId()` | 主题注册表 id；缺省/未知 → `flexibook:default` |
+| `defaultFont()` | 整书**显式**默认字体（Optional）；被 span/标题 font 覆盖 |
+| `resolvedFont()` | 显式 `defaultFont` 若有，否则 `FlexiBookFonts.DEFAULT`（`flexibook:default`） |
+| `themeId()` | 主题注册表 id；缺省/未知 → 主题 `flexibook:default` |
 | `resolveElements()` | 布局/渲染前统一得到 `List<BookElement>` |
 | `isEmpty()` | 解析后无元素且 raw 空白 |
 | `CODEC` / `STREAM_CODEC` | 持久化 + 网络同步 |
@@ -309,18 +310,25 @@ public record AdaptiveBookContent(
 ```jsonc
 {
   "title": { "key": "mymod.book.title", "args": [] },
-  "font": "mymod:fancy",          // 可选，整书默认字体
+  "font": "flexibook:default",    // 可选；省略时 resolvedFont() 仍为 flexibook:default
   "theme": "flexibook:contain",   // 可选，主题 id
   // 二选一：
   "raw": "[h1]mymod.book.ch1[/h1]\n[p]mymod.book.p1[/p]",
   // 或
   "elements": [
-    { "heading": { /* 见下 dispatch 形态 */ } }
+    { "type": "heading", "data": { "level": 1, "text": { "key": "mymod.book.ch1" } } }
   ]
 }
 ```
 
-`BookElement` 使用 `Codec.STRING.dispatch`（`typeId` → `data` 字段）。手写 JSON 时请以实际 codec 为准，**优先用 Builder / Java API 写入**，避免手写 elements 树出错。
+`BookElement` 使用 `Codec.STRING.dispatch`（`type` → `data` 字段）。手写 JSON 时请以实际 codec 为准，**优先用 Builder / Java API 写入**，避免手写 elements 树出错。
+
+实际 JSON 结构（示例）：
+```json
+{ "type": "heading", "data": { "level": 1, "text": { "key": "mymod.title" } } }
+{ "type": "paragraph", "data": { "spans": [ { "text": "mymod.p1", "translate": true } ] } }
+{ "type": "image", "data": { "src": "mymod:textures/icon.png", "width": 48, "height": 48 } }
+```
 
 ### 6.2 `TranslatableText`
 
@@ -717,30 +725,48 @@ mymod.action.<name>.feedback
 
 字体 id 与原版聊天组件一致：资源位于 `assets/<namespace>/font/<path>.json`，引用写作 `namespace:path`。
 
-原版常见 id：
+### 12.0 内置默认：`flexibook:default`
+
+FlexiBook **自带**书用默认字体，不依赖 `minecraft:default`：
 
 | id | 说明 |
 |----|------|
-| `minecraft:default` | 默认（不写 font 时的行为） |
-| `minecraft:alt` | 附魔台风格 |
-| `minecraft:uniform` | Unicode 字体 |
-| `minecraft:illageralt` | 灾厄村民风格 |
+| `flexibook:default` | 模组内置 unihex（GNU Unifont 17.0.05 HEX/ZIP）+ space provider。书未声明 `font` 时布局/绘制/页码/标题均解析到此 id |
+| `FlexiBookFonts.DEFAULT` / `content.resolvedFont()` | Java 侧常量与解析入口 |
 
-也可使用你自己模组/资源包定义的字体。
+资源文件：
+
+- `assets/flexibook/font/default.json`
+- `assets/flexibook/font/unifont_all-17.0.05.zip`
+- `assets/flexibook/font/LICENSE-unifont.txt`
+
+编辑器与游戏消费**同一 ZIP**，按 Minecraft `UnihexProvider` 度量对齐 advance（含粗体 +0.5 后 `ceil`）。
+
+其它仍可选用的字体 id（需客户端资源存在）：
+
+| id | 说明 |
+|----|------|
+| `minecraft:alt` | 附魔台风格（显式覆盖时） |
+| `minecraft:uniform` | 原版 Unicode 字体栈 |
+| `minecraft:illageralt` | 灾厄村民风格 |
+| `mymod:…` | 你自己的 font json |
+
+普通游戏 UI（搜索框、按钮、tooltip）仍走 Minecraft UI 字体，不受书默认字体影响。
 
 ### 12.1 优先级
 
 ```
 行内 StyleFlags.font / Heading.font
         ↓ 若无
-书级 AdaptiveBookContent.defaultFont
+书级 AdaptiveBookContent.defaultFont（JSON 字段 "font"）
         ↓ 若无
-原版默认字体（Style 不带 font）
+flexibook:default   ← 不再落到 minecraft:default
 ```
 
 同一本书内可以：
 
-- 只设 `defaultFont` → 全书统一  
+- 不写 `font` → 自动 `flexibook:default`  
+- 只设书级 `defaultFont` → 全书统一为该 id  
 - 只在部分 span / 标题设 font → 混排  
 - 两者都设 → 局部覆盖书级默认  
 
@@ -749,16 +775,19 @@ mymod.action.<name>.feedback
 ### 12.2 Builder 示例
 
 ```java
+import io.github.PhantomDaze.flexibook.content.FlexiBookFonts;
+
 ResourceLocation fancy = ResourceLocation.fromNamespaceAndPath("mymod", "fancy");
 ResourceLocation mono  = ResourceLocation.withDefaultNamespace("uniform");
 
 ItemStack book = FlexiBookAPI.builder("styled_guide")
     .titleKey("mymod.book.title")
-    .defaultFont(fancy)                          // 整书默认
-    .h1("mymod.book.h1")                         // 用 fancy
+    // 可省略：未设置时 layout/screen 仍用 FlexiBookFonts.DEFAULT
+    .defaultFont(FlexiBookFonts.DEFAULT)
+    .h1("mymod.book.h1")
     .h2("mymod.book.code_title", mono)            // 标题单独 mono
-    .p("mymod.book.body")                        // fancy
-    .font("mymod.book.quote", mono)              // 一段 mono
+    .p("mymod.book.body")
+    .font("mymod.book.quote", mono)
     .pRaw("[p]普通 [font font=\"minecraft:alt\"]符文[/font] 混排[/p]")
     .buildItem();
 ```
@@ -767,16 +796,22 @@ ItemStack book = FlexiBookAPI.builder("styled_guide")
 
 ```java
 AdaptiveBookContent c = AdaptiveBookContent.ofMarkup(title, markup)
-    .withDefaultFont(ResourceLocation.withDefaultNamespace("alt"));
+    .withDefaultFont(ResourceLocation.fromNamespaceAndPath("mymod", "fancy"));
 // 或
 AdaptiveBookContent.ofElements(title, elements, Optional.of(fontId));
+
+// 解析后的有效字体（显式或 flexibook:default）
+ResourceLocation used = c.resolvedFont();
 ```
 
 ### 12.4 注意
 
-- 字体必须在 **打开书的客户端** 资源里存在；缺失时原版通常回退，但可能显示异常。  
-- 自定义 TTF/位图字体请按原版 font json 规范打包，FlexiBook 不负责加载管线。  
-- 服务端只存 `ResourceLocation` 字符串；实际字形仅客户端解析。
+- **缺省语义变更**：JSON/Builder 不写 `font` 时，书页文字使用 `flexibook:default`，不是原版 `minecraft:default`。  
+- 显式自定义字体必须在 **打开书的客户端** 资源里存在；缺失时原版可能回退显示异常。  
+- 自定义 TTF/位图/unihex 请按原版 font json 规范打包；编辑器**仅**内置预览 `flexibook:default`，其它 font id 会提示不支持并回退预览。  
+- 服务端只存 `ResourceLocation` 字符串；实际字形仅客户端解析。  
+- Unifont 许可见 jar 内 `LICENSE-unifont.txt`（OFL / GPL font exception）；更新脚本：`scripts/update-unifont.sh`（不会在普通 build 联网）。
+- 实施规格与验收清单见 [`UNIFIED_FONT_PLAN.md`](./UNIFIED_FONT_PLAN.md)（已落地；改字体策略只改该文档 + 本节）。
 
 ---
 
@@ -890,9 +925,141 @@ FlexiBookAPI.builder("guide").theme(FlexiBookAPI.containThemeId())...
 
 ---
 
-## 14. 完整示例
+## 14. 数据化书籍注册
 
-### 14.1 模组内发放任务手册 + 注册动作
+书籍内容（`AdaptiveBookContent`）支持通过资源包 JSON 定义，路径与主题一致：
+
+### 14.1 资源路径
+```
+assets/<namespace>/flexibook/books/<path>.json
+```
+生成的 id 为 `<namespace>:<path>`（例如 `assets/mymod/flexibook/books/guide.json` → `mymod:guide`）。
+
+### 14.2 JSON 格式
+直接对齐 `AdaptiveBookContent` 的 codec 字段：
+
+```jsonc
+{
+  "title": { "key": "mymod.book.guide.title" },
+  "elements": [
+    { "type": "heading", "data": { "level": 1, "text": { "key": "mymod.book.guide.h1" } } },
+    { "type": "paragraph", "data": { "spans": [ { "text": "mymod.book.guide.p1", "translate": true } ] } },
+    { "type": "image", "data": { "src": "mymod:textures/gui/icon.png", "width": 48, "height": 48 } }
+  ],
+  "font": "flexibook:default",   // 可选；省略时运行时也解析为 flexibook:default
+  "theme": "mymod:dark"          // 可选，主题 id
+}
+```
+
+也支持 raw 形态（与双形态存储一致）：
+
+```json
+{
+  "title": { "key": "mymod.book.guide.title" },
+  "raw": "[h1]mymod.book.guide.h1[/h1][p]mymod.book.guide.p1[/p]",
+  "theme": "mymod:default"
+}
+```
+
+规则：
+- 同时存在时 **elements 优先**。
+- `title` 必填（`TranslatableText` 形态）。
+- 字体/主题 id 缺省或未知时按运行时规则回退。
+
+### 14.3 加载与覆盖
+- 代码可在任意公共侧通过 `FlexiBookAPI.registerBookContent(id, content)` 预注册。
+- 客户端资源重载时：
+  1. 清理上一次资源来源注册的书籍 id。
+  2. 调用 `bootstrap()`（当前为空，可用于未来内置）。
+  3. 扫描 `flexibook/books` 下所有 `*.json`，用 `AdaptiveBookContent.CODEC` 解析并注册。
+- **资源定义会覆盖同 id 的代码注册**，直到下次重载。
+- 重载后会清空 `BookLayoutEngine` 缓存。
+
+### 14.4 API 表面
+```java
+// 注册（代码路径）
+FlexiBookAPI.registerBookContent("mymod:guide", content);
+
+// 查询
+Optional<AdaptiveBookContent> c = FlexiBookAPI.getBookContent(id);
+AdaptiveBookContent resolved = FlexiBookAPI.resolveBookContent(id); // 未知返回 EMPTY
+Collection<ResourceLocation> ids = FlexiBookAPI.bookContentIds();
+
+// 直接创建物品（推荐用于模板继承）
+ItemStack book = FlexiBookAPI.createBookFromDefinition(ResourceLocation.parse("flexibook:demo_guide"));
+
+// 拉模板后微调：AdaptiveBookContent 为 record，override 必须 return 新实例
+ItemStack tweaked = FlexiBookAPI.createBookFromDefinition(
+    ResourceLocation.parse("flexibook:demo_guide"),
+    c -> c.withThemeId(ResourceLocation.fromNamespaceAndPath("mymod", "dark"))
+);
+```
+
+`resolveBookContent` 未知时返回 `AdaptiveBookContent.EMPTY`（标题为空书，元素为空）。
+
+### 14.5 模板继承（其他模组用法）
+
+**原则**：物品 ID / 命名空间由使用方决定；内容与主题 id 来自提供 JSON 的 namespace（资源包或其它 mod jar）。二者可以不同。
+
+#### 14.5.1 分发方式
+| 方式 | 做法 | 适用 |
+|------|------|------|
+| 资源包 | 玩家把导出的 pack 丢进 `resourcepacks/` 并启用 | 内容作者独立分发、热重载 |
+| 打进 mod jar | `src/main/resources/assets/<ns>/flexibook/{books,themes}/...` | 随 mod 安装，无额外资源包 |
+
+客户端 F3+T / 资源重载后，资源定义会覆盖同 id 的代码注册。
+
+#### 14.5.2 依赖
+在使用方 `build.gradle` / mods.toml 中声明对 `flexibook` 的依赖（版本范围按发布约定）。公共侧可调用 `io.github.PhantomDaze.flexibook.api.FlexiBookAPI`；主题/书籍注册表在客户端资源重载后对数据书生效。
+
+#### 14.5.3 推荐：从定义创建 FlexiBook 物品
+```java
+// 内容 id = 资源路径 assets/myguide/flexibook/books/guide.json → myguide:guide
+ItemStack stack = FlexiBookAPI.createBookFromDefinition(
+    ResourceLocation.fromNamespaceAndPath("myguide", "guide")
+);
+// stack 物品为 flexibook:flexi_book，DataComponent 已写入内容
+```
+
+#### 14.5.4 自己的物品 + 拉取内容
+若要用自定义 Item（仍需能打开 AdaptiveBookScreen / 携带同一 DataComponent）：
+```java
+ItemStack stack = new ItemStack(MyItems.FIELD_GUIDE.get());
+AdaptiveBookContent c = FlexiBookAPI.resolveBookContent(
+    ResourceLocation.fromNamespaceAndPath("myguide", "guide")
+);
+stack.set(ModDataComponents.ADAPTIVE_BOOK_CONTENT.get(), c);
+```
+未知 id 时 `resolveBookContent` 返回 `EMPTY`；`getBookContent` 返回 `Optional.empty()`。
+
+#### 14.5.5 Override 微调模板
+`AdaptiveBookContent` 不可变。使用 `Function` 重载并 **返回** 修改后的实例：
+```java
+ItemStack stack = FlexiBookAPI.createBookFromDefinition(
+    ResourceLocation.fromNamespaceAndPath("myguide", "guide"),
+    c -> c
+        .withThemeId(ResourceLocation.fromNamespaceAndPath("myguide", "main"))
+        .withDefaultFont(ResourceLocation.parse("flexibook:default"))
+);
+```
+也可用 `AdaptiveBookContent.ofElements(...)` / `ofMarkup(...)` 整本重建。`override == null` 或返回 `null` 时保持模板原文。
+
+#### 14.5.6 主题引用
+书 JSON 的 `"theme": "myguide:main"` 对应 `assets/myguide/flexibook/themes/main.json`。  
+主题内 `book_texture` / `widgets_texture` 指向 `assets/<texNs>/textures/...`（可与内容 namespace相同）。编辑器「导出资源包」会把纹理改写进同一 namespace，便于自包含分发。
+
+### 14.6 内置示例
+本模组在资源内提供与 `ExampleBooks.demoGuide()` 内容对齐的示例：
+```
+assets/flexibook/flexibook/books/demo_guide.json
+```
+其 id 为 `flexibook:demo_guide`，可用于验证加载与布局一致性。
+
+---
+
+## 15. 完整示例
+
+### 15.1 模组内发放任务手册 + 注册动作
 
 ```java
 public final class MyBooks {
@@ -920,7 +1087,7 @@ public final class MyBooks {
 }
 ```
 
-### 14.2 与 Demo Guide 对齐的 Builder 风格
+### 15.2 与 Demo Guide 对齐的 Builder 风格
 
 参考本模组 `io.github.PhantomDaze.flexibook.data.ExampleBooks#demoGuide`：
 
@@ -939,7 +1106,7 @@ new AdaptiveBookBuilder("demo_guide")
     .buildItem();
 ```
 
-### 14.3 运行时替换已有书的内容
+### 15.3 运行时替换已有书的内容
 
 ```java
 ItemStack stack = player.getMainHandItem();
@@ -954,7 +1121,7 @@ if (stack.is(ModItems.FLEXI_BOOK.get())) {
 
 客户端若正打开旧 Screen，需关闭重开才会看到新布局。
 
-### 14.4 仅解析标签（工具/测试）
+### 15.4 仅解析标签（工具/测试）
 
 ```java
 List<BookElement> elements = TagParser.parse("[h1]a.b[/h1][p]c.d[/p]");
@@ -965,7 +1132,7 @@ List<BookElement> elements = TagParser.parse("[h1]a.b[/h1][p]c.d[/p]");
 
 ---
 
-## 15. 限制与常见问题
+## 16. 限制与常见问题
 
 ### 15.1 v1 明确不做
 
@@ -993,7 +1160,13 @@ A: 只要 elements 非空就走结构化路径。只用 raw 时不要混用 `h1/
 A: 确认 `src` 命名空间与路径存在于资源包；尺寸是否过大导致翻页后才看见。
 
 **Q: 自定义字体不生效？**  
-A: 检查 id 是否与 `assets/.../font/*.json` 一致；书级用 `defaultFont`，行内用 `[font]` / `StyleFlags.withFont`。混排时确认局部 font 没有被空 `withFont(null)` 清掉。布局缓存含 font key，改完组件后需重开书。
+A: 检查 id 是否与 `assets/.../font/*.json` 一致；书级用 `defaultFont`，行内用 `[font]` / `StyleFlags.withFont`。混排时确认局部 font 没有被空 `withFont(null)` 清掉。布局缓存含 **resolved** font key，改完组件后需重开书。省略 `font` 时走内置 `flexibook:default`，不是 `minecraft:default`。
+
+**Q: 为什么和原版聊天/书籍看起来不一样？**  
+A: 书内默认故意使用模组自带 unihex（`flexibook:default`），与编辑器同一 ZIP，便于中西文与分页对齐。需要原版外观时请**显式**设书级或行内 font（如 `minecraft:default` / `minecraft:uniform`），并保证客户端资源存在。
+
+**Q: 编辑器里自定义 font id 预览不对？**  
+A: 编辑器默认只内置解析/绘制 `flexibook:default` unihex；其它 id 会保留在 JSON 中，预览回退到同一 unihex（见 §12.4）。游戏内仍按客户端真实 font 资源渲染。
 
 **Q: 能否在服务端打开书？**  
 A: 不能。Screen 仅客户端。服务端只负责给 `ItemStack` 或改组件。
@@ -1006,12 +1179,12 @@ A: 构建 FlexiBook 与兼容模组时建议 **JDK 21**（与 NeoForge 1.21.1 �
 
 ---
 
-## 16. 包与符号索引
+## 17. 包与符号索引
 
 | 包 | 用途 | 对依赖方 |
 |----|------|----------|
 | `api` | `FlexiBookAPI`, `AdaptiveBookBuilder` | **稳定入口** |
-| `content` | 组件载荷、元素、链接、样式 | 读写内容时使用 |
+| `content` | 组件载荷、元素、链接、样式；`FlexiBookFonts` / `AdaptiveBookContent.resolvedFont()` | 读写内容时使用 |
 | `registry` | `ModItems`, `ModDataComponents`, `ModCreativeTabs` | 物品/组件引用 |
 | `parse` | `TagParser` | 可选；Builder 已封装 |
 | `data` | `ExampleBooks` | 参考实现，非 API 承诺 |
@@ -1027,6 +1200,7 @@ A: 构建 FlexiBook 与兼容模组时建议 **JDK 21**（与 NeoForge 1.21.1 �
 | Component id | `flexibook:adaptive_book_content` |
 | 示例动作 | `flexibook:say_hi` |
 | 默认主题 | `flexibook:default` |
+| 默认字体 | `flexibook:default`（`FlexiBookFonts.DEFAULT`，unihex Unifont） |
 | 等比图主题 | `flexibook:contain` |
 
 ---
@@ -1038,5 +1212,6 @@ A: 构建 FlexiBook 与兼容模组时建议 **JDK 21**（与 NeoForge 1.21.1 �
 | 1.0.0 | 与模组 v1 首发 API 对齐的调用说明 |
 | 1.0.0+font | 书级 `defaultFont` + 行内/标题 `[font]` / `StyleFlags.font` |
 | 1.0.0+theme | 可注册 `BookTheme`；内容字段 `theme`；内置 default/contain 样例 + JSON 资源 |
+| 1.0.0+unihex | 内置 `flexibook:default`（unihex Unifont）；`resolvedFont()`；缺省不再 `minecraft:default`；编辑器同 ZIP |
 
-问题与扩展建议可对照根目录设计文档；讲台等能力以后续版本 changelog 为准。
+问题与扩展建议可对照 [`DESIGN.md`](./DESIGN.md)；讲台等能力以后续版本 changelog 为准。

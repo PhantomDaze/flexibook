@@ -1,5 +1,6 @@
 package io.github.PhantomDaze.flexibook.api;
 
+import io.github.PhantomDaze.flexibook.client.theme.BookContentRegistry;
 import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemeRegistry;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemes;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Public facade for other mods.
@@ -88,6 +90,68 @@ public final class FlexiBookAPI {
 
     public static Collection<ResourceLocation> themeIds() {
         return BookThemeRegistry.ids();
+    }
+
+    // ── Book Contents (data-driven) ─────────────────────────────────────────
+
+    /**
+     * Registers or replaces a book content definition.
+     * Resource-pack JSON under {@code assets/<ns>/flexibook/books/<path>.json}
+     * can provide/override definitions on client reload.
+     */
+    public static void registerBookContent(ResourceLocation id, AdaptiveBookContent content) {
+        BookContentRegistry.register(id, content);
+    }
+
+    public static void registerBookContent(String id, AdaptiveBookContent content) {
+        BookContentRegistry.register(id, content);
+    }
+
+    public static Optional<AdaptiveBookContent> getBookContent(ResourceLocation id) {
+        return BookContentRegistry.getOptional(id);
+    }
+
+    /** Resolves id or returns {@link AdaptiveBookContent#EMPTY}. */
+    public static AdaptiveBookContent resolveBookContent(ResourceLocation id) {
+        return BookContentRegistry.resolve(id);
+    }
+
+    public static AdaptiveBookContent resolveBookContent(Optional<ResourceLocation> id) {
+        return BookContentRegistry.resolve(id);
+    }
+
+    public static Collection<ResourceLocation> bookContentIds() {
+        return BookContentRegistry.ids();
+    }
+
+    /**
+     * Creates a FlexiBook ItemStack pre-filled with the registered book content for the given id.
+     * If the id is unknown, returns an empty book.
+     */
+    public static ItemStack createBookFromDefinition(ResourceLocation bookId) {
+        AdaptiveBookContent content = BookContentRegistry.resolve(bookId);
+        return createBook(content);
+    }
+
+    /**
+     * Creates a FlexiBook ItemStack from a registered definition, then applies an override.
+     * {@link AdaptiveBookContent} is immutable — the function must return the tweaked instance
+     * (e.g. {@code c -> c.withThemeId(myTheme)}). {@code null} override or return keeps the base.
+     * Useful for other mods to slightly customize a template book.
+     */
+    public static ItemStack createBookFromDefinition(
+            ResourceLocation bookId,
+            Function<AdaptiveBookContent, AdaptiveBookContent> override
+    ) {
+        AdaptiveBookContent base = BookContentRegistry.resolve(bookId);
+        AdaptiveBookContent modified = base;
+        if (override != null) {
+            AdaptiveBookContent next = override.apply(base);
+            if (next != null) {
+                modified = next;
+            }
+        }
+        return createBook(modified);
     }
 
     /**

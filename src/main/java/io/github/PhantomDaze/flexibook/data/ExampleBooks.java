@@ -3,6 +3,7 @@ package io.github.PhantomDaze.flexibook.data;
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.api.AdaptiveBookBuilder;
 import io.github.PhantomDaze.flexibook.api.FlexiBookAPI;
+import io.github.PhantomDaze.flexibook.content.FlexiBookFonts;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -10,10 +11,9 @@ public final class ExampleBooks {
     private ExampleBooks() {}
 
     public static ItemStack demoGuide() {
-        // Mixed fonts in one book: default body + alt for a heading / tagged run.
-        ResourceLocation alt = ResourceLocation.withDefaultNamespace("alt");
         return new AdaptiveBookBuilder("demo_guide")
                 .titleKey("flexibook.book.demo.title")
+                .defaultFont(FlexiBookFonts.DEFAULT)
                 .h1("flexibook.book.demo.h1")
                 .p("flexibook.book.demo.intro")
                 .divider()
@@ -38,8 +38,6 @@ public final class ExampleBooks {
                 .h2("flexibook.book.demo.markup")
                 .pRaw("[p]flexibook.book.demo.markup_sample[/p]")
                 .pRaw("[p][b]flexibook.book.demo.bold_sample[/b] [i]flexibook.book.demo.italic_sample[/i] [color=#CC5500]flexibook.book.demo.color_sample[/color][/p]")
-                .pRaw("[p][font font=\"minecraft:alt\"]flexibook.book.demo.font_sample[/font][/p]")
-                .h2("flexibook.book.demo.font_heading", alt)
                 .p("flexibook.book.demo.outro")
                 .buildItem();
     }

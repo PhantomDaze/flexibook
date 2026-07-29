@@ -2,6 +2,7 @@ package io.github.PhantomDaze.flexibook.content;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.PhantomDaze.flexibook.layout.TranslationProvider;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -60,6 +61,28 @@ public record InlineSpan(
     public String resolvePlain() {
         if (translate) {
             return net.minecraft.network.chat.Component.translatable(text).getString();
+        }
+        return text;
+    }
+
+    /**
+     * Resolve using a provider for standalone/editor usage.
+     * When translate=true and the text looks like a key, use provider; otherwise treat as literal.
+     */
+    public String resolvePlain(TranslationProvider provider) {
+        if (!translate) {
+            return text;
+        }
+        if (provider == null) {
+            return net.minecraft.network.chat.Component.translatable(text).getString();
+        }
+        // Reuse TranslatableText's heuristic for key detection
+        if (io.github.PhantomDaze.flexibook.content.TranslatableText.class.getName() != null) {
+            // simple heuristic: keys contain '.' and no spaces
+            if (text != null && text.indexOf('.') > 0 && text.indexOf(' ') < 0) {
+                return provider.get(text);
+            }
+            return text;
         }
         return text;
     }

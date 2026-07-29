@@ -18,6 +18,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
@@ -158,11 +159,11 @@ public class AdaptiveBookScreen extends Screen {
         // Blur/menu background + book texture + buttons/search (must run before page ink)
         super.render(graphics, mouseX, mouseY, partialTick);
 
-        // title (uses book default font when set)
+        ResourceLocation bookFont = content.resolvedFont();
+
+        // title (ALWAYS uses resolved book font; explicit override or flexibook:default)
         Component title = content.title().resolve();
-        if (content.defaultFont().isPresent()) {
-            title = title.copy().withStyle(Style.EMPTY.withFont(content.defaultFont().get()));
-        }
+        title = title.copy().withStyle(Style.EMPTY.withFont(bookFont));
         int titleX = leftPos + (theme.bookTexWidth() - font.width(title)) / 2;
         graphics.drawString(font, title, titleX, topPos + theme.titleOffsetY(), theme.pageTextColor(), false);
 
@@ -201,10 +202,11 @@ public class AdaptiveBookScreen extends Screen {
             tip.ifPresent(t -> graphics.renderTooltip(font, t, mouseX, mouseY));
         }
 
-        // page number
-        String pageLabel = Component.translatable("flexibook.screen.page", pageIndex + 1, Math.max(1, pages.size())).getString();
-        int pageLabelX = leftPos + (theme.bookTexWidth() - font.width(pageLabel)) / 2;
-        graphics.drawString(font, pageLabel, pageLabelX,
+        // page number — use styled component with book font so width() and draw use flexibook:default
+        Component pageComp = Component.translatable("flexibook.screen.page", pageIndex + 1, Math.max(1, pages.size()))
+                .withStyle(Style.EMPTY.withFont(bookFont));
+        int pageLabelX = leftPos + (theme.bookTexWidth() - font.width(pageComp)) / 2;
+        graphics.drawString(font, pageComp, pageLabelX,
                 topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), theme.pageTextColor(), false);
     }
 

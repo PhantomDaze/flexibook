@@ -27,6 +27,7 @@ sourceSets.main.resources {
 }
 
 repositories {
+    maven { url = uri('https://maven.neoforged.net/releases') }
     // Add here additional repositories if required by some of the dependencies below.
 }
 
@@ -48,6 +49,11 @@ neoForge {
 
     // Allow unit tests to compile/run against Minecraft + NeoForge classes.
     addModdingDependenciesTo(sourceSets.test)
+
+    // NOTE: Do NOT call addModdingDependenciesTo on the editor sourceSet.
+    // That brings the full Neo runtime graph (with strict version constraints, e.g. Gson)
+    // which conflicts in a plain desktop classpath. Instead we use compileOnly below for
+    // compile-time MC type visibility only. Runtime editor is plain Java.
 
     // This line is optional. Access Transformers are automatically detected
     // accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
@@ -169,6 +175,13 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+// Ensure the main mod JAR only contains the 'main' sourceSet.
+// The 'editor' sourceSet must never leak into the distributed mod JAR.
+jar {
+    // By default Gradle 'jar' uses sourceSets.main; be explicit to guard against future changes.
+    from sourceSets.main.output
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.

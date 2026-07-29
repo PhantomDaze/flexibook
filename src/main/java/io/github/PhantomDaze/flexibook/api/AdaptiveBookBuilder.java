@@ -20,8 +20,10 @@ import java.util.Optional;
  * Fluent builder for adaptive books. Prefers structured elements; use {@link #fromMarkup}
  * when you already have tag source text.
  * <p>
- * Fonts: {@link #defaultFont(ResourceLocation)} sets the book-wide font;
- * {@link #font(String, ResourceLocation)} / markup {@code [font font="ns:id"]} set per-run fonts.
+ * Fonts: {@link #defaultFont(ResourceLocation)} sets an explicit book-wide font override;
+ * when unset, layout/render time resolves to {@code flexibook:default} (not minecraft:default).
+ * Per-run fonts via {@link #font(String, ResourceLocation)} / markup {@code [font font="ns:id"]} or
+ * heading font override the book default.
  * <p>
  * Theme: {@link #theme(ResourceLocation)} selects a registered book chrome/layout theme
  * ({@code flexibook:default} when omitted).
@@ -48,7 +50,8 @@ public final class AdaptiveBookBuilder {
     }
 
     /**
-     * Book-wide default font resource id (e.g. {@code minecraft:default}, {@code mymod:fancy}).
+     * Book-wide explicit font override (e.g. {@code mymod:fancy}).
+     * When not set, the book uses {@code flexibook:default} at layout/render time.
      * Overridden by per-span / heading fonts.
      */
     public AdaptiveBookBuilder defaultFont(ResourceLocation font) {

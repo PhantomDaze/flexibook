@@ -27,8 +27,14 @@ bin/
 ### VS Code ###
 .vscode/
 
-### Mac OS ###
+### OS generated files ###
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
 ### Minecraft Modding ###
 run/
@@ -37,3 +43,63 @@ run/
 repo/
 !**/src/**/repo/
 /logs/
+
+### Node.js / npm (Electron editor) ###
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor build outputs (never commit compiled Electron app)
+editor/dist/
+editor/dist-electron/
+editor/release/
+editor/*.local
+
+# Vite cache
+.vite/
+editor/.vite/
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Package manager lock files
+# Keep committed for reproducible installs (npm uses package-lock.json)
+# If switching to pnpm/yarn, commit their lockfiles instead.
+
+### Environment & secrets ###
+.env
+.env.local
+.env.*.local
+*.env
+
+### Claude Code / AI tooling (session & memory) ###
+.claude/
+.claude-code/
+*.claude/
+
+### Decompiled / generated Minecraft sources (large, not for repo) ###
+net/
+net/minecraft/
+
+### Logs & temp ###
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.temp
+
+### Test / coverage (future-proof) ###
+coverage/
+.nyc_output/
+*.lcov
+
+### Misc ###
+*.bak
+*.swp
+*.swo
+*~
+/.playwright-mcp/

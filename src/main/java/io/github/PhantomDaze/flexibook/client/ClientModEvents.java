@@ -2,6 +2,7 @@ package io.github.PhantomDaze.flexibook.client;
 
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.client.screen.AdaptiveBookScreen;
+import io.github.PhantomDaze.flexibook.client.theme.BookContentReloadListener;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemeReloadListener;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
 import net.minecraft.client.Minecraft;
@@ -28,6 +29,7 @@ public final class ClientModEvents {
     public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((ResourceManagerReloadListener) (ResourceManager manager) -> TextureSizeCache.clear());
         event.registerReloadListener(new BookThemeReloadListener());
+        event.registerReloadListener(new BookContentReloadListener());
     }
 
     /** Client-only open helper so item code does not classload Screen on dedicated server until invoked. */

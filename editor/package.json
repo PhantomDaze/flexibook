@@ -1,0 +1,45 @@
+{
+  "name": "flexibook-editor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FlexiBook real-time theme & content editor (Electron)",
+  "main": "dist-electron/main.js",
+  "author": "PhantomDaze",
+  "scripts": {
+    "predev": "node scripts/sync-font-assets.mjs",
+    "prebuild": "node scripts/sync-font-assets.mjs",
+    "dev": "vite",
+    "build:main": "tsc -p tsconfig.node.json",
+    "dev:electron": "node scripts/dev-electron.js",
+    "build": "npm run build:main && tsc && vite build && electron-builder",
+    "preview": "vite preview",
+    "electron": "electron .",
+    "test:font": "node scripts/test-unihex.mjs",
+    "test:pack": "npx --yes tsx scripts/test-pack-export.mjs && npx --yes tsx scripts/test-pack-demo-export.mjs"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "^31.3.0",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "fflate": "^0.8.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "build": {
+    "appId": "io.github.PhantomDaze.flexibook.editor",
+    "productName": "FlexiBook Editor",
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "directories": {
+      "output": "release"
+    }
+  }
+}

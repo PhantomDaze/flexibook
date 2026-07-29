@@ -2,12 +2,13 @@ package io.github.PhantomDaze.flexibook.layout;
 
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.BookElement;
+import io.github.PhantomDaze.flexibook.content.FlexiBookFonts;
 import io.github.PhantomDaze.flexibook.content.InlineSpan;
 import io.github.PhantomDaze.flexibook.content.LinkAction;
 import io.github.PhantomDaze.flexibook.content.StyleFlags;
+import io.github.PhantomDaze.flexibook.content.TranslatableText;
 import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -31,9 +32,19 @@ public final class BookLayoutEngine {
         CACHE.clear();
     }
 
-    public static List<RenderedPage> layout(AdaptiveBookContent content, Font font, BookTheme theme, String languageCode, int guiScale, String searchQuery) {
+    /**
+     * Primary layout entry: providers drive measurement and translation for identical behavior between MC and editor.
+     */
+    public static List<RenderedPage> layout(AdaptiveBookContent content,
+                                            TextMeasurer measurer,
+                                            TranslationProvider translator,
+                                            BookTheme theme,
+                                            String languageCode,
+                                            int guiScale,
+                                            String searchQuery) {
         String q = searchQuery == null ? "" : searchQuery.trim().toLowerCase(Locale.ROOT);
-        String fontKey = content.defaultFont().map(ResourceLocation::toString).orElse("-");
+        ResourceLocation resolvedFont = content.resolvedFont();
+        String fontKey = resolvedFont.toString();
         String key = content.hashCode() + "|" + languageCode + "|" + guiScale + "|" + theme.revision() + "|" + fontKey + "|" + q;
         List<RenderedPage> cached = CACHE.get(key);
         if (cached != null) {
@@ -42,7 +53,7 @@ public final class BookLayoutEngine {
 
         List<BookElement> elements = content.resolveElements();
         float startScale = 1.0f;
-        if (looksMostlyCjk(elements)) {
+        if (looksMostlyCjk(elements, translator)) {
             startScale = 0.92f;
         }
 
@@ -50,8 +61,8 @@ public final class BookLayoutEngine {
         params.scale = startScale;
         params.columns = 1;
 
-        Optional<ResourceLocation> bookFont = content.defaultFont();
-        List<RenderedPage> pages = tryLayout(elements, font, params, q, bookFont);
+        Optional<ResourceLocation> bookFont = Optional.of(resolvedFont);
+        List<RenderedPage> pages = tryLayout(elements, measurer, translator, params, q, bookFont);
 
         int guard = 0;
         while (guard++ < 12 && (pages.size() >= 60 || isOvercrowded(pages, params))) {
@@ -63,18 +74,26 @@ public final class BookLayoutEngine {
             } else {
                 break;
             }
-            pages = tryLayout(elements, font, params, q, bookFont);
+            pages = tryLayout(elements, measurer, translator, params, q, bookFont);
         }
 
         if (pages.isEmpty()) {
             RenderedPage empty = new RenderedPage();
             StyleFlags emptyStyle = applyBookFont(StyleFlags.EMPTY, bookFont);
-            empty.add(new RenderedElement.TextLine(0, 0, 1f, I18n.get("flexibook.book.empty.body"), emptyStyle, Optional.empty(), 100, 9, false));
+            String emptyText = translator != null ? translator.get("flexibook.book.empty.body") : "flexibook.book.empty.body";
+            empty.add(new RenderedElement.TextLine(0, 0, 1f, emptyText, emptyStyle, Optional.empty(), 100, 9, false));
             pages = List.of(empty);
         }
 
         CACHE.put(key, pages);
         return pages;
+    }
+
+    /**
+     * Backward-compatible overload for inside-MC usage. Delegates to the provider path via MC adapters.
+     */
+    public static List<RenderedPage> layout(AdaptiveBookContent content, Font font, BookTheme theme, String languageCode, int guiScale, String searchQuery) {
+        return layout(content, new McTextMeasurer(font), new McTranslationProvider(), theme, languageCode, guiScale, searchQuery);
     }
 
     private static boolean isOvercrowded(List<RenderedPage> pages, LayoutParams params) {
@@ -85,14 +104,14 @@ public final class BookLayoutEngine {
         return params.scale > 0.95f && pages.size() > 20;
     }
 
-    private static boolean looksMostlyCjk(List<BookElement> elements) {
+    private static boolean looksMostlyCjk(List<BookElement> elements, TranslationProvider translator) {
         int cjk = 0;
         int total = 0;
         for (BookElement el : elements) {
             String s = switch (el) {
-                case BookElement.Heading h -> h.text().resolvePlain();
-                case BookElement.Paragraph p -> joinSpans(p.spans());
-                case BookElement.Bullet b -> joinSpans(b.spans());
+                case BookElement.Heading h -> resolveForDetection(h.text(), translator);
+                case BookElement.Paragraph p -> joinSpans(p.spans(), translator);
+                case BookElement.Bullet b -> joinSpans(b.spans(), translator);
                 default -> "";
             };
             for (int i = 0; i < s.length(); i++) {
@@ -114,15 +133,37 @@ public final class BookLayoutEngine {
         return total > 0 && (cjk / (float) total) > 0.3f;
     }
 
-    private static String joinSpans(List<InlineSpan> spans) {
+    private static String resolveForDetection(TranslatableText t, TranslationProvider translator) {
+        if (translator == null) return t.resolvePlain();
+        return t.resolvePlain(translator);
+    }
+
+    private static String joinSpans(List<InlineSpan> spans, TranslationProvider translator) {
         StringBuilder sb = new StringBuilder();
         for (InlineSpan s : spans) {
-            sb.append(s.resolvePlain());
+            sb.append(resolveSpanPlain(s, translator));
         }
         return sb.toString();
     }
 
-    private static List<RenderedPage> tryLayout(List<BookElement> elements, Font font, LayoutParams params, String searchLower, Optional<ResourceLocation> bookFont) {
+    private static String resolveSpanPlain(InlineSpan span, TranslationProvider translator) {
+        try {
+            // Prefer provider path if available
+            var m = InlineSpan.class.getMethod("resolvePlain", TranslationProvider.class);
+            Object res = m.invoke(span, translator);
+            return res == null ? "" : res.toString();
+        } catch (Exception ignored) {
+            // Fallback to MC path
+            return span.resolvePlain();
+        }
+    }
+
+    private static List<RenderedPage> tryLayout(List<BookElement> elements,
+                                                TextMeasurer measurer,
+                                                TranslationProvider translator,
+                                                LayoutParams params,
+                                                String searchLower,
+                                                Optional<ResourceLocation> bookFont) {
         List<RenderedPage> pages = new ArrayList<>();
         RenderedPage page = new RenderedPage();
         pages.add(page);
@@ -136,19 +177,18 @@ public final class BookLayoutEngine {
                 case BookElement.Heading heading -> {
                     float sizeMul = heading.level() <= 1 ? 1.35f : 1.15f;
                     float scale = params.scale * sizeMul;
-                    String text = heading.text().resolvePlain();
+                    String text = resolveTranslatablePlain(heading.text(), translator);
                     boolean hi = matchesSearch(text, searchLower);
                     StyleFlags style = StyleFlags.EMPTY.withBold(true);
                     style = applyFontOverride(style, heading.font(), bookFont);
-                    col = placeWrappedText(pages, page, colY, col, params, font, text, style, Optional.empty(), scale, 0, params.headingGap, hi);
+                    col = placeWrappedText(pages, page, colY, col, params, measurer, text, style, Optional.empty(), scale, 0, params.headingGap, hi);
                     page = pages.getLast();
                 }
                 case BookElement.Paragraph paragraph -> {
-                    col = placeInlineSpans(pages, page, colY, col, params, font, paragraph.spans(), 0, params.paragraphGap, searchLower, bookFont);
+                    col = placeInlineSpans(pages, page, colY, col, params, measurer, translator, paragraph.spans(), 0, params.paragraphGap, searchLower, bookFont);
                     page = pages.getLast();
                 }
                 case BookElement.Bullet bullet -> {
-                    // bullet marker
                     float markerScale = params.scale;
                     float x = columnX(col, params);
                     if (colY[col] + params.lineHeight * markerScale > params.pageContentHeight) {
@@ -158,11 +198,12 @@ public final class BookLayoutEngine {
                         x = columnX(col, params);
                     }
                     StyleFlags markerStyle = applyBookFont(StyleFlags.EMPTY, bookFont);
+                    int markerW = measureWidth(measurer, "•", markerStyle, Optional.empty());
                     page.add(new RenderedElement.TextLine(
                             x, colY[col], markerScale, "•", markerStyle, Optional.empty(),
-                            measureWidth(font, "•", toMeasureStyle(markerStyle)), params.lineHeight, false
+                            markerW, params.lineHeight, false
                     ));
-                    col = placeInlineSpans(pages, page, colY, col, params, font, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
+                    col = placeInlineSpans(pages, page, colY, col, params, measurer, translator, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
                     page = pages.getLast();
                 }
                 case BookElement.LineBreak ignored -> {
@@ -196,7 +237,7 @@ public final class BookLayoutEngine {
                 }
                 case BookElement.Box box -> {
                     for (BookElement child : box.children()) {
-                        col = layoutOne(child, pages, page, colY, col, params, font, searchLower, bookFont);
+                        col = layoutOne(child, pages, page, colY, col, params, measurer, translator, searchLower, bookFont);
                         page = pages.getLast();
                     }
                 }
@@ -206,17 +247,18 @@ public final class BookLayoutEngine {
     }
 
     private static int layoutOne(BookElement element, List<RenderedPage> pages, RenderedPage page, float[] colY, int col,
-                                 LayoutParams params, Font font, String searchLower, Optional<ResourceLocation> bookFont) {
+                                 LayoutParams params, TextMeasurer measurer, TranslationProvider translator,
+                                 String searchLower, Optional<ResourceLocation> bookFont) {
         return switch (element) {
             case BookElement.Heading heading -> {
                 float sizeMul = heading.level() <= 1 ? 1.35f : 1.15f;
                 float scale = params.scale * sizeMul;
-                String text = heading.text().resolvePlain();
+                String text = resolveTranslatablePlain(heading.text(), translator);
                 boolean hi = matchesSearch(text, searchLower);
                 StyleFlags style = applyFontOverride(StyleFlags.EMPTY.withBold(true), heading.font(), bookFont);
-                yield placeWrappedText(pages, page, colY, col, params, font, text, style, Optional.empty(), scale, 0, params.headingGap, hi);
+                yield placeWrappedText(pages, page, colY, col, params, measurer, text, style, Optional.empty(), scale, 0, params.headingGap, hi);
             }
-            case BookElement.Paragraph paragraph -> placeInlineSpans(pages, page, colY, col, params, font, paragraph.spans(), 0, params.paragraphGap, searchLower, bookFont);
+            case BookElement.Paragraph paragraph -> placeInlineSpans(pages, page, colY, col, params, measurer, translator, paragraph.spans(), 0, params.paragraphGap, searchLower, bookFont);
             case BookElement.Bullet bullet -> {
                 float x = columnX(col, params);
                 if (colY[col] + params.lineHeight * params.scale > params.pageContentHeight) {
@@ -225,11 +267,12 @@ public final class BookLayoutEngine {
                     x = columnX(col, params);
                 }
                 StyleFlags markerStyle = applyBookFont(StyleFlags.EMPTY, bookFont);
+                int markerW = measureWidth(measurer, "•", markerStyle, Optional.empty());
                 pages.getLast().add(new RenderedElement.TextLine(
                         x, colY[col], params.scale, "•", markerStyle, Optional.empty(),
-                        measureWidth(font, "•", toMeasureStyle(markerStyle)), params.lineHeight, false
+                        markerW, params.lineHeight, false
                 ));
-                yield placeInlineSpans(pages, pages.getLast(), colY, col, params, font, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
+                yield placeInlineSpans(pages, pages.getLast(), colY, col, params, measurer, translator, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
             }
             case BookElement.LineBreak ignored -> {
                 colY[col] += params.lineHeight * params.scale * 0.5f;
@@ -265,7 +308,7 @@ public final class BookLayoutEngine {
             case BookElement.Box box -> {
                 int c = col;
                 for (BookElement child : box.children()) {
-                    c = layoutOne(child, pages, pages.getLast(), colY, c, params, font, searchLower, bookFont);
+                    c = layoutOne(child, pages, pages.getLast(), colY, c, params, measurer, translator, searchLower, bookFont);
                 }
                 yield c;
             }
@@ -273,23 +316,22 @@ public final class BookLayoutEngine {
     }
 
     private static int placeInlineSpans(List<RenderedPage> pages, RenderedPage page, float[] colY, int col,
-                                        LayoutParams params, Font font, List<InlineSpan> spans,
+                                        LayoutParams params, TextMeasurer measurer, TranslationProvider translator,
+                                        List<InlineSpan> spans,
                                         int indent, int gapAfter, String searchLower, Optional<ResourceLocation> bookFont) {
-        // Flatten spans into styled runs, wrap by character/word using font width at scale
         for (InlineSpan span : spans) {
-            String text = span.resolvePlain();
+            String text = resolveSpanPlain(span, translator);
             if (text.isEmpty()) {
                 continue;
             }
             StyleFlags style = applyBookFont(span.style(), bookFont);
-            // handle explicit newlines inside span
             String[] parts = text.split("\n", -1);
             for (int pi = 0; pi < parts.length; pi++) {
                 if (pi > 0) {
                     colY[col] += params.lineHeight * params.scale;
                 }
                 boolean hi = matchesSearch(parts[pi], searchLower);
-                col = placeWrappedText(pages, pages.getLast(), colY, col, params, font,
+                col = placeWrappedText(pages, pages.getLast(), colY, col, params, measurer,
                         parts[pi], style, span.link(), params.scale, indent, 0, hi);
             }
         }
@@ -313,6 +355,92 @@ public final class BookLayoutEngine {
     }
 
     private static int placeWrappedText(List<RenderedPage> pages, RenderedPage page, float[] colY, int col,
+                                        LayoutParams params, TextMeasurer measurer, String text, StyleFlags style,
+                                        Optional<LinkAction> link, float scale, int indent, int gapAfter, boolean highlight) {
+        if (text == null || text.isEmpty()) {
+            colY[col] += gapAfter * scale;
+            return col;
+        }
+        int colW = params.columnWidth() - indent;
+        if (colW < 8) {
+            colW = 8;
+        }
+        int maxUnscaled = Math.max(4, Mth.floor(colW / scale));
+        StyleFlags measureStyle = link.isPresent() ? style.withUnderline(true) : style;
+
+        List<String> lines = wrap(measurer, text, maxUnscaled, measureStyle);
+        float lineH = params.lineHeight * scale;
+
+        for (String line : lines) {
+            if (colY[col] + lineH > params.pageContentHeight) {
+                col = advanceColumn(pages, colY, col, params);
+                page = pages.getLast();
+            }
+            float x = columnX(col, params) + indent;
+            float w = measureWidth(measurer, line, measureStyle, Optional.empty());
+            pages.getLast().add(new RenderedElement.TextLine(
+                    x, colY[col], scale, line, style, link, w, params.lineHeight, highlight
+            ));
+            colY[col] += lineH;
+        }
+        colY[col] += gapAfter * scale;
+        return col;
+    }
+
+    private static int measureWidth(TextMeasurer measurer, String text, StyleFlags style, Optional<ResourceLocation> fontId) {
+        if (text == null || text.isEmpty()) {
+            return 0;
+        }
+        return measurer.width(text, style, fontId);
+    }
+
+    private static List<String> wrap(TextMeasurer measurer, String text, int maxWidth, StyleFlags style) {
+        List<String> lines = new ArrayList<>();
+        if (maxWidth <= 0) {
+            lines.add(text);
+            return lines;
+        }
+        int start = 0;
+        int len = text.length();
+        while (start < len) {
+            int low = start + 1;
+            int high = len;
+            int best = start + 1;
+            while (low <= high) {
+                int mid = (low + high) >>> 1;
+                String sub = text.substring(start, mid);
+                if (measureWidth(measurer, sub, style, Optional.empty()) <= maxWidth) {
+                    best = mid;
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            int breakAt = best;
+            if (best < len) {
+                int space = text.lastIndexOf(' ', best - 1);
+                if (space >= start + 1) {
+                    breakAt = space + 1;
+                }
+            }
+            if (breakAt <= start) {
+                breakAt = Math.min(start + 1, len);
+            }
+            lines.add(text.substring(start, breakAt));
+            start = breakAt;
+            while (start < len && text.charAt(start) == ' ') {
+                start++;
+            }
+        }
+        if (lines.isEmpty()) {
+            lines.add("");
+        }
+        return lines;
+    }
+
+    // ---- Legacy Font-based internals kept for any direct callers; prefer provider path above ----
+
+    private static int placeWrappedText(List<RenderedPage> pages, RenderedPage page, float[] colY, int col,
                                         LayoutParams params, Font font, String text, StyleFlags style,
                                         Optional<LinkAction> link, float scale, int indent, int gapAfter, boolean highlight) {
         if (text == null || text.isEmpty()) {
@@ -323,9 +451,7 @@ public final class BookLayoutEngine {
         if (colW < 8) {
             colW = 8;
         }
-        // Work in unscaled font units: available width = colW / scale
         int maxUnscaled = Math.max(4, Mth.floor(colW / scale));
-        // Links render underlined; bake that into measurement style for consistent advances.
         StyleFlags measureStyle = link.isPresent() ? style.withUnderline(true) : style;
         Style mcStyle = toMeasureStyle(measureStyle);
 
@@ -346,24 +472,6 @@ public final class BookLayoutEngine {
         }
         colY[col] += gapAfter * scale;
         return col;
-    }
-
-    /** Bold/italic/font change glyph advances — always measure with the same Style used at draw time. */
-    private static Style toMeasureStyle(StyleFlags flags) {
-        Style style = Style.EMPTY;
-        if (flags.bold()) {
-            style = style.withBold(true);
-        }
-        if (flags.italic()) {
-            style = style.withItalic(true);
-        }
-        if (flags.underline()) {
-            style = style.withUnderlined(true);
-        }
-        if (flags.font().isPresent()) {
-            style = style.withFont(flags.font().get());
-        }
-        return style;
     }
 
     private static int measureWidth(Font font, String text, Style style) {
@@ -395,7 +503,6 @@ public final class BookLayoutEngine {
                     high = mid - 1;
                 }
             }
-            // try break at space
             int breakAt = best;
             if (best < len) {
                 int space = text.lastIndexOf(' ', best - 1);
@@ -443,5 +550,28 @@ public final class BookLayoutEngine {
             return false;
         }
         return text.toLowerCase(Locale.ROOT).contains(searchLower);
+    }
+
+    private static String resolveTranslatablePlain(TranslatableText t, TranslationProvider translator) {
+        if (translator == null) return t.resolvePlain();
+        return t.resolvePlain(translator);
+    }
+
+    /** Bold/italic/font change glyph advances — used by legacy Font path. */
+    private static Style toMeasureStyle(StyleFlags flags) {
+        Style style = Style.EMPTY;
+        if (flags.bold()) {
+            style = style.withBold(true);
+        }
+        if (flags.italic()) {
+            style = style.withItalic(true);
+        }
+        if (flags.underline()) {
+            style = style.withUnderlined(true);
+        }
+        if (flags.font().isPresent()) {
+            style = style.withFont(flags.font().get());
+        }
+        return style;
     }
 }
