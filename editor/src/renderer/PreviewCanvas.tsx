@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { UnihexFont } from '../shared/UnihexFont';
+import type { TextRenderer } from '../shared/FontRouter';
 import { MC_CELL } from '../shared/UnihexFont';
 import type { BookTheme, RenderedPage } from '../shared/types';
 import { StyleFlags } from '../shared/types';
@@ -14,12 +14,10 @@ export interface PreviewCanvasProps {
   widgetsReady: boolean;
   bookImg: HTMLImageElement | null;
   bookReady: boolean;
-  /** FlexiBook unihex measurer/renderer (same ZIP as the mod). */
-  atlasMeasurer?: UnihexFont | null;
+  /** Unihex or FontRouter — width + drawText */
+  atlasMeasurer?: TextRenderer | null;
   fontRev?: number;
-  /** 已按 flexibook.screen.page 翻译的页码文本，与游戏端 Component.translatable 对齐 */
   pageLabel: string;
-  /** 已翻译的书标题；与 AdaptiveBookScreen 标题绘制对齐 */
   titleLabel?: string;
   onPrev: () => void;
   onNext: () => void;

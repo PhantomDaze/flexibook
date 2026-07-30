@@ -58,6 +58,7 @@ ipcMain.handle('dialog:openFile', async (_, options) => {
       { name: 'JSON', extensions: ['json'] },
       { name: 'All Files', extensions: ['*'] },
     ],
+    ...(options?.defaultPath ? { defaultPath: options.defaultPath } : {}),
   });
   return result;
 });
@@ -68,6 +69,7 @@ ipcMain.handle('dialog:saveFile', async (_, options) => {
       { name: 'JSON', extensions: ['json'] },
       { name: 'All Files', extensions: ['*'] },
     ],
+    ...(options?.defaultPath ? { defaultPath: options.defaultPath } : {}),
   });
   return result;
 });
@@ -75,6 +77,35 @@ ipcMain.handle('dialog:saveFile', async (_, options) => {
 ipcMain.handle('dialog:message', async (_, options) => {
   const result = await dialog.showMessageBox(mainWindow!, options);
   return result;
+});
+
+/** Read a UTF-8 text file after open dialog. Returns content + path, or canceled. */
+ipcMain.handle('fs:readTextFile', async (_, filePath: string) => {
+  try {
+    if (!filePath || typeof filePath !== 'string') {
+      return { ok: false, error: 'Invalid path' };
+    }
+    const resolved = path.resolve(filePath);
+    const text = await fsp.readFile(resolved, 'utf8');
+    return { ok: true, path: resolved, text };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || String(err) };
+  }
+});
+
+/** Write UTF-8 text to a path chosen via save dialog. */
+ipcMain.handle('fs:writeTextFile', async (_, payload: { path: string; text: string }) => {
+  try {
+    if (!payload || typeof payload.path !== 'string' || typeof payload.text !== 'string') {
+      return { ok: false, error: 'Invalid payload' };
+    }
+    const resolved = path.resolve(payload.path);
+    await fsp.mkdir(path.dirname(resolved), { recursive: true });
+    await fsp.writeFile(resolved, payload.text, 'utf8');
+    return { ok: true, path: resolved };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || String(err) };
+  }
 });
 
 // Directory picker for pack export
@@ -114,6 +145,83 @@ ipcMain.handle('fs:writePack', async (_, payload: { dir: string; files: { path: 
       await fsp.writeFile(fullPath, buf);
     }
     return { ok: true, root: rootDir };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || String(err) };
+  }
+});
+
+const PACK_READ_MAX_FILES = 500;
+const PACK_READ_MAX_FILE_BYTES = 12 * 1024 * 1024; // 12 MiB per file
+const PACK_READ_MAX_TOTAL_BYTES = 48 * 1024 * 1024; // 48 MiB total
+
+async function walkPackFiles(
+  rootDir: string,
+  dir: string,
+  out: { path: string; base64: string }[],
+  totals: { bytes: number },
+): Promise<void> {
+  const entries = await fsp.readdir(dir, { withFileTypes: true });
+  for (const ent of entries) {
+    if (out.length >= PACK_READ_MAX_FILES) {
+      throw new Error(`Pack has too many files (max ${PACK_READ_MAX_FILES})`);
+    }
+    const full = path.join(dir, ent.name);
+    const rel = path.relative(rootDir, full).split(path.sep).join('/');
+    if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) continue;
+    // skip junk
+    if (ent.name === '.DS_Store' || ent.name === 'Thumbs.db' || ent.name.startsWith('.')) continue;
+    if (ent.isDirectory()) {
+      await walkPackFiles(rootDir, full, out, totals);
+      continue;
+    }
+    if (!ent.isFile()) continue;
+    const st = await fsp.stat(full);
+    if (st.size > PACK_READ_MAX_FILE_BYTES) {
+      throw new Error(`File too large: ${rel} (${st.size} bytes)`);
+    }
+    if (totals.bytes + st.size > PACK_READ_MAX_TOTAL_BYTES) {
+      throw new Error(`Pack total size exceeds ${PACK_READ_MAX_TOTAL_BYTES} bytes`);
+    }
+    const buf = await fsp.readFile(full);
+    totals.bytes += buf.byteLength;
+    out.push({ path: rel, base64: buf.toString('base64') });
+  }
+}
+
+/** Read an entire resource pack directory into base64 file entries (for import). */
+ipcMain.handle('fs:readPack', async (_, payload: { dir: string }) => {
+  try {
+    if (!payload || typeof payload.dir !== 'string') {
+      throw new Error('Invalid payload for readPack');
+    }
+    const rootDir = path.resolve(payload.dir);
+    const st = await fsp.stat(rootDir);
+    if (!st.isDirectory()) {
+      throw new Error('Not a directory');
+    }
+    const files: { path: string; base64: string }[] = [];
+    const totals = { bytes: 0 };
+    await walkPackFiles(rootDir, rootDir, files, totals);
+    return { ok: true, root: rootDir, files };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || String(err) };
+  }
+});
+
+/** Read a binary file after open dialog (zip import). */
+ipcMain.handle('fs:readBinaryFile', async (_, filePath: string) => {
+  try {
+    if (!filePath || typeof filePath !== 'string') {
+      return { ok: false, error: 'Invalid path' };
+    }
+    const resolved = path.resolve(filePath);
+    const st = await fsp.stat(resolved);
+    if (!st.isFile()) return { ok: false, error: 'Not a file' };
+    if (st.size > PACK_READ_MAX_TOTAL_BYTES) {
+      return { ok: false, error: `File too large (${st.size} bytes)` };
+    }
+    const buf = await fsp.readFile(resolved);
+    return { ok: true, path: resolved, base64: buf.toString('base64'), size: buf.byteLength };
   } catch (err: any) {
     return { ok: false, error: err?.message || String(err) };
   }

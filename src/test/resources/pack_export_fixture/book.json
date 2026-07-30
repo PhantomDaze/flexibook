@@ -1,41 +1,5 @@
 {
-  "title": {
-    "key": "myguide.book.guide.title"
-  },
-  "font": "flexibook:default",
+  "content": "myguide:guide",
   "theme": "myguide:main",
-  "elements": [
-    {
-      "type": "heading",
-      "data": {
-        "level": 1,
-        "text": {
-          "key": "myguide.h1"
-        }
-      }
-    },
-    {
-      "type": "paragraph",
-      "data": {
-        "spans": [
-          {
-            "text": "hello",
-            "translate": false
-          }
-        ]
-      }
-    },
-    {
-      "type": "divider",
-      "data": {}
-    },
-    {
-      "type": "image",
-      "data": {
-        "src": "flexibook:textures/gui/icon.png",
-        "width": 32,
-        "height": 32
-      }
-    }
-  ]
+  "font": "myguide:title"
 }

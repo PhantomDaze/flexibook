@@ -15,7 +15,12 @@
     "preview": "vite preview",
     "electron": "electron .",
     "test:font": "node scripts/test-unihex.mjs",
-    "test:pack": "npx --yes tsx scripts/test-pack-export.mjs && npx --yes tsx scripts/test-pack-demo-export.mjs"
+    "test:pack": "npx --yes tsx scripts/test-pack-export.mjs && npx --yes tsx scripts/test-pack-demo-export.mjs",
+    "test:parser": "npx --yes tsx scripts/test-tagparser.mjs",
+    "test:layout": "npx --yes tsx scripts/test-layout.mjs",
+    "test:markup": "npx --yes tsx scripts/test-markup-highlight.mjs",
+    "test": "npm run test:font && npm run test:pack && npm run test:import && npm run test:parser && npm run test:layout && npm run test:markup",
+    "test:import": "npx --yes tsx scripts/test-pack-import.mjs"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

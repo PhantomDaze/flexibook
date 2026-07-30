@@ -1,0 +1,12 @@
+{
+  "fieldnotes.journal.bold": "粗体片段",
+  "fieldnotes.journal.h1": "旅人日记",
+  "fieldnotes.journal.icon_tip": "图标",
+  "fieldnotes.journal.intro": "这是从 FlexiBook 编辑器导出管道生成的纯资源包书。",
+  "fieldnotes.journal.note1": "books/ 仅为索引（content + theme）",
+  "fieldnotes.journal.note2": "contents/ 存翻译键；lang/ 存具体文案",
+  "fieldnotes.journal.notes_h": "要点",
+  "fieldnotes.journal.outro": "启用资源包后 F3+T，再执行：/flexibook give fieldnotes:journal",
+  "fieldnotes.journal.plain": "与普通文字同在一段。",
+  "fieldnotes.journal.title": "野外笔记"
+}

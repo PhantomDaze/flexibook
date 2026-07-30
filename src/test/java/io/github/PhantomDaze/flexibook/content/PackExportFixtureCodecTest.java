@@ -15,9 +15,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Ensures JSON produced by the editor pack exporter (Phase D) parses with game codecs.
+ * Ensures JSON produced by the editor pack exporter parses with game codecs.
  * Fixtures written by {@code editor/scripts/test-pack-export.mjs} and
  * {@code editor/scripts/test-pack-demo-export.mjs}.
+ * <p>
+ * Split layout: books/ = index ({@link BookDefinition}), contents/ = body ({@link AdaptiveBookContent}).
  */
 class PackExportFixtureCodecTest {
 
@@ -36,21 +38,29 @@ class PackExportFixtureCodecTest {
     }
 
     @Test
-    void exportedBookParses() throws Exception {
+    void exportedBookIndexParses() throws Exception {
         var el = load("pack_export_fixture/book.json");
-        AdaptiveBookContent book = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
+        BookDefinition def = BookDefinition.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
 
-        assertEquals("myguide.book.guide.title", book.title().key());
-        assertEquals(OptionalRL("flexibook:default"), book.defaultFont());
-        assertEquals(OptionalRL("myguide:main"), book.themeId());
-        assertTrue(book.elements().isPresent());
-        assertEquals(4, book.elements().get().size());
-        assertInstanceOf(BookElement.Heading.class, book.elements().get().get(0));
-        assertInstanceOf(BookElement.Paragraph.class, book.elements().get().get(1));
-        assertInstanceOf(BookElement.Divider.class, book.elements().get().get(2));
-        assertInstanceOf(BookElement.Image.class, book.elements().get().get(3));
+        assertEquals(ResourceLocation.parse("myguide:guide"), def.contentId());
+        assertEquals(OptionalRL("myguide:main"), def.themeId());
+        assertEquals(OptionalRL("myguide:title"), def.font());
+    }
 
-        BookElement.Image img = (BookElement.Image) book.elements().get().get(3);
+    @Test
+    void exportedContentBodyParses() throws Exception {
+        var el = load("pack_export_fixture/content.json");
+        AdaptiveBookContent body = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
+
+        assertEquals("myguide.book.guide.title", body.title().key());
+        assertTrue(body.elements().isPresent());
+        assertTrue(body.elements().get().size() >= 4);
+        assertInstanceOf(BookElement.Heading.class, body.elements().get().get(0));
+        assertInstanceOf(BookElement.Paragraph.class, body.elements().get().get(1));
+        assertInstanceOf(BookElement.Divider.class, body.elements().get().get(2));
+        assertInstanceOf(BookElement.Image.class, body.elements().get().get(3));
+
+        BookElement.Image img = (BookElement.Image) body.elements().get().get(3);
         assertEquals(ResourceLocation.parse("flexibook:textures/gui/icon.png"), img.src());
         assertEquals(32, img.width());
         assertEquals(32, img.height());
@@ -66,14 +76,21 @@ class PackExportFixtureCodecTest {
     }
 
     @Test
-    void realDemoGuideExportParses() throws Exception {
+    void realDemoGuideIndexExportParses() throws Exception {
         var el = load("pack_export_fixture/demo_guide_export.json");
-        AdaptiveBookContent book = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
-        assertFalse(book.isEmpty());
-        assertEquals(OptionalRL("demopack:default"), book.themeId());
-        assertEquals(OptionalRL("flexibook:default"), book.defaultFont());
-        assertTrue(book.elements().isPresent());
-        assertTrue(book.elements().get().size() >= 10, "demo guide has many elements");
+        BookDefinition def = BookDefinition.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
+        assertEquals(ResourceLocation.parse("demopack:demo_guide"), def.contentId());
+        assertEquals(OptionalRL("demopack:default"), def.themeId());
+    }
+
+    @Test
+    void realDemoGuideContentExportParses() throws Exception {
+        var el = load("pack_export_fixture/demo_guide_content_export.json");
+        AdaptiveBookContent body = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
+        assertFalse(body.isEmpty());
+        assertEquals(OptionalRL("flexibook:default"), body.defaultFont());
+        assertTrue(body.elements().isPresent());
+        assertTrue(body.elements().get().size() >= 10, "demo guide has many elements");
     }
 
     @Test

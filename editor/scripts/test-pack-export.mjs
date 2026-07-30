@@ -156,6 +156,9 @@ async function main() {
     themeId: 'flexibook:default',
   };
 
+  // tiny fake ttf bytes (not a real font — export only checks packaging)
+  const fakeTtf = new Uint8Array([0, 1, 0, 0, 0, 10, 0, 80, 0, 3]).buffer;
+
   const files = await packMod.buildResourcePack({
     namespace: 'myguide',
     themeId: 'main',
@@ -163,18 +166,48 @@ async function main() {
     includeBook: true,
     packFormat: 34,
     theme,
-    content,
+    content: {
+      ...content,
+      defaultFont: 'other:title',
+      elements: [
+        ...(content.elements || []),
+        {
+          type: 'paragraph',
+          spans: [{ text: 'hi', translate: false, style: { bold: false, italic: false, underline: false, font: 'other:title' } }],
+        },
+      ],
+    },
     customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
     customWidgetsPng: widgetsBytes.buffer.slice(widgetsBytes.byteOffset, widgetsBytes.byteOffset + widgetsBytes.byteLength),
     defaultBookUrl: pathToFileURL(bookPng).href,
     defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
+    langTables: {
+      en_us: { 'myguide.book.guide.title': 'Guide', 'myguide.hello': 'Hello' },
+      zh_cn: { 'myguide.book.guide.title': '指南' },
+    },
+    customFonts: [
+      {
+        id: 'other:title',
+        fileName: 'Title.ttf',
+        ext: 'ttf',
+        bytes: fakeTtf,
+        size: 11,
+        oversample: 2,
+      },
+    ],
+    rewriteFontsToPackNs: true,
   });
 
   const paths = files.map((f) => f.path).sort();
   const expected = [
     'HOW_TO_USE.txt',
     'assets/myguide/flexibook/books/guide.json',
+    'assets/myguide/flexibook/contents/guide.json',
     'assets/myguide/flexibook/themes/main.json',
+    'assets/myguide/font/title.json',
+    'assets/myguide/font/title.ttf',
+    'assets/myguide/lang/en_us.json',
+    'assets/myguide/lang/zh_cn.json',
     'assets/myguide/textures/gui/book.png',
     'assets/myguide/textures/gui/book_widgets.png',
     'pack.mcmeta',
@@ -195,11 +228,34 @@ async function main() {
   assert(themeJson.book_tex_width === 192, 'theme metrics preserved');
   assert(themeJson.image_fit === 'stretch', 'image_fit preserved');
 
-  // book rewrite
+  // book index (not full body)
   const bookJson = JSON.parse(new TextDecoder().decode(byPath['assets/myguide/flexibook/books/guide.json'].data));
-  assert(bookJson.theme === 'myguide:main', 'book theme forced to pack theme');
-  assert(bookJson.title?.key === 'myguide.book.guide.title', 'book title');
-  assert(Array.isArray(bookJson.elements), 'book elements array');
+  assert(bookJson.content === 'myguide:guide', 'book index content id');
+  assert(bookJson.theme === 'myguide:main', 'book index theme');
+  assert(bookJson.font === 'myguide:title', 'book index font rewritten');
+  assert(!bookJson.elements, 'book index has no elements');
+  assert(!bookJson.title, 'book index has no title');
+
+  // content body
+  const contentJson = JSON.parse(new TextDecoder().decode(byPath['assets/myguide/flexibook/contents/guide.json'].data));
+  assert(contentJson.title?.key === 'myguide.book.guide.title', 'content title');
+  assert(Array.isArray(contentJson.elements), 'content elements array');
+  assert(!contentJson.theme, 'content body has no theme field');
+  const spanFonts = JSON.stringify(contentJson.elements);
+  assert(spanFonts.includes('myguide:title'), 'span font rewritten into pack ns');
+  assert(!spanFonts.includes('other:title'), 'old font id not left in content');
+
+  // lang tables
+  const enLang = JSON.parse(new TextDecoder().decode(byPath['assets/myguide/lang/en_us.json'].data));
+  assert(enLang['myguide.hello'] === 'Hello', 'en lang table exported');
+  const zhLang = JSON.parse(new TextDecoder().decode(byPath['assets/myguide/lang/zh_cn.json'].data));
+  assert(zhLang['myguide.book.guide.title'] === '指南', 'zh lang table exported');
+
+  // font provider
+  const fontJson = JSON.parse(new TextDecoder().decode(byPath['assets/myguide/font/title.json'].data));
+  assert(fontJson.providers?.[0]?.type === 'ttf', 'font provider type ttf');
+  assert(fontJson.providers?.[0]?.file === 'myguide:title', 'font provider file ref');
+  assert(byPath['assets/myguide/font/title.ttf'].data.byteLength === fakeTtf.byteLength, 'ttf bytes packed');
 
   // png sizes
   assert(byPath['assets/myguide/textures/gui/book.png'].data.byteLength === bookBytes.length, 'book png bytes');
@@ -208,6 +264,7 @@ async function main() {
   // HOW_TO_USE contains ns ids
   const how = new TextDecoder().decode(byPath['HOW_TO_USE.txt'].data);
   assert(how.includes('myguide') && how.includes('createBookFromDefinition'), 'HOW_TO_USE content');
+  assert(how.includes('lang') && how.includes('font'), 'HOW_TO_USE mentions lang/font');
 
   // 5) zip roundtrip
   const zipU8 = packMod.packFilesToZip(files);
@@ -230,6 +287,7 @@ async function main() {
   mkdirSync(fixtureDir, { recursive: true });
   writeFileSync(join(fixtureDir, 'theme.json'), byPath['assets/myguide/flexibook/themes/main.json'].data);
   writeFileSync(join(fixtureDir, 'book.json'), byPath['assets/myguide/flexibook/books/guide.json'].data);
+  writeFileSync(join(fixtureDir, 'content.json'), byPath['assets/myguide/flexibook/contents/guide.json'].data);
   writeFileSync(join(fixtureDir, 'pack.mcmeta'), byPath['pack.mcmeta'].data);
   console.log('\nWrote pack to', outDir);
   console.log('Wrote codec fixtures to', fixtureDir);
@@ -247,6 +305,81 @@ async function main() {
     defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
   });
   assert(!filesNoBook.some((f) => f.path.includes('/books/')), 'includeBook false omits books');
+  assert(!filesNoBook.some((f) => f.path.includes('/contents/')), 'includeBook false omits contents');
+
+  // 7b) partial theme-only pack
+  const themeOnly = await packMod.buildResourcePack({
+    namespace: 'myguide',
+    themeId: 'main',
+    packFormat: 34,
+    parts: { meta: true, theme: true, textures: false, content: false, lang: false, fonts: false },
+    theme,
+  });
+  const themeOnlyPaths = themeOnly.map((f) => f.path).sort();
+  assert(themeOnlyPaths.includes('pack.mcmeta'), 'theme-only has mcmeta');
+  assert(themeOnlyPaths.some((p) => p.includes('/themes/')), 'theme-only has theme');
+  assert(!themeOnlyPaths.some((p) => p.includes('/textures/')), 'theme-only no textures');
+  assert(!themeOnlyPaths.some((p) => p.includes('/contents/')), 'theme-only no contents');
+  assert(!themeOnlyPaths.some((p) => p.includes('/lang/')), 'theme-only no lang');
+
+  // 7c) partial lang-only
+  const langOnly = await packMod.buildResourcePack({
+    namespace: 'myguide',
+    packFormat: 34,
+    parts: { meta: true, theme: false, textures: false, content: false, lang: true, fonts: false },
+    langTables: { en_us: { a: '1' } },
+  });
+  assert(langOnly.some((f) => f.path.endsWith('lang/en_us.json')), 'lang-only has lang');
+  assert(!langOnly.some((f) => f.path.includes('/themes/')), 'lang-only no theme');
+
+  // 7d) partial content-only
+  const contentOnly = await packMod.buildResourcePack({
+    namespace: 'myguide',
+    themeId: 'main',
+    bookId: 'guide',
+    packFormat: 34,
+    parts: { meta: true, theme: false, textures: false, content: true, lang: false, fonts: false },
+    content,
+  });
+  assert(contentOnly.some((f) => f.path.includes('/contents/')), 'content-only has contents');
+  assert(contentOnly.some((f) => f.path.includes('/books/')), 'content-only has books index');
+  assert(!contentOnly.some((f) => f.path.includes('/themes/')), 'content-only no theme');
+  assert(!contentOnly.some((f) => f.path.includes('/textures/')), 'content-only no textures');
+
+  // 7e) partial fonts-only
+  const fontsOnly = await packMod.buildResourcePack({
+    namespace: 'myguide',
+    packFormat: 34,
+    parts: { meta: true, theme: false, textures: false, content: false, lang: false, fonts: true },
+    customFonts: [
+      {
+        id: 'other:title',
+        fileName: 'Title.ttf',
+        ext: 'ttf',
+        bytes: fakeTtf,
+        size: 11,
+        oversample: 2,
+      },
+    ],
+    rewriteFontsToPackNs: true,
+  });
+  assert(fontsOnly.some((f) => f.path.endsWith('font/title.json')), 'fonts-only has font json');
+  assert(fontsOnly.some((f) => f.path.endsWith('font/title.ttf')), 'fonts-only has ttf');
+  assert(!fontsOnly.some((f) => f.path.includes('/lang/')), 'fonts-only no lang');
+
+  // 7f) partial textures-only
+  const texOnly = await packMod.buildResourcePack({
+    namespace: 'myguide',
+    packFormat: 34,
+    parts: { meta: true, theme: false, textures: true, content: false, lang: false, fonts: false },
+    customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
+    customWidgetsPng: widgetsBytes.buffer.slice(widgetsBytes.byteOffset, widgetsBytes.byteOffset + widgetsBytes.byteLength),
+    defaultBookUrl: pathToFileURL(bookPng).href,
+    defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
+  });
+  assert(texOnly.some((f) => f.path.endsWith('textures/gui/book.png')), 'tex-only has book png');
+  assert(texOnly.some((f) => f.path.endsWith('textures/gui/book_widgets.png')), 'tex-only has widgets');
+  assert(!texOnly.some((f) => f.path.includes('/themes/')), 'tex-only no theme');
 
   // 8) bad namespace throws
   let threw = false;

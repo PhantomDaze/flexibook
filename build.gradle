@@ -66,6 +66,10 @@ neoForge {
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            // Avoid Early Display window handoff failures (Wayland / multi-display / headless-ish)
+            systemProperty 'fml.earlyWindowControl', 'false'
+            systemProperty 'fml.earlyProgressWindow', 'false'
+            jvmArgument '-Dfml.earlyWindowControl=false'
         }
 
         server {

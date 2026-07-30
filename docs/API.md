@@ -808,7 +808,8 @@ ResourceLocation used = c.resolvedFont();
 
 - **缺省语义变更**：JSON/Builder 不写 `font` 时，书页文字使用 `flexibook:default`，不是原版 `minecraft:default`。  
 - 显式自定义字体必须在 **打开书的客户端** 资源里存在；缺失时原版可能回退显示异常。  
-- 自定义 TTF/位图/unihex 请按原版 font json 规范打包；编辑器**仅**内置预览 `flexibook:default`，其它 font id 会提示不支持并回退预览。  
+- 自定义 TTF/位图/unihex 请按原版 font json 规范打包。编辑器可**导入 TTF/OTF** 并近似预览（FontFace，非游戏逐像素 parity）；导出资源包时写入 `assets/<ns>/font/*.json`（`type: ttf`）与字体文件，并重写书内 font id。未导入的外部 id 仍横幅提示并回退 unihex 预览。  
+- 翻译表可在编辑器 Lang 面板维护；导出完整 `assets/<ns>/lang/*.json`。  
 - 服务端只存 `ResourceLocation` 字符串；实际字形仅客户端解析。  
 - Unifont 许可见 jar 内 `LICENSE-unifont.txt`（OFL / GPL font exception）；更新脚本：`scripts/update-unifont.sh`（不会在普通 build 联网）。
 - 实施规格与验收清单见 [`UNIFIED_FONT_PLAN.md`](./UNIFIED_FONT_PLAN.md)（已落地；改字体策略只改该文档 + 本节）。
@@ -925,77 +926,102 @@ FlexiBookAPI.builder("guide").theme(FlexiBookAPI.containThemeId())...
 
 ---
 
-## 14. 数据化书籍注册
+## 14. 数据化书籍注册（6 段资源布局）
 
-书籍内容（`AdaptiveBookContent`）支持通过资源包 JSON 定义，路径与主题一致：
+资源包 / mod jar 内与书籍相关的资源分为 **6 部分**（其中 3 段为原版强制路径）：
 
-### 14.1 资源路径
+| 部分 | 路径 | 作用 |
+|------|------|------|
+| **books** | `assets/<ns>/flexibook/books/<id>.json` | **索引**：指向 content + theme（+ 可选 font） |
+| **contents** | `assets/<ns>/flexibook/contents/<id>.json` | **正文**：title / elements 或 raw（翻译键） |
+| **themes** | `assets/<ns>/flexibook/themes/<id>.json` | 布局与样式 |
+| **lang** | `assets/<ns>/lang/<code>.json` | 各语言具体文案（**原版**路径） |
+| **fonts** | `assets/<ns>/font/<path>.json` + `.ttf`/`.otf` | 自定义字体（**原版** ttf provider） |
+| **textures** | `assets/<ns>/textures/...` | 书本/按钮/插图（**原版**路径） |
+
+### 14.1 books 索引格式
+
 ```
 assets/<namespace>/flexibook/books/<path>.json
+→ id = <namespace>:<path>
 ```
-生成的 id 为 `<namespace>:<path>`（例如 `assets/mymod/flexibook/books/guide.json` → `mymod:guide`）。
 
-### 14.2 JSON 格式
-直接对齐 `AdaptiveBookContent` 的 codec 字段：
+```json
+{
+  "content": "myguide:guide",
+  "theme": "myguide:main",
+  "font": "myguide:title"
+}
+```
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `content` | 是 | content body id（`flexibook/contents/`） |
+| `theme` | 否 | 主题 id；缺省则用 body 内 theme 或 `flexibook:default` |
+| `font` | 否 | 书级字体；覆盖 body 的 `font` |
+
+### 14.2 contents 正文格式
+
+```
+assets/<namespace>/flexibook/contents/<path>.json
+→ id = <namespace>:<path>
+```
+
+直接对齐 `AdaptiveBookContent` codec（**不再**要求 theme 写在 body 里，主题以 books 索引为准）：
 
 ```jsonc
 {
   "title": { "key": "mymod.book.guide.title" },
   "elements": [
     { "type": "heading", "data": { "level": 1, "text": { "key": "mymod.book.guide.h1" } } },
-    { "type": "paragraph", "data": { "spans": [ { "text": "mymod.book.guide.p1", "translate": true } ] } },
-    { "type": "image", "data": { "src": "mymod:textures/gui/icon.png", "width": 48, "height": 48 } }
+    { "type": "paragraph", "data": { "spans": [ { "text": "mymod.book.guide.p1", "translate": true } ] } }
   ],
-  "font": "flexibook:default",   // 可选；省略时运行时也解析为 flexibook:default
-  "theme": "mymod:dark"          // 可选，主题 id
+  "font": "flexibook:default"
 }
 ```
 
-也支持 raw 形态（与双形态存储一致）：
-
-```json
-{
-  "title": { "key": "mymod.book.guide.title" },
-  "raw": "[h1]mymod.book.guide.h1[/h1][p]mymod.book.guide.p1[/p]",
-  "theme": "mymod:default"
-}
-```
-
-规则：
-- 同时存在时 **elements 优先**。
-- `title` 必填（`TranslatableText` 形态）。
-- 字体/主题 id 缺省或未知时按运行时规则回退。
+也支持 `"raw": "[h1]...[/h1]"`。同时存在时 **elements 优先**。
 
 ### 14.3 加载与覆盖
-- 代码可在任意公共侧通过 `FlexiBookAPI.registerBookContent(id, content)` 预注册。
-- 客户端资源重载时：
-  1. 清理上一次资源来源注册的书籍 id。
-  2. 调用 `bootstrap()`（当前为空，可用于未来内置）。
-  3. 扫描 `flexibook/books` 下所有 `*.json`，用 `AdaptiveBookContent.CODEC` 解析并注册。
-- **资源定义会覆盖同 id 的代码注册**，直到下次重载。
-- 重载后会清空 `BookLayoutEngine` 缓存。
+
+客户端资源重载时（`BookContentReloadListener`）：
+
+1. 清理上一轮资源写入的 contents / books  
+2. bootstrap 代码注册  
+3. 扫描 `flexibook/contents/*.json` → `BookContentRegistry`  
+4. 扫描 `flexibook/books/*.json` → **仅** `BookDefinition` 索引（必须有 `"content"` 字段；整份 content 放 books 会解析失败）  
+5. 清空布局缓存  
+
+主题仍由 `BookThemeReloadListener` 扫描 `flexibook/themes/`。  
+lang / font / textures 由 Minecraft 原版资源系统加载，无需 FlexiBook 专用注册表。
 
 ### 14.4 API 表面
+
 ```java
-// 注册（代码路径）
-FlexiBookAPI.registerBookContent("mymod:guide", content);
+// 正文 body
+FlexiBookAPI.registerBookContent("mymod:guide_body", content);
+Optional<AdaptiveBookContent> body = FlexiBookAPI.getBookContent(id);
+AdaptiveBookContent body2 = FlexiBookAPI.resolveBookContent(id); // 未知 → EMPTY
 
-// 查询
-Optional<AdaptiveBookContent> c = FlexiBookAPI.getBookContent(id);
-AdaptiveBookContent resolved = FlexiBookAPI.resolveBookContent(id); // 未知返回 EMPTY
-Collection<ResourceLocation> ids = FlexiBookAPI.bookContentIds();
+// 索引 definition
+FlexiBookAPI.registerBookDefinition("mymod:guide",
+    new BookDefinition(
+        ResourceLocation.parse("mymod:guide_body"),
+        Optional.of(ResourceLocation.parse("mymod:dark")),
+        Optional.empty()));
+Optional<BookDefinition> def = FlexiBookAPI.getBookDefinition(id);
 
-// 直接创建物品（推荐用于模板继承）
+// 解析整书（索引 → body + theme/font 合并）
+AdaptiveBookContent full = FlexiBookAPI.resolveBook(ResourceLocation.parse("mymod:guide"));
+
+// 创建物品（推荐）
 ItemStack book = FlexiBookAPI.createBookFromDefinition(ResourceLocation.parse("flexibook:demo_guide"));
 
-// 拉模板后微调：AdaptiveBookContent 为 record，override 必须 return 新实例
 ItemStack tweaked = FlexiBookAPI.createBookFromDefinition(
     ResourceLocation.parse("flexibook:demo_guide"),
     c -> c.withThemeId(ResourceLocation.fromNamespaceAndPath("mymod", "dark"))
 );
 ```
-
-`resolveBookContent` 未知时返回 `AdaptiveBookContent.EMPTY`（标题为空书，元素为空）。
 
 ### 14.5 模板继承（其他模组用法）
 
@@ -1005,37 +1031,37 @@ ItemStack tweaked = FlexiBookAPI.createBookFromDefinition(
 | 方式 | 做法 | 适用 |
 |------|------|------|
 | 资源包 | 玩家把导出的 pack 丢进 `resourcepacks/` 并启用 | 内容作者独立分发、热重载 |
-| 打进 mod jar | `src/main/resources/assets/<ns>/flexibook/{books,themes}/...` | 随 mod 安装，无额外资源包 |
+| 打进 mod jar | `src/main/resources/assets/<ns>/flexibook/{books,contents,themes}/...` + 原版 `lang/`/`font/`/`textures/` | 随 mod 安装 |
 
 客户端 F3+T / 资源重载后，资源定义会覆盖同 id 的代码注册。
 
 #### 14.5.2 依赖
-在使用方 `build.gradle` / mods.toml 中声明对 `flexibook` 的依赖（版本范围按发布约定）。公共侧可调用 `io.github.PhantomDaze.flexibook.api.FlexiBookAPI`；主题/书籍注册表在客户端资源重载后对数据书生效。
+在使用方 `build.gradle` / mods.toml 中声明对 `flexibook` 的依赖（版本范围按发布约定）。公共侧可调用 `io.github.PhantomDaze.flexibook.api.FlexiBookAPI`。
 
 #### 14.5.3 推荐：从定义创建 FlexiBook 物品
 ```java
-// 内容 id = 资源路径 assets/myguide/flexibook/books/guide.json → myguide:guide
+// 索引 id = assets/myguide/flexibook/books/guide.json → myguide:guide
+// 其 content 字段指向 assets/myguide/flexibook/contents/....json
 ItemStack stack = FlexiBookAPI.createBookFromDefinition(
     ResourceLocation.fromNamespaceAndPath("myguide", "guide")
 );
-// stack 物品为 flexibook:flexi_book，DataComponent 已写入内容
+// stack 物品为 flexibook:flexi_book，DataComponent 已写入合并后的内容
 ```
 
 #### 14.5.4 自己的物品 + 拉取内容
-若要用自定义 Item（仍需能打开 AdaptiveBookScreen / 携带同一 DataComponent）：
 ```java
 ItemStack stack = new ItemStack(MyItems.FIELD_GUIDE.get());
-AdaptiveBookContent c = FlexiBookAPI.resolveBookContent(
+AdaptiveBookContent c = FlexiBookAPI.resolveBook(
     ResourceLocation.fromNamespaceAndPath("myguide", "guide")
 );
 stack.set(ModDataComponents.ADAPTIVE_BOOK_CONTENT.get(), c);
 ```
-未知 id 时 `resolveBookContent` 返回 `EMPTY`；`getBookContent` 返回 `Optional.empty()`。
 
 #### 14.5.5 Override 微调模板
 `AdaptiveBookContent` 不可变。使用 `Function` 重载并 **返回** 修改后的实例：
 ```java
 ItemStack stack = FlexiBookAPI.createBookFromDefinition(
+
     ResourceLocation.fromNamespaceAndPath("myguide", "guide"),
     c -> c
         .withThemeId(ResourceLocation.fromNamespaceAndPath("myguide", "main"))
@@ -1166,7 +1192,7 @@ A: 检查 id 是否与 `assets/.../font/*.json` 一致；书级用 `defaultFont`
 A: 书内默认故意使用模组自带 unihex（`flexibook:default`），与编辑器同一 ZIP，便于中西文与分页对齐。需要原版外观时请**显式**设书级或行内 font（如 `minecraft:default` / `minecraft:uniform`），并保证客户端资源存在。
 
 **Q: 编辑器里自定义 font id 预览不对？**  
-A: 编辑器默认只内置解析/绘制 `flexibook:default` unihex；其它 id 会保留在 JSON 中，预览回退到同一 unihex（见 §12.4）。游戏内仍按客户端真实 font 资源渲染。
+A: 默认路径仍是 `flexibook:default` unihex（与游戏同一 ZIP）。在 **Fonts** 面板导入的 TTF/OTF 会用浏览器 FontFace **近似**测宽/绘制（advance 可能与游戏不一致）。未导入的 id 会回退 unihex 并提示。导出后游戏端按资源包 `ttf` provider 真实渲染。
 
 **Q: 能否在服务端打开书？**  
 A: 不能。Screen 仅客户端。服务端只负责给 `ItemStack` 或改组件。

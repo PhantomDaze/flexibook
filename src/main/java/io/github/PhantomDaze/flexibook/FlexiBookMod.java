@@ -30,6 +30,8 @@ public class FlexiBookMod {
         event.enqueueWork(() -> {
             FlexiBookAPI.registerDefaultActions();
             BookThemeRegistry.bootstrap();
+            // Bundled sample pack (also shipped under run/resourcepacks/fieldnotes_pack)
+            io.github.PhantomDaze.flexibook.data.ClasspathPackBootstrap.loadFieldNotesSample();
         });
         LOGGER.info("FlexiBook initialized");
     }

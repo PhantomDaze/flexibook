@@ -1,10 +1,12 @@
 package io.github.PhantomDaze.flexibook.api;
 
 import io.github.PhantomDaze.flexibook.client.theme.BookContentRegistry;
+import io.github.PhantomDaze.flexibook.client.theme.BookDefinitionRegistry;
 import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemeRegistry;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemes;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
+import io.github.PhantomDaze.flexibook.content.BookDefinition;
 import io.github.PhantomDaze.flexibook.content.LinkAction;
 import io.github.PhantomDaze.flexibook.content.LinkActionRegistry;
 import io.github.PhantomDaze.flexibook.registry.ModDataComponents;
@@ -92,12 +94,11 @@ public final class FlexiBookAPI {
         return BookThemeRegistry.ids();
     }
 
-    // ── Book Contents (data-driven) ─────────────────────────────────────────
+    // ── Book contents (bodies under flexibook/contents/) ───────────────────────
 
     /**
-     * Registers or replaces a book content definition.
-     * Resource-pack JSON under {@code assets/<ns>/flexibook/books/<path>.json}
-     * can provide/override definitions on client reload.
+     * Registers or replaces a content <em>body</em>.
+     * Resource-pack JSON: {@code assets/<ns>/flexibook/contents/<path>.json}.
      */
     public static void registerBookContent(ResourceLocation id, AdaptiveBookContent content) {
         BookContentRegistry.register(id, content);
@@ -111,7 +112,7 @@ public final class FlexiBookAPI {
         return BookContentRegistry.getOptional(id);
     }
 
-    /** Resolves id or returns {@link AdaptiveBookContent#EMPTY}. */
+    /** Resolves a content body id or returns {@link AdaptiveBookContent#EMPTY}. */
     public static AdaptiveBookContent resolveBookContent(ResourceLocation id) {
         return BookContentRegistry.resolve(id);
     }
@@ -124,26 +125,55 @@ public final class FlexiBookAPI {
         return BookContentRegistry.ids();
     }
 
+    // ── Book definitions (indices under flexibook/books/) ───────────────────
+
     /**
-     * Creates a FlexiBook ItemStack pre-filled with the registered book content for the given id.
-     * If the id is unknown, returns an empty book.
+     * Registers a book <em>index</em> (content id + theme id).
+     * Resource-pack JSON: {@code assets/<ns>/flexibook/books/<path>.json}.
+     */
+    public static void registerBookDefinition(ResourceLocation id, BookDefinition def) {
+        BookDefinitionRegistry.register(id, def);
+    }
+
+    public static void registerBookDefinition(String id, BookDefinition def) {
+        BookDefinitionRegistry.register(id, def);
+    }
+
+    public static Optional<BookDefinition> getBookDefinition(ResourceLocation id) {
+        return BookDefinitionRegistry.getOptional(id);
+    }
+
+    public static Collection<ResourceLocation> bookDefinitionIds() {
+        return BookDefinitionRegistry.ids();
+    }
+
+    /**
+     * Resolves a book id to full content for item use:
+     * {@code flexibook/books/} index → content body + theme/font merge.
+     */
+    public static AdaptiveBookContent resolveBook(ResourceLocation bookId) {
+        return BookDefinitionRegistry.resolveContent(bookId);
+    }
+
+    /**
+     * Creates a FlexiBook ItemStack from a registered book index id
+     * ({@code assets/<ns>/flexibook/books/<path>.json}).
      */
     public static ItemStack createBookFromDefinition(ResourceLocation bookId) {
-        AdaptiveBookContent content = BookContentRegistry.resolve(bookId);
+        AdaptiveBookContent content = BookDefinitionRegistry.resolveContent(bookId);
         return createBook(content);
     }
 
     /**
-     * Creates a FlexiBook ItemStack from a registered definition, then applies an override.
+     * Creates a FlexiBook ItemStack from a registered book, then applies an override.
      * {@link AdaptiveBookContent} is immutable — the function must return the tweaked instance
      * (e.g. {@code c -> c.withThemeId(myTheme)}). {@code null} override or return keeps the base.
-     * Useful for other mods to slightly customize a template book.
      */
     public static ItemStack createBookFromDefinition(
             ResourceLocation bookId,
             Function<AdaptiveBookContent, AdaptiveBookContent> override
     ) {
-        AdaptiveBookContent base = BookContentRegistry.resolve(bookId);
+        AdaptiveBookContent base = BookDefinitionRegistry.resolveContent(bookId);
         AdaptiveBookContent modified = base;
         if (override != null) {
             AdaptiveBookContent next = override.apply(base);

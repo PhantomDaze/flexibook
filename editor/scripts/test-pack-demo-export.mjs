@@ -16,7 +16,8 @@ const { buildResourcePack, packFilesToZip } = await import(pathToFileURL(join(ro
 const { parseThemeJson, parseBookContentJson } = await import(pathToFileURL(join(root, 'src/shared/modJson.ts')).href);
 
 const theme = parseThemeJson(JSON.parse(readFileSync(join(root, 'assets/themes/default.json'), 'utf8')));
-const content = parseBookContentJson(JSON.parse(readFileSync(join(root, 'assets/books/demo_guide.json'), 'utf8')));
+const contentPath = join(root, 'assets/contents/demo_guide.json');
+const content = parseBookContentJson(JSON.parse(readFileSync(contentPath, 'utf8')));
 const bookPng = join(root, 'public/assets/textures/gui/book.png');
 const widgetsPng = join(root, 'public/assets/textures/gui/book_widgets.png');
 const bookBytes = readFileSync(bookPng);
@@ -38,14 +39,16 @@ const files = await buildResourcePack({
 });
 
 const book = JSON.parse(new TextDecoder().decode(files.find(f => f.path.endsWith('books/demo_guide.json')).data));
+const body = JSON.parse(new TextDecoder().decode(files.find(f => f.path.endsWith('contents/demo_guide.json')).data));
 const themeOut = JSON.parse(new TextDecoder().decode(files.find(f => f.path.includes('themes/default.json')).data));
 console.log('theme textures:', themeOut.book_texture, themeOut.widgets_texture);
-console.log('book theme/font:', book.theme, book.font);
-console.log('elements:', book.elements?.length, 'types:', book.elements?.map(e => e.type).join(','));
+console.log('book index content/theme/font:', book.content, book.theme, book.font);
+console.log('body elements:', body.elements?.length, 'types:', body.elements?.map(e => e.type).join(','));
 console.log('zip bytes', packFilesToZip(files).byteLength);
 
 const fixture = join(root, '..', 'src/test/resources/pack_export_fixture');
 mkdirSync(fixture, { recursive: true });
 writeFileSync(join(fixture, 'demo_guide_export.json'), JSON.stringify(book, null, 2));
+writeFileSync(join(fixture, 'demo_guide_content_export.json'), JSON.stringify(body, null, 2));
 writeFileSync(join(fixture, 'default_theme_export.json'), JSON.stringify(themeOut, null, 2));
 console.log('OK demo export →', fixture);

@@ -1,29 +1,26 @@
 # FlexiBook Electron Editor
 
-Real-time theme editor + custom book content editor using **Electron** (Chromium + Node.js).
-
-The editor runs **without Minecraft**, but produces near-identical layout and rendering by using a pure TypeScript port of the mod's `BookLayoutEngine` plus the **same Unihex Unifont ZIP** as the in-game `flexibook:default` font.
+Real-time theme + book content editor (Electron / browser). Uses a pure TypeScript port of `BookLayoutEngine` and the **same Unihex ZIP** as in-game `flexibook:default`.
 
 ## Status
 
-Working desktop app:
-- Live layout + preview (real book background, real images, STRETCH/CONTAIN)
-- Theme editing (all layout metrics, colors, imageFit)
-- Structured content editing (add/remove/reorder elements, spans, bold/italic/underline, translate toggle)
-- Tabbed UI (Theme | Content)
-- Visual GUI scale (1/2/3/4) — does **not** affect reflow
-- Search (affects layout + highlight)
-- Language switch (en_us / zh_cn)
-- Page-turn buttons use the real MC `book_widgets.png` texture
-- Export theme/content JSON (browser download)
-- **Export full resource pack** (Phase D): pack.mcmeta + textures + flexibook/themes/*.json (+ optional books) + HOW_TO_USE.txt. Electron: direct folder write via native dialog; browser fallback to .zip download. Custom textures included when chosen. UI in ThemePanel bottom section.
-- Native file dialogs available in main process (UI load/save pending)
-- Default font: `flexibook:default` via bundled `unifont_all-17.0.05.zip` (MC unihex metrics; no browser system-font fallback for book text)
+Working desktop / web app:
 
-Build artifacts (example):
-- `release/FlexiBook Editor-0.1.0.AppImage`
-- `release/flexibook-editor_0.1.0_amd64.snap`
-- `dist/` (Vite bundle) + `dist-electron/`
+- Live layout + preview (book background, images, STRETCH/CONTAIN)
+- Theme editing (layout metrics, colors, imageFit, custom textures)
+- Structured content editing (elements, multi-span style/color/font/link, box children)
+- Tabs: **Theme | Content | Lang | Fonts**
+- Workspace modes: **预览** (book canvas) | **内容编辑** (large translation value editor, no book preview)
+- Multi-language tables (add `ja_jp` etc.), real-time `localStorage` cache — language switch does not drop drafts
+- Manual **重新布局** in preview mode
+- Visual GUI scale 1/2/3/4 (draw only, no reflow)
+- Search highlight, page widgets from `book_widgets.png`
+- Native open/save for theme/content JSON (Electron); browser file input / download fallback
+- **Export resource packs**: top bar **导出完整资源包…**; each tab has its own partial export (theme / textures / content / lang / fonts only)
+- **Import resource packs**: top bar **导入资源包…** (ZIP or pack folder) → theme / contents / lang / fonts / textures
+- **Workspace draft**: IndexedDB autosave of unexported edits (theme/content/lang/textures/fonts); survives reload; **清草稿** to reset
+- Custom TTF/OTF import (approx FontFace preview) + pack embed
+- Default font: `flexibook:default` unihex (parity path)
 
 ## Quick Start
 
@@ -31,150 +28,156 @@ Build artifacts (example):
 cd editor
 npm install
 
-# Recommended: full Electron dev with Vite HMR for renderer
+# Full Electron + Vite HMR
 npm run dev:electron
 
-# Web-only dev server (http://localhost:5173/)
+# Browser only → http://localhost:5173/
 npm run dev
 
-# Full production build + packaging (electron-builder)
+# Production package
 npm run build
 ```
 
-Run packaged AppImage / Snap directly, or use `npm run dev:electron` during development.
+## Export resource pack (6-part layout)
+
+### Full pack (top bar only)
+
+Top bar **导出完整资源包…** → folder/zip `{ns}_pack/`:
+
+```
+{ns}_pack/
+  pack.mcmeta
+  HOW_TO_USE.txt
+  assets/{ns}/
+    lang/{en_us,zh_cn,…}.json          # vanilla lang
+    textures/gui/{book,book_widgets}.png
+    font/…                             # optional custom TTF/OTF + json
+    flexibook/
+      themes/{themeId}.json
+      contents/{bookId}.json           # body (title + elements, translation keys)
+      books/{bookId}.json              # index: { "content", "theme", "font"? }
+```
+
+### Partial packs (per panel)
+
+Each tab exports **only its section** (+ `pack.mcmeta` / `HOW_TO_USE.txt`). Same namespace packs stack in-game.
+
+| Entry | Includes | Typical folder suffix |
+|-------|----------|------------------------|
+| Theme → **导出主题资源包…** | `flexibook/themes/*.json` | `{ns}_theme_pack` |
+| Theme → **导出纹理资源包…** | `textures/gui/book.png` + `book_widgets.png` | `{ns}_tex_pack` |
+| Content → **导出内容资源包…** | `flexibook/contents` + `books` index | `{ns}_content_pack` |
+| Lang → **导出翻译资源包…** | `lang/*.json` | `{ns}_lang_pack` |
+| Fonts → **导出字体资源包…** | `font/*.json` + ttf/otf | `{ns}_fonts_pack` |
+
+| Part | Path | Role |
+|------|------|------|
+| **books** | `flexibook/books/` | Index only (`content` + `theme` + optional `font`) |
+| **contents** | `flexibook/contents/` | Body (`AdaptiveBookContent`) |
+| **themes** | `flexibook/themes/` | Layout / colors / texture RLs |
+| **lang** | `lang/` | Vanilla language files |
+| **fonts** | `font/` | Vanilla ttf providers |
+| **textures** | `textures/` | Vanilla textures |
+
+In-game after enabling the pack (F3+T):
+
+```java
+FlexiBookAPI.createBookFromDefinition(
+    ResourceLocation.fromNamespaceAndPath("myguide", "guide"));
+```
+
+Or command (mod):
+
+```text
+/flexibook give <bookId> [player]
+# e.g. /flexibook give fieldnotes:journal
+```
+
+Automated: `npm run test:pack` (includes theme-only / lang-only asserts); `npm run test:import`; Java `PackExportFixtureCodecTest`.
+
+### Import resource pack
+
+Top bar **导入资源包…**:
+
+| Host | Source |
+|------|--------|
+| Electron | ZIP file **or** pack root directory (`pack.mcmeta` / `assets/`) |
+| Browser | ZIP only |
+
+Loads whatever is present (partial packs OK): theme JSON, contents + books index, `lang/*.json`, `font/*.json`+ttf/otf, `textures/gui/book*.png`. Export form defaults update to imported `namespace` / themeId / bookId. Lang merges into current tables; fonts merge by id.
+
+### Workspace draft (persistence)
+
+Unexported work is autosaved (~0.9s debounce) to **IndexedDB** (`flexibook-editor` / `workspace` / `draft`):
+
+- theme, content, lang tables
+- custom texture PNG bytes
+- custom font TTF/OTF bytes + provider knobs
+- UI: active lang, left tab, pack id defaults
+
+Lang tables are **also** mirrored to `localStorage` (lightweight). Status bar shows last draft save time. **清草稿** clears IDB (reload then uses demo + asset lang seeds).
 
 ## Architecture
 
-Pure TS port (no Java at runtime):
+- `src/shared/types.ts` — mirrors Java models
+- `src/shared/layout.ts` — layout engine port + cache
+- `src/shared/UnihexFont.ts` — unihex measure/draw
+- `src/shared/FontRouter.ts` + `BrowserFont.ts` — custom TTF routing (approx)
+- `src/shared/TagParser.ts` — markup → elements (shared; Content UI is structured-only)
+- `src/shared/markupHighlight.ts` + `MarkupEditor.tsx` — syntax highlight (translation workspace)
+- `src/shared/packExport.ts` — 6-part pack builder
+- `src/shared/packImport.ts` — zip/dir → editor pieces
+- `src/shared/workspaceDraft.ts` — IndexedDB draft autosave
+- `src/shared/modJson.ts` — theme/content wire JSON
+- `src/shared/langTables.ts` — multi-lang tables + localStorage
 
-- `src/shared/types.ts` — mirrors Java records (RL, StyleFlags, InlineSpan, BookElement, AdaptiveBookContent, BookTheme, RenderedPage, etc.)
-- `src/shared/layout.ts` — `layout()` replicates the engine:
-  - `looksMostlyCjk`
-  - `tryLayout` with binary-search word wrap
-  - `placeWrappedText`, `placeInlineSpans`
-  - Adaptive guard loop (scale down → columns=2)
-  - `LayoutCache` keyed by content hash + lang + theme.revision + search
-- Measurement / font (parity critical):
-  - `src/shared/UnihexFont.ts` — loads the same ZIP as the mod (`assets/flexibook/font/unifont_all-17.0.05.zip`), ports MC 1.21.1 unihex packing + advance (`floor((right-left+1)/2)+1`, bold +0.5, width `ceil`)
-  - `scripts/sync-font-assets.mjs` — `predev`/`prebuild` copies font JSON/ZIP/license from mod resources into `public/assets` + `assets`
-  - `scripts/test-unihex.mjs` — `npm run test:font` (glyph bounds / advances)
-  - `McAtlasTextMeasurer.ts` — **legacy** (ascii.png + browser Unifont); not used on the default preview path
-- `src/shared/providers.ts` + `JsonTranslationProvider.ts`
-  - Fixed-reference measurement: always 9px base; GUI scale is visual only
-- `src/shared/ImageFitMath.ts` — port of Java `ImageFitMath.contain()`
-- `src/shared/modJson.ts` — wire format conversion for theme/content JSON round-tripping with the mod
+Renderer: `App.tsx`, `ThemePanel`, `ContentPanel`, `LangPanel`, `FontPanel`, `PreviewCanvas`, `PackExportForm`.
 
-Renderer:
-- `App.tsx` — state, Unihex load gate, layout effect, asset loading, keyboard nav, tabs, export wiring
-- `ThemePanel.tsx` — numeric spinners, hex colors, imageFit, revision bump on layout keys
-- `ContentPanel.tsx` — structured element list with add/remove/reorder/edit + export
-- `PreviewCanvas.tsx` — draws using real textures + UnihexFont:
-  - `book.png` as background (via `theme.bookTexWidth/Height`)
-  - Content images via async cache + `imgVersion`
-  - `contain()` centering when `imageFit === 'contain'`
-  - Widgets texture split for prev/next buttons
-  - Title + page label + body all measured/drawn with Unihex (no `fillText` system font)
+Assets: `assets/{lang,themes,contents,books,textures}/`, font ZIP synced from mod via `scripts/sync-font-assets.mjs`.
 
-Assets (served/copied at dev/build):
-- `assets/lang/*.json` (and public copy)
-- `assets/textures/gui/book.png`, `book_widgets.png`, `icon.png`
-- `assets/themes/*.json` (samples: default, contain)
-- `assets/books/*.json` (demo content)
-- `public/assets/flexibook/font/*` — synced from mod (`default.json`, `unifont_all-17.0.05.zip`, license)
-- `assets/fonts/README.md` explains purpose (not shipped to mod)
+## Key behaviors
 
-## Key Behaviors
-
-- Layout parity: same algorithm, same constants, same cache invalidation
-- Visual scale only: 1/2/3/4 changes draw size, never reflow
-- Elements win: if `elements` present, `rawMarkup` is ignored
-- Theme revision: changing a layout metric bumps `revision` → cache miss → relayout
-- Image fit:
-  - `stretch` — fill the box (may distort)
-  - `contain` — aspect-preserving, centered (letterbox/pillarbox)
-- Export produces JSON + full resource packs compatible with mod's data-driven themes (`flexibook/themes/`) and book content loading
-
-## Export / Round-trip
-
-- Export Theme → `*.json` (matches `BookTheme` shape for resource pack)
-- Export Content → `*.json` (matches wire form)
-- **Export full Resource Pack** (Phase D): Button in Theme panel. Produces:
-  ```
-  {ns}_pack/
-    pack.mcmeta
-    HOW_TO_USE.txt
-    assets/{ns}/
-      textures/gui/{book,book_widgets}.png
-      flexibook/themes/{themeId}.json   (texture refs rewritten to ns:...)
-      flexibook/books/{bookId}.json     (optional, theme=ns:themeId)
-  ```
-  - In Electron: native "select folder" → direct write (secure path checks in main).
-  - Browser: downloads `{ns}_pack.zip` (unzip into resourcepacks).
-  - Custom textures (if picked) are embedded; defaults fetched from editor assets.
-  - Load via resource pack or drop files into a mod jar under correct ns.
-- Load in-game: place under `assets/<ns>/flexibook/...` or use full pack; reference with `FlexiBookAPI.createBookFromDefinition(ResourceLocation.fromNamespaceAndPath(ns, bookId))`
-- See `src/shared/modJson.ts` and `src/shared/packExport.ts` for shapes
-- Automated: `npm run test:pack` (path set / rewrite / zip / real `demo_guide`); Java `PackExportFixtureCodecTest` parses the same fixtures with game codecs
-
-For in-game usage, load equivalent JSON into the mod's data-driven theme registration or construct content via `AdaptiveBookBuilder`.
-
-## Differences vs In-Game
-
-- Default font path uses the **same unihex ZIP** as `flexibook:default` — advances/bold/page label should match the game when content/theme/lang match
-- Explicit non-`flexibook:default` font ids are kept in data but **preview still draws with FlexiBook unihex** (no arbitrary resource-pack fonts in the editor)
-- No tooltip hover rendering for images/links (visual only)
-- No link click handling (preview is read-only visually)
-- No full native file open/save UI yet (exports are download-based; main process has dialog ipc)
-
-## Development Notes
-
-- Keep `editor/` completely outside the mod JAR (guarded: `jar { from sourceSets.main.output }` in build.gradle; editor is never added to main sourceSet)
-- If layout math / constants change in Java (`BookLayoutEngine`, `BookTheme`), mirror in `src/shared/layout.ts` and types
-- To compare a page:
-  1. Use identical theme JSON
-  2. Same language
-  3. Same content (Builder or exported JSON)
-  4. Visual scale = 1 in editor
-- Main process: `src/main/main.ts` + `preload.ts` (Electron + ipc for dialogs)
-- Renderer hot-reloads via Vite when using `dev:electron`
+- Layout parity with mod when using unihex + same theme/content/lang
+- Custom TTF preview is **approximate** (browser FontFace ≠ MC advance)
+- Unregistered external font ids → banner + unihex fallback
+- Content panel is structured elements only (no raw markup textarea)
+- Translation authoring: workspace **内容编辑** + Lang tab
+- Pack export rewrites theme texture paths and custom font ids into pack namespace
 
 ## Commands
 
 ```bash
-npm run dev:electron    # predev sync fonts + build:main + Vite + Electron
-npm run dev             # predev sync fonts + Vite dev server only
-npm run build           # prebuild sync fonts + tsc + vite + electron-builder
-npm run build:main      # compile main/preload only (tsconfig.node.json)
-npm run test:font       # Unihex parse/advance self-check against bundled ZIP
-npm run preview         # preview built web bundle
-npm run electron        # run electron against current dist (post-build)
+npm run dev:electron    # sync fonts + main + Vite + Electron
+npm run dev             # sync fonts + Vite only
+npm run build           # sync fonts + tsc + vite + electron-builder
+npm run build:main      # main/preload only
+npm run test:font
+npm run test:parser
+npm run test:layout
+npm run test:pack
+npm run test:import
+npm run test:markup
+npm run test            # all of the above
 ```
 
-## Roadmap (high value next)
+## Roadmap
 
-- [x] Native open/save dialogs in main process (ipc implemented)
-- [x] Theme + content export wired
-- [ ] Full UI integration for native open/save (load theme/content from disk)
-- [ ] Per-span editing (italic/underline/color/link in content panel)
-- [ ] Raw markup textarea + lightweight TagParser port
+- [x] Native open/save UI
+- [x] Multi-span + TagParser port
+- [x] Lang tables + content-edit workspace
+- [x] Custom TTF import/export
+- [x] 6-part pack (books index / contents / themes / lang / fonts / textures)
+- [x] Pack import (zip / directory)
+- [x] Workspace draft persistence (IndexedDB)
 - [ ] Better search highlight drawing
-- [ ] Basic deterministic tests with a fake measurer
-- [ ] Further parity: exact MC text layout edge cases
+- [ ] True TTF metrics parity with MC
 
-## Verification Checklist
+## Verification
 
-- [x] Layout metric change → immediate reflow
-- [x] Color change → redraw only
-- [x] imageFit toggle → visual change, no reflow
-- [x] Add/remove/reorder elements → live re-pagination
-- [x] Lang switch → translations + re-layout
-- [x] Search input → layout + highlight flags
-- [x] Visual scale changes size only
-- [x] Widgets texture → textured buttons (no arrows)
-- [x] Book background → real book.png
-- [x] Image renders (contain or stretch per theme)
-- [x] Theme/content export produces valid JSON matching mod wire format
-- [x] FlexiBook unihex (`flexibook:default`) measurement + draw active
-- [x] Title + page label use same resolved font metrics as mod Screen
+- [x] Theme/layout live reflow; colors redraw-only
+- [x] imageFit visual only
+- [x] Lang switch + cached tables
+- [x] Pack export path set includes contents + books index
+- [x] Default unihex measure/draw for title/body/page label
 
-See [`../docs/UNIFIED_FONT_PLAN.md`](../docs/UNIFIED_FONT_PLAN.md) and [`../docs/todo.md`](../docs/todo.md).
+See [`../docs/API.md`](../docs/API.md) §12 / §14, [`../docs/todo.md`](../docs/todo.md), [`../docs/UNIFIED_FONT_PLAN.md`](../docs/UNIFIED_FONT_PLAN.md).

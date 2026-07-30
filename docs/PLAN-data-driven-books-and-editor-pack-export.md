@@ -1,21 +1,22 @@
 # FlexiBook 计划：编辑器默认示例 + Mod 数据化书籍注册 + 编辑器导出完整材质包 + 跨 Mod 模板继承
 
 **日期**：2026-07-28 (updated 2026-07-29)  
-**状态**：Phase D 资源包导出已实现（编辑器端）
+**状态**：Phase D 资源包导出已实现；**books/contents 拆分已落地**（2026-07-30）
 
 ---
 
 ## 已完成（核心）
 
 - **数据化主题注册**：`assets/<ns>/flexibook/themes/*.json` + `BookThemeRegistry` + `BookThemeReloadListener`（资源覆盖代码注册）。
-- **数据化书籍内容注册**：
-  - `assets/<ns>/flexibook/books/<path>.json`（支持 `elements` 结构化或 `raw` 标记两种形态，优先 elements）。
-  - `BookContentRegistry` + `BookContentReloadListener`（重载时先 bootstrap 代码，再加载资源覆盖）。
-  - `AdaptiveBookContent.CODEC` 完整支持 title/elements/raw/font/theme。
-- **API 暴露**（`FlexiBookAPI`）：
-  - `registerBookContent(id, content)`
-  - `getBookContent(id)` / `resolveBookContent(id)`
-  - `createBookFromDefinition(bookId)` / 带 `override` 变体（便于模板 + 微调）。
+- **数据化书籍（拆分，无旧格式兼容）**：
+  - `assets/<ns>/flexibook/books/<path>.json` → **仅索引** `BookDefinition`（`content` + `theme` + 可选 `font`）
+  - `assets/<ns>/flexibook/contents/<path>.json` → **正文** `AdaptiveBookContent`（title/elements/raw/font）
+  - `BookDefinitionRegistry` + `BookContentRegistry` + 统一 `BookContentReloadListener`
+  - `FlexiBookAPI.createBookFromDefinition` / `resolveBook` / `registerBookDefinition`
+- **原版配套路径**（无需 FlexiBook 专用注册表）：
+  - `assets/<ns>/lang/*.json`
+  - `assets/<ns>/font/*`（ttf provider）
+  - `assets/<ns>/textures/**`
 - **编辑器默认对齐 mod 示例**：
   - `defaults.ts` 从 `editor/assets/books/demo_guide.json` + `themes/*.json` 加载（需与 mod `assets/flexibook/flexibook/{books,themes}/` 保持同步）。
   - ContentPanel 有 "重置为 Demo"；ThemePanel 有重置默认 / Contain 示例。

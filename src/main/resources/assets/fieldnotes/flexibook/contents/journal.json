@@ -1,0 +1,105 @@
+{
+  "title": {
+    "key": "fieldnotes.journal.title"
+  },
+  "font": "flexibook:default",
+  "elements": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 1,
+        "text": {
+          "key": "fieldnotes.journal.h1"
+        }
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "spans": [
+          {
+            "text": "fieldnotes.journal.intro",
+            "translate": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "divider",
+      "data": {}
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": {
+          "key": "fieldnotes.journal.notes_h"
+        }
+      }
+    },
+    {
+      "type": "bullet",
+      "data": {
+        "spans": [
+          {
+            "text": "fieldnotes.journal.note1",
+            "translate": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "bullet",
+      "data": {
+        "spans": [
+          {
+            "text": "fieldnotes.journal.note2",
+            "translate": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "spans": [
+          {
+            "text": "fieldnotes.journal.bold",
+            "translate": true,
+            "style": {
+              "bold": true
+            }
+          },
+          {
+            "text": " ",
+            "translate": false
+          },
+          {
+            "text": "fieldnotes.journal.plain",
+            "translate": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "image",
+      "data": {
+        "src": "flexibook:textures/gui/icon.png",
+        "width": 48,
+        "height": 48,
+        "tooltip": "fieldnotes.journal.icon_tip"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "spans": [
+          {
+            "text": "fieldnotes.journal.outro",
+            "translate": true
+          }
+        ]
+      }
+    }
+  ]
+}

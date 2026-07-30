@@ -1,9 +1,8 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import type { BookTheme } from '../shared/types';
 import type { CustomTexture, CustomTextures, TextureSlot } from './customTextures';
 import { loadImageFile, resolveThemeAssetUrl } from './customTextures';
 import { DEFAULT_THEME } from './defaults';
-
 export interface ThemePanelProps {
   theme: BookTheme;
   onChange: (next: BookTheme) => void;
@@ -12,14 +11,12 @@ export interface ThemePanelProps {
   onResetDefault: () => void;
   onLoadContain: () => void;
   onExport: () => void;
-  /** Called when user requests a full resource pack export */
-  onExportPack?: (opts: {
-    namespace: string;
-    themeId: string;
-    bookId: string;
-    includeBook: boolean;
-    packFormat: number;
-  }) => void;
+  onLoad?: () => void;
+  onSave?: () => void;
+  /** Partial pack: theme JSON only */
+  onExportThemePack?: () => void;
+  /** Partial pack: book/widgets textures only */
+  onExportTexturesPack?: () => void;
 }
 
 const LAYOUT_KEYS: (keyof BookTheme)[] = [
@@ -52,7 +49,10 @@ export function ThemePanel({
   onResetDefault,
   onLoadContain,
   onExport,
-  onExportPack,
+  onLoad,
+  onSave,
+  onExportThemePack,
+  onExportTexturesPack,
 }: ThemePanelProps) {
   function set<K extends keyof BookTheme>(key: K, value: BookTheme[K]) {
     const next = { ...theme, [key]: value } as BookTheme;
@@ -60,32 +60,6 @@ export function ThemePanel({
       next.revision = (theme.revision || 1) + 1;
     }
     onChange(next);
-  }
-
-  // Pack export local form state (kept here for section UI; parent receives on trigger)
-  const [packNamespace, setPackNamespace] = useState('myguide');
-  const [packThemeId, setPackThemeId] = useState('main');
-  const [packBookId, setPackBookId] = useState('guide');
-  const [packIncludeBook, setPackIncludeBook] = useState(true);
-  const [packFormat, setPackFormat] = useState(34);
-
-  function handleExportPack() {
-    const ns = (packNamespace || '').trim();
-    if (!ns) {
-      alert('namespace 必填');
-      return;
-    }
-    if (!/^[a-z0-9_.-]+$/.test(ns)) {
-      alert('namespace 格式不合法，应为 [a-z0-9_.-]+');
-      return;
-    }
-    onExportPack?.({
-      namespace: ns,
-      themeId: (packThemeId || 'main').trim() || 'main',
-      bookId: (packBookId || 'guide').trim() || 'guide',
-      includeBook: packIncludeBook,
-      packFormat: Number.isFinite(packFormat) && packFormat > 0 ? packFormat : 34,
-    });
   }
 
   function setColor(
@@ -162,7 +136,7 @@ export function ThemePanel({
         </div>
         <p className="section-hint">
           选择本地 PNG 后立即在预览中使用。bookTexWidth/Height 决定绘制区域（自定义背景默认同步为图片像素尺寸）。
-          导出主题 JSON 仍写资源路径字段；本地图本身需后续「导出资源包」一并打包。
+          「导出主题资源包」只含 theme JSON；「导出纹理资源包」只含 PNG。完整包请用顶栏按钮。
         </p>
       </div>
 
@@ -226,102 +200,36 @@ export function ThemePanel({
         </div>
       </div>
 
-      {/* Phase D: 完整资源包导出 */}
-      <div className="section">
-        <div className="section-head">
-          <h4 className="section-title">导出资源包</h4>
-          <span className="hint">生成可直接加载的 Minecraft 资源包</span>
-        </div>
-
-        <div className="field-grid">
-          <div className="field">
-            <label htmlFor="pack-ns">namespace <span style={{color:'var(--danger)'}}>*</span></label>
-            <input
-              id="pack-ns"
-              type="text"
-              className="mono"
-              value={packNamespace}
-              onChange={(e) => setPackNamespace(e.target.value)}
-              placeholder="myguide"
-              spellCheck={false}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="pack-theme">themeId</label>
-            <input
-              id="pack-theme"
-              type="text"
-              className="mono"
-              value={packThemeId}
-              onChange={(e) => setPackThemeId(e.target.value)}
-              placeholder="main"
-              spellCheck={false}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="pack-fmt">pack_format</label>
-            <input
-              id="pack-fmt"
-              type="number"
-              value={packFormat}
-              onChange={(e) => setPackFormat(parseInt(e.target.value, 10) || 34)}
-              min={1}
-            />
-          </div>
-        </div>
-
-        <div className="field" style={{ marginTop: 6 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input
-              type="checkbox"
-              checked={packIncludeBook}
-              onChange={(e) => setPackIncludeBook(e.target.checked)}
-            />
-            包含当前书籍内容 (book)
-          </label>
-        </div>
-
-        {packIncludeBook && (
-          <div className="field">
-            <label htmlFor="pack-book">bookId</label>
-            <input
-              id="pack-book"
-              type="text"
-              className="mono"
-              value={packBookId}
-              onChange={(e) => setPackBookId(e.target.value)}
-              placeholder="guide"
-              spellCheck={false}
-            />
-          </div>
-        )}
-
-        <div className="btn-row" style={{ marginTop: 8 }}>
-          <button
-            type="button"
-            className="primary"
-            onClick={handleExportPack}
-            disabled={!packNamespace || !/^[a-z0-9_.-]+$/.test((packNamespace || '').trim())}
-            title="导出 pack.mcmeta + 纹理 + 主题/书籍 JSON（Electron 写盘或浏览器 zip）"
-          >
-            导出资源包…
-          </button>
-        </div>
-        <p className="section-hint">
-          自定义纹理会一并打包；Electron 下可直接选择文件夹写入；浏览器环境下载 zip。
-        </p>
-      </div>
-
       <div className="toolbar sticky-actions">
+        {onLoad && (
+          <button type="button" onClick={onLoad} title="从磁盘加载主题 JSON">
+            打开…
+          </button>
+        )}
+        {onSave && (
+          <button type="button" onClick={onSave} title="保存主题 JSON 到磁盘">
+            保存…
+          </button>
+        )}
         <button type="button" onClick={onResetDefault}>
           重置默认
         </button>
         <button type="button" onClick={onLoadContain}>
           Contain 示例
         </button>
-        <button type="button" className="primary" onClick={onExport}>
+        <button type="button" onClick={onExport}>
           导出主题 JSON
         </button>
+        {onExportThemePack && (
+          <button type="button" className="primary" onClick={onExportThemePack} title="仅 themes/*.json">
+            导出主题资源包…
+          </button>
+        )}
+        {onExportTexturesPack && (
+          <button type="button" className="primary" onClick={onExportTexturesPack} title="仅 textures/gui PNG">
+            导出纹理资源包…
+          </button>
+        )}
       </div>
     </div>
   );

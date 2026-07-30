@@ -29,18 +29,23 @@ Cross-check: layout numbers, wrap points, page counts, CJK scale, imageFit (no r
 
 ## Open / Actionable
 
-### P1 — 编辑器
-- Content polish: per-span color/font/link + multi-span；raw markup + TagParser 移植；box 子元素编辑
-- Native open/save dialogs UI 接线
-- TS layout tests（fake measurer，对齐 Java 确定性测试）
-- 非 `flexibook:default` 的 font id：预览 UI 显式提示“外部字体不支持，已回退 unihex”
+### P1 — 编辑器（已完成）
+- [x] Content polish: per-span color/font/link + multi-span；raw markup + TagParser 移植；box 子元素编辑
+- [x] Native open/save dialogs UI 接线（Electron `fs:readTextFile` / `fs:writeTextFile` + 面板「打开…/保存…」；浏览器降级 file input / download）
+- [x] TS layout tests（fake measurer）：`npm run test:layout`；TagParser：`npm run test:parser`
+- [x] 非 `flexibook:default` 的 font id：Content 面板 + Preview 横幅 + 状态栏显式提示“外部字体不支持，已回退 unihex”
 
 ### Later
-- Syntax-highlighted markup editor
+- [x] Syntax-highlighted markup editor（Content raw 区轻量高亮）
 - [x] 完整资源包导出（Phase D 已落地）：编辑器可导出 pack.mcmeta + textures + themes + books + HOW_TO_USE；支持 Electron 直写文件夹或 zip。详见 PLAN 文件。
 - [x] 导出自动化：`npm run test:pack` + Java `PackExportFixtureCodecTest`（导出 JSON 与游戏 CODEC 对齐）。
+- [x] **翻译表编辑 + 导出 lang**：Lang 面板（全表 en_us/zh_cn）、全屏键编辑、Content 键选择器；导出 `assets/<ns>/lang/*.json`
+- [x] **自定义 TTF/OTF**：Fonts 面板导入；书级/行内 font；FontRouter 预览（浏览器近似）；导出 font JSON + ttf/otf 并重写 id
+- [x] **分项资源包导出**：完整包仅顶栏；Theme/Content/Lang/Fonts 各自只导出本分项（`PackParts`）
+- [x] **资源包导入**：ZIP / 目录 → theme/content/lang/fonts/textures；`npm run test:import`
+- [x] **工作区草稿持久化**：IndexedDB autosave（未导出内容跨刷新保留）；顶栏清草稿
 - 游戏端手测对照编辑器 1x/2x（F3+T 后标题/粗体/中文/页码）— 自动化已绿，客户端目视可选
-- 自定义资源包字体在编辑器内的可选加载（当前仅预览内置 unihex）
+- 游戏端手测资源包加载 / 跨模组 API（见 PLAN 验收未勾项）
 
 ## Rules (keep)
 - Mark [x] when done.
@@ -52,4 +57,6 @@ Cross-check: layout numbers, wrap points, page counts, CJK scale, imageFit (no r
 See also: [`../editor/README.md`](../editor/README.md), [`README.md`](./README.md), [`API.md`](./API.md) §12.
 
 ## Starting Point (now)
-统一字体 **已完成**。资源包导出（Phase D）**已完成**（编辑器 + codec 自动化）。下一项优先：编辑器内容打磨 / 原生文件对话框 / **游戏端手测**资源包加载。
+**6 段资源布局已落地**：books（索引）+ contents（正文）+ themes + lang + fonts + textures。  
+`createBookFromDefinition` 经 BookDefinition 解析 content/theme。books 仅为索引，无旧格式兼容。  
+导入 + 草稿持久化已落地。下一项：游戏端手测资源包加载（F3+T）与跨模组 API。

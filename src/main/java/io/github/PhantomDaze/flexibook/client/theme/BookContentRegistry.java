@@ -13,11 +13,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Runtime registry of {@link AdaptiveBookContent} definitions, keyed by {@link ResourceLocation}.
+ * Runtime registry of book <em>content bodies</em> ({@link AdaptiveBookContent}),
+ * keyed by {@link ResourceLocation}.
  * <p>
- * Code can call {@link #register(ResourceLocation, AdaptiveBookContent)} during setup.
- * Resource packs provide definitions under {@code assets/<ns>/flexibook/books/<path>.json}
- * (loaded client-side on resource reload via {@link BookContentReloadListener}).
+ * Resource packs place bodies under {@code assets/<ns>/flexibook/contents/<path>.json}
+ * (loaded on client reload via {@link BookContentReloadListener}).
+ * Book <em>indices</em> live in {@link BookDefinitionRegistry} ({@code flexibook/books/}).
  * <p>
  * Missing ids return empty content (caller should handle gracefully).
  */
@@ -80,15 +81,11 @@ public final class BookContentRegistry {
     }
 
     /**
-     * Re-applies any code-registered built-in books.
-     * Resource-loaded books override same ids after this call.
+     * Re-applies any code-registered built-in content bodies.
+     * Resource-loaded contents override same ids after this call.
      */
     public static void bootstrap() {
-        // Currently no hard-coded built-in books in the registry.
-        // The original demo is created via ExampleBooks / AdaptiveBookBuilder in creative tab.
-        // Data-driven books are expected to come from resource packs under flexibook/books/.
-        // If you want a code-defined built-in, register it here and it will be cleared on reload
-        // before resources are applied again.
+        // No hard-coded bodies; data-driven contents come from flexibook/contents/.
         FlexiBookMod.LOGGER.debug("Book content registry bootstrapped ({} entries)", CONTENTS.size());
     }
 

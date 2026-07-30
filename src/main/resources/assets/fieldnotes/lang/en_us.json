@@ -1,0 +1,12 @@
+{
+  "fieldnotes.journal.bold": "Bold run",
+  "fieldnotes.journal.h1": "Traveler Journal",
+  "fieldnotes.journal.icon_tip": "Pack icon",
+  "fieldnotes.journal.intro": "A resource-pack-only book exported from the FlexiBook editor pipeline.",
+  "fieldnotes.journal.note1": "books/ is an index (content + theme)",
+  "fieldnotes.journal.note2": "contents/ holds translation keys; lang/ holds text",
+  "fieldnotes.journal.notes_h": "Notes",
+  "fieldnotes.journal.outro": "Enable this pack, F3+T, then: /flexibook give fieldnotes:journal",
+  "fieldnotes.journal.plain": "and plain text share a paragraph.",
+  "fieldnotes.journal.title": "Field Notes"
+}

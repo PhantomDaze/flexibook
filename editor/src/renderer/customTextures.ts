@@ -80,3 +80,28 @@ export async function loadImageFile(file: File): Promise<CustomTexture> {
     img.src = url;
   });
 }
+
+/** Build CustomTexture from raw PNG/JPEG bytes (pack import / draft restore). */
+export async function loadImageFromBytes(
+  bytes: ArrayBuffer,
+  fileName = 'texture.png',
+): Promise<CustomTexture> {
+  const url = URL.createObjectURL(new Blob([bytes]));
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({
+        url,
+        fileName,
+        naturalWidth: img.naturalWidth || img.width,
+        naturalHeight: img.naturalHeight || img.height,
+        bytes,
+      });
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error(`Failed to load image bytes: ${fileName}`));
+    };
+    img.src = url;
+  });
+}
