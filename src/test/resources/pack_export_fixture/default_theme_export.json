@@ -2,7 +2,7 @@
   "book_texture": "demopack:textures/gui/book.png",
   "book_tex_width": 192,
   "book_tex_height": 216,
-  "texture_sheet_size": 256,
+  "texture_sheet_size": 2048,
   "content_left": 16,
   "content_top": 10,
   "title_offset_y": 5,

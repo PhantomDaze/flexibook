@@ -35,6 +35,9 @@ import java.util.Optional;
  * unless an explicit {@link BookTheme} is passed to the constructor.
  */
 public class AdaptiveBookScreen extends Screen {
+    /** Fixed atlas size for book panel sampling (editor + game must match). */
+    public static final int BOOK_TEXTURE_SHEET = 2048;
+
     private final ItemStack bookStack;
     private final BookTheme theme;
 
@@ -135,22 +138,28 @@ public class AdaptiveBookScreen extends Screen {
      * then draw the book texture as part of the screen background (not pre-blur content).
      */
     /**
-     * Same path as vanilla {@code BookViewScreen}: dim without menu blur, then blit the book
-     * panel with the 7-arg {@link GuiGraphics#blit(ResourceLocation, int, int, int, int, int, int)}
-     * overload (u/v + size, texture sheet defaults to 256×256).
+     * Dim without menu blur, then draw the book background.
+     * Texture is a fixed {@link #BOOK_TEXTURE_SHEET}² atlas; the full sheet is mapped
+     * into the panel ({@code bookTexWidth × bookTexHeight}). Same as the editor preview.
      */
     @Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         this.renderTransparentBackground(graphics);
-        // GuiGraphics.blit(location, x, y, uOffset, vOffset, uWidth, vHeight) → sheet 256×256
+        int panelW = theme.bookTexWidth();
+        int panelH = theme.bookTexHeight();
+        // 11-arg: dest size ≠ sample size — map full 2048 sheet into the book panel
         graphics.blit(
                 theme.bookTexture(),
                 leftPos,
                 topPos,
-                0,
-                0,
-                theme.bookTexWidth(),
-                theme.bookTexHeight()
+                panelW,
+                panelH,
+                0f,
+                0f,
+                BOOK_TEXTURE_SHEET,
+                BOOK_TEXTURE_SHEET,
+                BOOK_TEXTURE_SHEET,
+                BOOK_TEXTURE_SHEET
         );
     }
 

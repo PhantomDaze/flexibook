@@ -66,7 +66,8 @@ printf '%s\n' "{
     },
     {
       \"type\": \"unihex\",
-      \"hex_file\": \"flexibook:font/${ZIP_NAME}\"
+      \"hex_file\": \"flexibook:font/${ZIP_NAME}\",
+      \"size_overrides\": []
     }
   ]
 }" > "$OUT_DIR/default.json"
@@ -87,11 +88,11 @@ printf '%s\n' "{
   echo "================================================================================"
   echo ""
   cat LICENSE.txt
-} > "$OUT_DIR/LICENSE-unifont.txt"
+} > "$ROOT/src/main/resources/assets/flexibook/license_unifont.txt"
 
 # Keep pin block in this script in sync message
 echo "Wrote:"
 echo "  $OUT_DIR/$ZIP_NAME  ($zip_sum)"
 echo "  $OUT_DIR/default.json"
-echo "  $OUT_DIR/LICENSE-unifont.txt"
+echo "  $ROOT/src/main/resources/assets/flexibook/license_unifont.txt"
 echo "Done. If version pins change, update EXPECT_* in scripts/update-unifont.sh."

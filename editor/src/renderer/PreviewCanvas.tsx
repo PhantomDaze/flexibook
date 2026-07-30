@@ -5,6 +5,9 @@ import type { BookTheme, RenderedPage } from '../shared/types';
 import { StyleFlags } from '../shared/types';
 import { contain } from '../shared/ImageFitMath';
 
+/** Must match AdaptiveBookScreen.BOOK_TEXTURE_SHEET — fixed atlas for UV math. */
+export const BOOK_TEXTURE_SHEET = 2048;
+
 export interface PreviewCanvasProps {
   pages: RenderedPage[];
   pageIndex: number;
@@ -90,15 +93,11 @@ export function PreviewCanvas(props: PreviewCanvasProps) {
 
     if (bookReady && bookImg) {
       g.imageSmoothingEnabled = false;
-      // Vanilla book sheet: sample top-left panel region.
-      // Custom full-bleed images often equal natural size == bookTex*; if image is
-      // smaller/larger than the declared panel, fall back to full-image stretch.
-      const srcW = theme.bookTexWidth;
-      const srcH = theme.bookTexHeight;
-      if (bookImg.width >= srcW && bookImg.height >= srcH) {
+      // Same as game: map full fixed 2048 sheet (or whole image if smaller) into the panel.
+      const srcW = Math.min(BOOK_TEXTURE_SHEET, bookImg.width);
+      const srcH = Math.min(BOOK_TEXTURE_SHEET, bookImg.height);
+      if (srcW > 0 && srcH > 0) {
         g.drawImage(bookImg, 0, 0, srcW, srcH, ox, oy, drawW, drawH);
-      } else {
-        g.drawImage(bookImg, 0, 0, bookImg.width, bookImg.height, ox, oy, drawW, drawH);
       }
     } else {
       g.fillStyle = '#f6f0df';

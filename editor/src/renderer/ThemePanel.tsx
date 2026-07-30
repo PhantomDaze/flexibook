@@ -116,8 +116,10 @@ export function ThemePanel({
           />
         </div>
         <p className="section-hint">
-          选择本地 book.png 后立即在预览中使用。bookTexWidth/Height 决定绘制区域（自定义背景默认同步为图片像素尺寸）。
-          翻页使用预览区下方简单按钮（游戏内为原版 GUI 按钮，无自定义 widgets 贴图）。
+          选择本地 book.png 后立即在预览中使用。游戏与编辑器一致：贴图按固定 2048×2048 图集，
+          整张映射到书页面板（bookTexWidth×bookTexHeight，默认 192×216）。
+          请提供 2048×2048 的 book.png（或会被按整图取样）；布局尺寸改 bookTexWidth/Height。
+          翻页使用预览区下方简单按钮（游戏内为原版 GUI 按钮）。
           「导出主题资源包」只含 theme JSON；「导出纹理资源包」只含 book.png。完整包请用顶栏按钮。
         </p>
       </div>

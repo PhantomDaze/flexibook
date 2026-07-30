@@ -217,7 +217,7 @@ export const BookTheme = {
     bookTexture: 'flexibook:textures/gui/book.png',
     bookTexWidth: 192,
     bookTexHeight: 216,
-    textureSheetSize: 256,
+    textureSheetSize: 2048,
     contentLeft: 16,
     contentTop: 10,
     titleOffsetY: 0,

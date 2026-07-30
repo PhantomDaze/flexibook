@@ -107,7 +107,7 @@ public record BookTheme(
         static final com.mojang.serialization.MapCodec<Metrics> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Codec.INT.optionalFieldOf("book_tex_width", 192).forGetter(Metrics::bookTexWidth),
                 Codec.INT.optionalFieldOf("book_tex_height", 216).forGetter(Metrics::bookTexHeight),
-                Codec.INT.optionalFieldOf("texture_sheet_size", 256).forGetter(Metrics::textureSheetSize),
+                Codec.INT.optionalFieldOf("texture_sheet_size", 2048).forGetter(Metrics::textureSheetSize),
                 Codec.INT.optionalFieldOf("content_left", 16).forGetter(Metrics::contentLeft),
                 Codec.INT.optionalFieldOf("content_top", 10).forGetter(Metrics::contentTop),
                 Codec.INT.optionalFieldOf("title_offset_y", 5).forGetter(Metrics::titleOffsetY),

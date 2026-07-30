@@ -9,7 +9,8 @@
     },
     {
       "type": "unihex",
-      "hex_file": "flexibook:font/unifont_all-17.0.05.zip"
+      "hex_file": "flexibook:font/unifont_all-17.0.05.zip",
+      "size_overrides": []
     }
   ]
 }

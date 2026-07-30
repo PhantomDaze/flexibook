@@ -29,7 +29,7 @@ public final class BookThemes {
             BOOK_TEX,
             192,
             216,
-            256,
+            2048,
             16,
             10,
             5,

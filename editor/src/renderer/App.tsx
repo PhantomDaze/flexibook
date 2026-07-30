@@ -643,32 +643,14 @@ export default function App() {
         if (old && old !== tex) revokeCustomTexture(old);
         return { ...prev, [slot]: tex };
       });
+      // Custom upload: keep panel metrics; preview/game sample top-left
+      // bookTexW×H from a fixed 2048 sheet (no full-image stretch).
       if (slot === 'book' && tex && opts?.syncSize) {
-        setTheme((t) => {
-          const nw = tex.naturalWidth || t.bookTexWidth;
-          const nh = tex.naturalHeight || t.bookTexHeight;
-          // Vanilla-style GUI sheets are typically 256² (or larger) with a panel
-          // region in the top-left. Keep existing panel size so layout still fits.
-          // Full-bleed panel art (≈ content-sized) adopts natural dimensions.
-          const looksLikeSheet = nw >= 256 && nh >= 256 && (nw > t.bookTexWidth || nh > t.bookTexHeight);
-          if (looksLikeSheet) {
-            return {
-              ...t,
-              textureSheetSize: Math.max(t.textureSheetSize, nw, nh),
-              // clamp panel if it somehow exceeds the new sheet
-              bookTexWidth: Math.min(t.bookTexWidth, nw),
-              bookTexHeight: Math.min(t.bookTexHeight, nh),
-              revision: (t.revision || 1) + 1,
-            };
-          }
-          return {
-            ...t,
-            bookTexWidth: nw,
-            bookTexHeight: nh,
-            textureSheetSize: Math.max(t.textureSheetSize, nw, nh, 256),
-            revision: (t.revision || 1) + 1,
-          };
-        });
+        setTheme((t) => ({
+          ...t,
+          textureSheetSize: 2048,
+          revision: (t.revision || 1) + 1,
+        }));
       }
     },
     [],
