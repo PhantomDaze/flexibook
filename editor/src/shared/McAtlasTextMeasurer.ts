@@ -177,7 +177,7 @@ export class McAtlasTextMeasurer implements TextMeasurer {
       // keep fallback
       this.ready = false;
     };
-    // Prefer the same relative pattern used for book/widgets (proven to work).
+    // Prefer the same relative pattern used for book textures (proven to work).
     // Then public root (for plain Vite dev server), then alternative.
     // ascii.png moved to editor/legacy/… — default path uses UnihexFont only.
     const candidates = [
@@ -193,7 +193,7 @@ export class McAtlasTextMeasurer implements TextMeasurer {
   }
 
   /**
-   * Inject a preloaded image (e.g. loaded via the same new URL pattern used for book/widgets in App).
+   * Inject a preloaded image (e.g. loaded via the same new URL pattern used for book textures in App).
    * This makes font parity loading consistent with other textures.
    */
   setAtlas(img: HTMLImageElement) {

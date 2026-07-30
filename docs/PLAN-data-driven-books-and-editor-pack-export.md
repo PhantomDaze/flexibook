@@ -21,7 +21,7 @@
   - `defaults.ts` 从 `editor/assets/books/demo_guide.json` + `themes/*.json` 加载（需与 mod `assets/flexibook/flexibook/{books,themes}/` 保持同步）。
   - ContentPanel 有 "重置为 Demo"；ThemePanel 有重置默认 / Contain 示例。
 - **编辑器自定义纹理**：
-  - ThemePanel 支持为 book / widgets 选择本地 PNG，立即用于预览（`customTextures` + `loadImageFile`）。
+  - ThemePanel 支持为 book 选择本地 PNG，立即用于预览（`customTextures` + `loadImageFile`）。
   - 自动同步 book 尺寸到 theme（`bookTexWidth/Height`）。
   - 导出 JSON 时仍写资源路径；本地文件仅预览。
 
@@ -58,7 +58,7 @@
 ### 后续（非 MVP）
 - 编辑器内“项目”管理：多主题 + 多书，统一 namespace 导出。
 - 自动提取字面量到 lang。
-- 自定义 widgets 纹理选择与打包。
+- ~~自定义 widgets 纹理~~（已移除：翻页用原版 GUI 按钮）。
 - 复杂图片规则、字体包。
 - 命令/创造直接给“数据书”。
 

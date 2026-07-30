@@ -188,7 +188,6 @@ export type ImageFit = 'stretch' | 'contain';
 // ===== BookTheme（精简版，足够布局使用） =====
 export interface BookTheme {
   bookTexture: RL;
-  widgetsTexture: RL;
   bookTexWidth: number;
   bookTexHeight: number;
   textureSheetSize: number;
@@ -216,7 +215,6 @@ export interface BookTheme {
 export const BookTheme = {
   DEFAULT: {
     bookTexture: 'flexibook:textures/gui/book.png',
-    widgetsTexture: 'flexibook:textures/gui/book_widgets.png',
     bookTexWidth: 192,
     bookTexHeight: 216,
     textureSheetSize: 256,

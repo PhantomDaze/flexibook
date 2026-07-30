@@ -875,7 +875,7 @@ id：`<namespace>:<path>`（例：`assets/mymod/flexibook/themes/dark.json` → 
 - `assets/flexibook/flexibook/themes/default.json`
 - `assets/flexibook/flexibook/themes/contain.json`
 
-必填：`book_texture`、`widgets_texture`（`ResourceLocation` 字符串）。其余字段均有默认值，可只写要改的项：
+必填：`book_texture`（`ResourceLocation` 字符串）。其余字段均有默认值，可只写要改的项：
 
 | 字段 | 默认（约） | 含义 |
 |------|------------|------|
@@ -899,11 +899,10 @@ id：`<namespace>:<path>`（例：`assets/mymod/flexibook/themes/dark.json` → 
 | 路径 | 用途 |
 |------|------|
 | `assets/flexibook/textures/gui/book.png` | 默认书页背景（256 sheet，绘制 192×216） |
-| `assets/flexibook/textures/gui/book_widgets.png` | 按钮等 |
 | `assets/flexibook/textures/gui/icon.png` | 示例/默认图 |
 | `assets/flexibook/textures/item/flexi_book.png` | 物品图标 |
 
-自定义主题可把 `book_texture` / `widgets_texture` 指到你自己的路径。
+自定义主题可把 `book_texture` 指到你自己的路径。翻页按钮使用原版 GUI，无需自定义 widgets 贴图。
 
 ### 13.6 图片元素纹理与比例
 
@@ -1072,7 +1071,7 @@ ItemStack stack = FlexiBookAPI.createBookFromDefinition(
 
 #### 14.5.6 主题引用
 书 JSON 的 `"theme": "myguide:main"` 对应 `assets/myguide/flexibook/themes/main.json`。  
-主题内 `book_texture` / `widgets_texture` 指向 `assets/<texNs>/textures/...`（可与内容 namespace相同）。编辑器「导出资源包」会把纹理改写进同一 namespace，便于自包含分发。
+主题内 `book_texture` 指向 `assets/<texNs>/textures/...`（可与内容 namespace相同）。编辑器「导出资源包」会把 book.png 改写进同一 namespace。
 
 ### 14.6 内置示例
 本模组在资源内提供与 `ExampleBooks.demoGuide()` 内容对齐的示例：

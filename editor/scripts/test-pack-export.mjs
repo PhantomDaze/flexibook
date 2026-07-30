@@ -100,17 +100,13 @@ async function main() {
 
   // 4) build pack with real default PNGs (file:// URLs)
   const bookPng = join(root, 'public/assets/textures/gui/book.png');
-  const widgetsPng = join(root, 'public/assets/textures/gui/book_widgets.png');
-  assert(existsSync(bookPng), 'default book.png exists');
-  assert(existsSync(widgetsPng), 'default widgets.png exists');
-
+    assert(existsSync(bookPng), 'default book.png exists');
+  
   const bookBytes = readFileSync(bookPng);
-  const widgetsBytes = readFileSync(widgetsPng);
-
+  
   // minimal theme shape matching BookTheme
   const theme = {
     bookTexture: 'flexibook:textures/gui/book.png',
-    widgetsTexture: 'flexibook:textures/gui/book_widgets.png',
     bookTexWidth: 192,
     bookTexHeight: 216,
     textureSheetSize: 256,
@@ -178,9 +174,7 @@ async function main() {
       ],
     },
     customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
-    customWidgetsPng: widgetsBytes.buffer.slice(widgetsBytes.byteOffset, widgetsBytes.byteOffset + widgetsBytes.byteLength),
     defaultBookUrl: pathToFileURL(bookPng).href,
-    defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
     langTables: {
       en_us: { 'myguide.book.guide.title': 'Guide', 'myguide.hello': 'Hello' },
       zh_cn: { 'myguide.book.guide.title': '指南' },
@@ -209,7 +203,6 @@ async function main() {
     'assets/myguide/lang/en_us.json',
     'assets/myguide/lang/zh_cn.json',
     'assets/myguide/textures/gui/book.png',
-    'assets/myguide/textures/gui/book_widgets.png',
     'pack.mcmeta',
   ].sort();
   assert(JSON.stringify(paths) === JSON.stringify(expected), 'file path set matches expected\n  got: ' + paths.join(', '));
@@ -224,7 +217,6 @@ async function main() {
   // theme rewrite
   const themeJson = JSON.parse(new TextDecoder().decode(byPath['assets/myguide/flexibook/themes/main.json'].data));
   assert(themeJson.book_texture === 'myguide:textures/gui/book.png', 'book_texture rewritten');
-  assert(themeJson.widgets_texture === 'myguide:textures/gui/book_widgets.png', 'widgets_texture rewritten');
   assert(themeJson.book_tex_width === 192, 'theme metrics preserved');
   assert(themeJson.image_fit === 'stretch', 'image_fit preserved');
 
@@ -259,7 +251,6 @@ async function main() {
 
   // png sizes
   assert(byPath['assets/myguide/textures/gui/book.png'].data.byteLength === bookBytes.length, 'book png bytes');
-  assert(byPath['assets/myguide/textures/gui/book_widgets.png'].data.byteLength === widgetsBytes.length, 'widgets png bytes');
 
   // HOW_TO_USE contains ns ids
   const how = new TextDecoder().decode(byPath['HOW_TO_USE.txt'].data);
@@ -300,9 +291,7 @@ async function main() {
     packFormat: 34,
     theme,
     customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
-    customWidgetsPng: widgetsBytes.buffer.slice(widgetsBytes.byteOffset, widgetsBytes.byteOffset + widgetsBytes.byteLength),
     defaultBookUrl: pathToFileURL(bookPng).href,
-    defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
   });
   assert(!filesNoBook.some((f) => f.path.includes('/books/')), 'includeBook false omits books');
   assert(!filesNoBook.some((f) => f.path.includes('/contents/')), 'includeBook false omits contents');
@@ -373,12 +362,9 @@ async function main() {
     packFormat: 34,
     parts: { meta: true, theme: false, textures: true, content: false, lang: false, fonts: false },
     customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
-    customWidgetsPng: widgetsBytes.buffer.slice(widgetsBytes.byteOffset, widgetsBytes.byteOffset + widgetsBytes.byteLength),
     defaultBookUrl: pathToFileURL(bookPng).href,
-    defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
   });
   assert(texOnly.some((f) => f.path.endsWith('textures/gui/book.png')), 'tex-only has book png');
-  assert(texOnly.some((f) => f.path.endsWith('textures/gui/book_widgets.png')), 'tex-only has widgets');
   assert(!texOnly.some((f) => f.path.includes('/themes/')), 'tex-only no theme');
 
   // 8) bad namespace throws
@@ -389,9 +375,7 @@ async function main() {
       includeBook: false,
       theme,
       customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
-      customWidgetsPng: widgetsBytes.buffer.slice(widgetsBytes.byteOffset, widgetsBytes.byteOffset + widgetsBytes.byteLength),
       defaultBookUrl: pathToFileURL(bookPng).href,
-      defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
     });
   } catch {
     threw = true;

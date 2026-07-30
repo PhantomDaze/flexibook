@@ -99,9 +99,7 @@ const content = {
 };
 
 const bookPng = join(root, 'public/assets/textures/gui/book.png');
-const widgetsPng = join(root, 'public/assets/textures/gui/book_widgets.png');
 const bookBytes = readFileSync(bookPng);
-const widgetsBytes = readFileSync(widgetsPng);
 const ab = (b) => b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
 
 const files = await buildResourcePack({
@@ -114,9 +112,7 @@ const files = await buildResourcePack({
   theme,
   content,
   customBookPng: ab(bookBytes),
-  customWidgetsPng: ab(widgetsBytes),
   defaultBookUrl: pathToFileURL(bookPng).href,
-  defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
   langTables: {
     en_us: {
       'fieldnotes.journal.title': 'Field Notes',

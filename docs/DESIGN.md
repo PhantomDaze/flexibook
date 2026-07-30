@@ -70,7 +70,7 @@
 ---
 
 ## 主题与字体资源
-- `BookTheme`：布局数字 + 颜色 + `bookTexture` / `widgetsTexture` + `imageFit`（stretch/contain） + revision（触发重排）。
+- `BookTheme`：布局数字 + 颜色 + `bookTexture` + `imageFit`（stretch/contain） + revision（触发重排）。
 - 数据化主题：`assets/<ns>/flexibook/themes/*.json`（snake_case 字段）。
 - 内置主题示例：`flexibook:default`（stretch）、`flexibook:contain`。
 - **内置书字体**：`assets/flexibook/font/default.json` + `unifont_all-17.0.05.zip`（unihex + space）；id `flexibook:default`。更新：`scripts/update-unifont.sh`（普通 build 不联网）。

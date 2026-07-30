@@ -32,7 +32,7 @@ const MODE_META: Record<
   },
   textures: {
     title: '导出纹理资源包',
-    hint: '仅 textures/gui/book.png + book_widgets.png',
+    hint: '仅 textures/gui/book.png',
     parts: { meta: true, theme: false, textures: true, content: false, lang: false, fonts: false },
   },
   content: {

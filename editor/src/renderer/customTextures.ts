@@ -11,16 +11,14 @@ export interface CustomTexture {
   bytes?: ArrayBuffer;
 }
 
-export type TextureSlot = 'book' | 'widgets';
+export type TextureSlot = 'book';
 
 export interface CustomTextures {
   book: CustomTexture | null;
-  widgets: CustomTexture | null;
 }
 
 export const EMPTY_CUSTOM_TEXTURES: CustomTextures = {
   book: null,
-  widgets: null,
 };
 
 /** Resolve a flexibook:/assets path to a URL Vite can fetch. */
@@ -51,7 +49,6 @@ export function revokeCustomTexture(tex: CustomTexture | null | undefined) {
 
 export function revokeAllCustomTextures(map: CustomTextures) {
   revokeCustomTexture(map.book);
-  revokeCustomTexture(map.widgets);
 }
 
 /**

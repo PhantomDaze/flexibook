@@ -29,7 +29,6 @@ class PackExportFixtureCodecTest {
         BookTheme theme = BookTheme.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
 
         assertEquals(ResourceLocation.parse("myguide:textures/gui/book.png"), theme.bookTexture());
-        assertEquals(ResourceLocation.parse("myguide:textures/gui/book_widgets.png"), theme.widgetsTexture());
         assertEquals(192, theme.bookTexWidth());
         assertEquals(216, theme.bookTexHeight());
         assertEquals(160, theme.pageContentWidth());
@@ -98,7 +97,6 @@ class PackExportFixtureCodecTest {
         var el = load("pack_export_fixture/default_theme_export.json");
         BookTheme theme = BookTheme.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
         assertEquals(ResourceLocation.parse("demopack:textures/gui/book.png"), theme.bookTexture());
-        assertEquals(ResourceLocation.parse("demopack:textures/gui/book_widgets.png"), theme.widgetsTexture());
     }
 
     private static Optional<ResourceLocation> OptionalRL(String s) {

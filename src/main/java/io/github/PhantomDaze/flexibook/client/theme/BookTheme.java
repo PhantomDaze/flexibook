@@ -15,7 +15,6 @@ import net.minecraft.util.StringRepresentable;
  */
 public record BookTheme(
         ResourceLocation bookTexture,
-        ResourceLocation widgetsTexture,
         int bookTexWidth,
         int bookTexHeight,
         int textureSheetSize,
@@ -47,14 +46,12 @@ public record BookTheme(
      */
     public static final Codec<BookTheme> CODEC = RecordCodecBuilder.create(i -> i.group(
             ResourceLocation.CODEC.fieldOf("book_texture").forGetter(BookTheme::bookTexture),
-            ResourceLocation.CODEC.fieldOf("widgets_texture").forGetter(BookTheme::widgetsTexture),
             Metrics.MAP_CODEC.forGetter(Metrics::from),
             Colors.MAP_CODEC.forGetter(Colors::from),
             IMAGE_FIT_CODEC.optionalFieldOf("image_fit", ImageFit.STRETCH).forGetter(BookTheme::imageFit),
             Codec.INT.optionalFieldOf("revision", 1).forGetter(BookTheme::revision)
-    ).apply(i, (bookTexture, widgetsTexture, metrics, colors, imageFit, revision) -> new BookTheme(
+    ).apply(i, (bookTexture, metrics, colors, imageFit, revision) -> new BookTheme(
             bookTexture,
-            widgetsTexture,
             metrics.bookTexWidth,
             metrics.bookTexHeight,
             metrics.textureSheetSize,
@@ -156,7 +153,7 @@ public record BookTheme(
 
     public BookTheme withImageFit(ImageFit fit) {
         return new BookTheme(
-                bookTexture, widgetsTexture, bookTexWidth, bookTexHeight, textureSheetSize,
+                bookTexture, bookTexWidth, bookTexHeight, textureSheetSize,
                 contentLeft, contentTop, titleOffsetY, contentOffsetY, pageLabelInsetY,
                 pageContentWidth, pageContentHeight, lineHeight, paragraphGap, headingGap,
                 gutter, bulletIndent, dividerHeight,
@@ -168,7 +165,7 @@ public record BookTheme(
 
     public BookTheme withRevision(int newRevision) {
         return new BookTheme(
-                bookTexture, widgetsTexture, bookTexWidth, bookTexHeight, textureSheetSize,
+                bookTexture, bookTexWidth, bookTexHeight, textureSheetSize,
                 contentLeft, contentTop, titleOffsetY, contentOffsetY, pageLabelInsetY,
                 pageContentWidth, pageContentHeight, lineHeight, paragraphGap, headingGap,
                 gutter, bulletIndent, dividerHeight,
@@ -184,7 +181,6 @@ public record BookTheme(
 
     public static final class Builder {
         private ResourceLocation bookTexture;
-        private ResourceLocation widgetsTexture;
         private int bookTexWidth;
         private int bookTexHeight;
         private int textureSheetSize;
@@ -211,7 +207,6 @@ public record BookTheme(
         public static Builder from(BookTheme base) {
             Builder b = new Builder();
             b.bookTexture = base.bookTexture;
-            b.widgetsTexture = base.widgetsTexture;
             b.bookTexWidth = base.bookTexWidth;
             b.bookTexHeight = base.bookTexHeight;
             b.textureSheetSize = base.textureSheetSize;
@@ -238,7 +233,6 @@ public record BookTheme(
         }
 
         public Builder bookTexture(ResourceLocation v) { this.bookTexture = v; return this; }
-        public Builder widgetsTexture(ResourceLocation v) { this.widgetsTexture = v; return this; }
         public Builder bookTexWidth(int v) { this.bookTexWidth = v; return this; }
         public Builder bookTexHeight(int v) { this.bookTexHeight = v; return this; }
         public Builder textureSheetSize(int v) { this.textureSheetSize = v; return this; }
@@ -264,7 +258,7 @@ public record BookTheme(
 
         public BookTheme build() {
             return new BookTheme(
-                    bookTexture, widgetsTexture, bookTexWidth, bookTexHeight, textureSheetSize,
+                    bookTexture, bookTexWidth, bookTexHeight, textureSheetSize,
                     contentLeft, contentTop, titleOffsetY, contentOffsetY, pageLabelInsetY,
                     pageContentWidth, pageContentHeight, lineHeight, paragraphGap, headingGap,
                     gutter, bulletIndent, dividerHeight,

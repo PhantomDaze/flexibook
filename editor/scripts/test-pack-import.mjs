@@ -37,15 +37,11 @@ async function main() {
   const { packExport, packImport } = await loadMods();
 
   const bookPng = join(root, 'public/assets/textures/gui/book.png');
-  const widgetsPng = join(root, 'public/assets/textures/gui/book_widgets.png');
-  assert(existsSync(bookPng), 'book.png exists');
-  assert(existsSync(widgetsPng), 'widgets.png exists');
-  const bookBytes = readFileSync(bookPng);
-  const widgetsBytes = readFileSync(widgetsPng);
-
+    assert(existsSync(bookPng), 'book.png exists');
+    const bookBytes = readFileSync(bookPng);
+  
   const theme = {
     bookTexture: 'flexibook:textures/gui/book.png',
-    widgetsTexture: 'flexibook:textures/gui/book_widgets.png',
     bookTexWidth: 192,
     bookTexHeight: 216,
     textureSheetSize: 256,
@@ -98,12 +94,7 @@ async function main() {
       defaultFont: 'other:title',
     },
     customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
-    customWidgetsPng: widgetsBytes.buffer.slice(
-      widgetsBytes.byteOffset,
-      widgetsBytes.byteOffset + widgetsBytes.byteLength,
-    ),
     defaultBookUrl: pathToFileURL(bookPng).href,
-    defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
     langTables: {
       en_us: { 'myguide.book.guide.title': 'Guide', 'myguide.hello': 'Hello' },
       zh_cn: { 'myguide.book.guide.title': '指南' },
@@ -136,10 +127,6 @@ async function main() {
   assert(parsed.fonts[0].id === 'myguide:title', 'font rewritten id');
   assert(parsed.fonts[0].bytes.byteLength === fakeTtf.byteLength, 'font bytes');
   assert(!!parsed.textures.book && parsed.textures.book.byteLength === bookBytes.length, 'book tex');
-  assert(
-    !!parsed.textures.widgets && parsed.textures.widgets.byteLength === widgetsBytes.length,
-    'widgets tex',
-  );
   assert(parsed.packFormat === 34, 'pack_format');
 
   // 2) zip roundtrip import

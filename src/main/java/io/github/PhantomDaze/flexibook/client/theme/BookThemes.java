@@ -20,8 +20,6 @@ public final class BookThemes {
 
     private static final ResourceLocation BOOK_TEX =
             ResourceLocation.fromNamespaceAndPath(FlexiBookMod.MOD_ID, "textures/gui/book.png");
-    private static final ResourceLocation WIDGETS_TEX =
-            ResourceLocation.fromNamespaceAndPath(FlexiBookMod.MOD_ID, "textures/gui/book_widgets.png");
 
     /**
      * Example parchment theme used when a book has no {@code theme} id (or an unknown id).
@@ -29,7 +27,6 @@ public final class BookThemes {
      */
     public static final BookTheme DEFAULT = new BookTheme(
             BOOK_TEX,
-            WIDGETS_TEX,
             192,
             216,
             256,

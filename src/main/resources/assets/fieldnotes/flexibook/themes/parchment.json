@@ -1,6 +1,5 @@
 {
   "book_texture": "fieldnotes:textures/gui/book.png",
-  "widgets_texture": "fieldnotes:textures/gui/book_widgets.png",
   "book_tex_width": 192,
   "book_tex_height": 216,
   "texture_sheet_size": 256,

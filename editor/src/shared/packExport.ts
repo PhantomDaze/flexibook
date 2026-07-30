@@ -11,7 +11,7 @@ export interface PackParts {
   meta?: boolean;
   /** flexibook/themes/*.json */
   theme?: boolean;
-  /** textures/gui book + widgets */
+  /** textures/gui book.png */
   textures?: boolean;
   /** flexibook/contents + flexibook/books index */
   content?: boolean;
@@ -70,10 +70,8 @@ export interface PackExportOptions {
   content?: AdaptiveBookContent;
   /** Custom texture raw bytes (from loadImageFile). If absent, fetch defaults. */
   customBookPng?: ArrayBuffer | null;
-  customWidgetsPng?: ArrayBuffer | null;
   /** Vite-fetchable default texture URLs, e.g. '/assets/textures/gui/book.png' */
   defaultBookUrl?: string;
-  defaultWidgetsUrl?: string;
   /** Full language tables to embed as assets/<ns>/lang/<lang>.json */
   langTables?: Record<string, Record<string, string>>;
   /** Custom TTF/OTF fonts to embed under assets/<ns>/font/ */
@@ -231,7 +229,6 @@ export async function buildResourcePack(opts: PackExportOptions): Promise<PackFi
   const exportTextures = parts.textures;
 
   let bookPng: ArrayBuffer | null = null;
-  let widgetsPng: ArrayBuffer | null = null;
   if (exportTextures) {
     if (opts.customBookPng && opts.customBookPng.byteLength > 0) {
       bookPng = opts.customBookPng;
@@ -240,13 +237,6 @@ export async function buildResourcePack(opts: PackExportOptions): Promise<PackFi
     } else {
       throw new Error('textures export requires defaultBookUrl or customBookPng');
     }
-    if (opts.customWidgetsPng && opts.customWidgetsPng.byteLength > 0) {
-      widgetsPng = opts.customWidgetsPng;
-    } else if (opts.defaultWidgetsUrl) {
-      widgetsPng = await fetchArrayBuffer(opts.defaultWidgetsUrl);
-    } else {
-      throw new Error('textures export requires defaultWidgetsUrl or customWidgetsPng');
-    }
   }
 
   let themeWire: Record<string, unknown> | null = null;
@@ -254,7 +244,6 @@ export async function buildResourcePack(opts: PackExportOptions): Promise<PackFi
     if (!opts.theme) throw new Error('theme export requires theme object');
     themeWire = JSON.parse(JSON.stringify(themeToWire(opts.theme))) as Record<string, unknown>;
     themeWire.book_texture = `${namespace}:textures/gui/book.png`;
-    themeWire.widgets_texture = `${namespace}:textures/gui/book_widgets.png`;
   }
 
   // pack.mcmeta always for a valid resource pack
@@ -339,10 +328,9 @@ ${fontLines}
     });
   }
 
-  if (exportTextures && bookPng && widgetsPng) {
+  if (exportTextures && bookPng) {
     const texBase = `assets/${namespace}/textures/gui/`;
     files.push({ path: texBase + 'book.png', data: new Uint8Array(bookPng) });
-    files.push({ path: texBase + 'book_widgets.png', data: new Uint8Array(widgetsPng) });
   }
 
   if (parts.theme && themeWire) {

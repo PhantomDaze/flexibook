@@ -15,7 +15,7 @@ export interface ThemePanelProps {
   onSave?: () => void;
   /** Partial pack: theme JSON only */
   onExportThemePack?: () => void;
-  /** Partial pack: book/widgets textures only */
+  /** Partial pack: book texture only */
   onExportTexturesPack?: () => void;
 }
 
@@ -98,25 +98,6 @@ export function ThemePanel({
           }}
         />
 
-        <div style={{ height: 10 }} />
-
-        <TexturePicker
-          title="翻页按钮 widgets"
-          path={theme.widgetsTexture}
-          defaultPath={DEFAULT_THEME.widgetsTexture}
-          custom={customTextures.widgets}
-          onPathChange={(p) => set('widgetsTexture', p)}
-          onPickFile={async (file) => {
-            const tex = await loadImageFile(file);
-            onCustomTexture('widgets', tex);
-          }}
-          onClearCustom={() => onCustomTexture('widgets', null)}
-          onResetPath={() => {
-            onCustomTexture('widgets', null);
-            set('widgetsTexture', DEFAULT_THEME.widgetsTexture);
-          }}
-        />
-
         <div className="field-grid" style={{ marginTop: 10 }}>
           <NumField
             label="bookTexWidth"
@@ -135,8 +116,9 @@ export function ThemePanel({
           />
         </div>
         <p className="section-hint">
-          选择本地 PNG 后立即在预览中使用。bookTexWidth/Height 决定绘制区域（自定义背景默认同步为图片像素尺寸）。
-          「导出主题资源包」只含 theme JSON；「导出纹理资源包」只含 PNG。完整包请用顶栏按钮。
+          选择本地 book.png 后立即在预览中使用。bookTexWidth/Height 决定绘制区域（自定义背景默认同步为图片像素尺寸）。
+          翻页使用预览区下方简单按钮（游戏内为原版 GUI 按钮，无自定义 widgets 贴图）。
+          「导出主题资源包」只含 theme JSON；「导出纹理资源包」只含 book.png。完整包请用顶栏按钮。
         </p>
       </div>
 

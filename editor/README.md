@@ -14,7 +14,7 @@ Working desktop / web app:
 - Multi-language tables (add `ja_jp` etc.), real-time `localStorage` cache — language switch does not drop drafts
 - Manual **重新布局** in preview mode
 - Visual GUI scale 1/2/3/4 (draw only, no reflow)
-- Search highlight, page widgets from `book_widgets.png`
+- Search highlight; page nav is simple editor chrome (in-game: vanilla buttons)
 - Native open/save for theme/content JSON (Electron); browser file input / download fallback
 - **Export resource packs**: top bar **导出完整资源包…**; each tab has its own partial export (theme / textures / content / lang / fonts only)
 - **Import resource packs**: top bar **导入资源包…** (ZIP or pack folder) → theme / contents / lang / fonts / textures
@@ -50,7 +50,7 @@ Top bar **导出完整资源包…** → folder/zip `{ns}_pack/`:
   HOW_TO_USE.txt
   assets/{ns}/
     lang/{en_us,zh_cn,…}.json          # vanilla lang
-    textures/gui/{book,book_widgets}.png
+    textures/gui/book.png
     font/…                             # optional custom TTF/OTF + json
     flexibook/
       themes/{themeId}.json
@@ -65,7 +65,7 @@ Each tab exports **only its section** (+ `pack.mcmeta` / `HOW_TO_USE.txt`). Same
 | Entry | Includes | Typical folder suffix |
 |-------|----------|------------------------|
 | Theme → **导出主题资源包…** | `flexibook/themes/*.json` | `{ns}_theme_pack` |
-| Theme → **导出纹理资源包…** | `textures/gui/book.png` + `book_widgets.png` | `{ns}_tex_pack` |
+| Theme → **导出纹理资源包…** | `textures/gui/book.png` | `{ns}_tex_pack` |
 | Content → **导出内容资源包…** | `flexibook/contents` + `books` index | `{ns}_content_pack` |
 | Lang → **导出翻译资源包…** | `lang/*.json` | `{ns}_lang_pack` |
 | Fonts → **导出字体资源包…** | `font/*.json` + ttf/otf | `{ns}_fonts_pack` |

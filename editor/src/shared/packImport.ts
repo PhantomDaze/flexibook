@@ -41,7 +41,6 @@ export interface PackImportResult {
   fonts: ImportedFont[];
   textures: {
     book: ArrayBuffer | null;
-    widgets: ArrayBuffer | null;
   };
   packFormat: number | null;
   warnings: string[];
@@ -369,23 +368,16 @@ export function parsePackFiles(filesIn: PackImportFile[]): PackImportResult {
     }
   }
 
-  // Textures
+  // Textures (book panel only; page buttons use vanilla GUI, not a pack texture)
   let bookTex: ArrayBuffer | null = null;
-  let widgetsTex: ArrayBuffer | null = null;
   if (base) {
     const bookP = `${base}textures/gui/book.png`;
-    const widgetsP = `${base}textures/gui/book_widgets.png`;
     if (byPath.has(bookP)) bookTex = u8ToArrayBuffer(byPath.get(bookP)!);
-    if (byPath.has(widgetsP)) widgetsTex = u8ToArrayBuffer(byPath.get(widgetsP)!);
   }
   // fallback: any book.png under textures/gui
   if (!bookTex) {
     const p = files.find((x) => /\/textures\/gui\/book\.png$/i.test(x));
     if (p) bookTex = u8ToArrayBuffer(byPath.get(p)!);
-  }
-  if (!widgetsTex) {
-    const p = files.find((x) => /\/textures\/gui\/book_widgets\.png$/i.test(x));
-    if (p) widgetsTex = u8ToArrayBuffer(byPath.get(p)!);
   }
 
   if (!theme && !content && !Object.keys(langTables).length && !fonts.length && !bookTex) {
@@ -401,7 +393,7 @@ export function parsePackFiles(filesIn: PackImportFile[]): PackImportResult {
     bookFont,
     langTables,
     fonts,
-    textures: { book: bookTex, widgets: widgetsTex },
+    textures: { book: bookTex },
     packFormat,
     warnings,
     files,

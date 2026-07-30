@@ -19,9 +19,7 @@ const theme = parseThemeJson(JSON.parse(readFileSync(join(root, 'assets/themes/d
 const contentPath = join(root, 'assets/contents/demo_guide.json');
 const content = parseBookContentJson(JSON.parse(readFileSync(contentPath, 'utf8')));
 const bookPng = join(root, 'public/assets/textures/gui/book.png');
-const widgetsPng = join(root, 'public/assets/textures/gui/book_widgets.png');
 const bookBytes = readFileSync(bookPng);
-const widgetsBytes = readFileSync(widgetsPng);
 const ab = (buf) => buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 
 const files = await buildResourcePack({
@@ -33,15 +31,13 @@ const files = await buildResourcePack({
   theme,
   content,
   customBookPng: ab(bookBytes),
-  customWidgetsPng: ab(widgetsBytes),
   defaultBookUrl: pathToFileURL(bookPng).href,
-  defaultWidgetsUrl: pathToFileURL(widgetsPng).href,
 });
 
 const book = JSON.parse(new TextDecoder().decode(files.find(f => f.path.endsWith('books/demo_guide.json')).data));
 const body = JSON.parse(new TextDecoder().decode(files.find(f => f.path.endsWith('contents/demo_guide.json')).data));
 const themeOut = JSON.parse(new TextDecoder().decode(files.find(f => f.path.includes('themes/default.json')).data));
-console.log('theme textures:', themeOut.book_texture, themeOut.widgets_texture);
+console.log('theme textures:', themeOut.book_texture);
 console.log('book index content/theme/font:', book.content, book.theme, book.font);
 console.log('body elements:', body.elements?.length, 'types:', body.elements?.map(e => e.type).join(','));
 console.log('zip bytes', packFilesToZip(files).byteLength);

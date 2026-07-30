@@ -117,7 +117,7 @@ function summarizeImport(r: PackImportResult): string {
     r.content && `book=${r.bookId || 'yes'}`,
     Object.keys(r.langTables).length && `lang=${Object.keys(r.langTables).join(',')}`,
     r.fonts.length && `fonts=${r.fonts.length}`,
-    (r.textures.book || r.textures.widgets) && 'textures',
+    r.textures.book && 'textures',
   ].filter(Boolean);
   return parts.length ? `已加载：${parts.join(' · ')}` : '包内未识别到 FlexiBook 数据';
 }
@@ -395,29 +395,16 @@ export default function App() {
             setCustomFonts(next);
           }
 
-          if (draft.textures?.book || draft.textures?.widgets) {
-            const patch: CustomTextures = { book: null, widgets: null };
-            if (draft.textures.book) {
-              try {
-                patch.book = await loadImageFromBytes(
-                  draft.textures.book,
-                  draft.textures.bookFileName || 'book.png',
-                );
-              } catch {
-                /* ignore */
-              }
+          if (draft.textures?.book) {
+            try {
+              const book = await loadImageFromBytes(
+                draft.textures.book,
+                draft.textures.bookFileName || 'book.png',
+              );
+              setCustomTextures({ book });
+            } catch {
+              /* ignore */
             }
-            if (draft.textures.widgets) {
-              try {
-                patch.widgets = await loadImageFromBytes(
-                  draft.textures.widgets,
-                  draft.textures.widgetsFileName || 'book_widgets.png',
-                );
-              } catch {
-                /* ignore */
-              }
-            }
-            setCustomTextures(patch);
           }
           clearLayoutCache();
           setDraftStatus('saved');
@@ -464,11 +451,7 @@ export default function App() {
         langTables,
         textures: {
           book: customTextures.book?.bytes ? copyArrayBuffer(customTextures.book.bytes) : null,
-          widgets: customTextures.widgets?.bytes
-            ? copyArrayBuffer(customTextures.widgets.bytes)
-            : null,
           bookFileName: customTextures.book?.fileName,
-          widgetsFileName: customTextures.widgets?.fileName,
         },
         fonts,
       };
@@ -613,9 +596,6 @@ export default function App() {
     setPageIndex((i) => Math.min(i, Math.max(0, laidOut.length - 1)));
   }, [laidOut]);
 
-  const widgetsImgRef = useRef<HTMLImageElement | null>(null);
-  const [widgetsReady, setWidgetsReady] = useState(false);
-  const [widgetsEpoch, setWidgetsEpoch] = useState(0);
   const bookImgRef = useRef<HTMLImageElement | null>(null);
   const [bookReady, setBookReady] = useState(false);
   const [bookEpoch, setBookEpoch] = useState(0);
@@ -648,33 +628,6 @@ export default function App() {
     };
   }, [theme.bookTexture, customTextures.book]);
 
-  // Widgets texture
-  useEffect(() => {
-    let cancelled = false;
-    setWidgetsReady(false);
-    const src = customTextures.widgets?.url || resolveThemeAssetUrl(theme.widgetsTexture);
-    if (!src) {
-      widgetsImgRef.current = null;
-      return;
-    }
-    const img = new Image();
-    img.onload = () => {
-      if (cancelled) return;
-      widgetsImgRef.current = img;
-      setWidgetsReady(true);
-      setWidgetsEpoch((e) => e + 1);
-    };
-    img.onerror = () => {
-      if (cancelled) return;
-      widgetsImgRef.current = null;
-      setWidgetsReady(false);
-      setWidgetsEpoch((e) => e + 1);
-    };
-    img.src = src;
-    return () => {
-      cancelled = true;
-    };
-  }, [theme.widgetsTexture, customTextures.widgets]);
 
   // Revoke object URLs on unmount
   const customTexturesRef = useRef(customTextures);
@@ -942,12 +895,8 @@ export default function App() {
           theme: resolved.theme ? theme : undefined,
           content: resolved.content ? content : undefined,
           customBookPng: resolved.textures ? customTextures.book?.bytes ?? null : null,
-          customWidgetsPng: resolved.textures ? customTextures.widgets?.bytes ?? null : null,
           defaultBookUrl: resolved.textures
             ? new URL('../../assets/textures/gui/book.png', import.meta.url).toString()
-            : undefined,
-          defaultWidgetsUrl: resolved.textures
-            ? new URL('../../assets/textures/gui/book_widgets.png', import.meta.url).toString()
             : undefined,
           langTables: resolved.lang ? langTables : undefined,
           customFonts: resolved.fonts ? customFonts.map(toExportFont) : undefined,
@@ -1141,36 +1090,15 @@ export default function App() {
         );
       }
 
-      if (result.textures.book || result.textures.widgets) {
-        setCustomTextures((prev) => {
-          const next = { ...prev };
-          // revoke later after async load — handled below
-          return next;
-        });
-        const patch: Partial<CustomTextures> = {};
-        if (result.textures.book) {
-          try {
-            patch.book = await loadImageFromBytes(result.textures.book, 'book.png');
-          } catch (e) {
-            console.warn('book texture import failed', e);
-          }
-        }
-        if (result.textures.widgets) {
-          try {
-            patch.widgets = await loadImageFromBytes(result.textures.widgets, 'book_widgets.png');
-          } catch (e) {
-            console.warn('widgets texture import failed', e);
-          }
-        }
-        if (patch.book || patch.widgets) {
+      if (result.textures.book) {
+        try {
+          const book = await loadImageFromBytes(result.textures.book, 'book.png');
           setCustomTextures((prev) => {
-            if (patch.book) revokeCustomTexture(prev.book);
-            if (patch.widgets) revokeCustomTexture(prev.widgets);
-            return {
-              book: patch.book ?? prev.book,
-              widgets: patch.widgets ?? prev.widgets,
-            };
+            revokeCustomTexture(prev.book);
+            return { book };
           });
+        } catch (e) {
+          console.warn('book texture import failed', e);
         }
       }
 
@@ -1585,13 +1513,11 @@ export default function App() {
 
               <div className="preview-area">
                 <PreviewCanvas
-                  key={`book-${bookEpoch}-w-${widgetsEpoch}-r-${layoutForceRev}`}
+                  key={`book-${bookEpoch}-r-${layoutForceRev}`}
                   pages={pages}
                   pageIndex={pageIndex}
                   theme={theme}
                   scale={scale}
-                  widgetsImg={widgetsImgRef.current}
-                  widgetsReady={widgetsReady}
                   bookImg={bookImgRef.current}
                   bookReady={bookReady}
                   atlasMeasurer={fontRouter}
@@ -1659,8 +1585,6 @@ export default function App() {
         <span>Lang: {langTablesReady ? `${Object.keys(langTables).length}L / ${Object.values(langTables).reduce((n, t) => Math.max(n, Object.keys(t || {}).length), 0)} keys` : '…'}</span>
         <span className="sep" />
         <span>Mode: {workspaceMode === 'preview' ? '预览' : '内容编辑'}</span>
-        <span className="sep" />
-        <span>Widgets: {widgetsReady ? 'ok' : '…'}</span>
         <span className="sep" />
         <span>
           BG: {customTextures.book ? customTextures.book.fileName : bookReady ? 'theme' : 'missing'}

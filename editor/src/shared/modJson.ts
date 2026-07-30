@@ -23,7 +23,6 @@ import { StyleFlags as SF } from './types';
 
 type ThemeWire = {
   book_texture?: string;
-  widgets_texture?: string;
   book_tex_width?: number;
   book_tex_height?: number;
   texture_sheet_size?: number;
@@ -50,7 +49,6 @@ type ThemeWire = {
 
 const THEME_FALLBACK: BookTheme = {
   bookTexture: 'flexibook:textures/gui/book.png',
-  widgetsTexture: 'flexibook:textures/gui/book_widgets.png',
   bookTexWidth: 192,
   bookTexHeight: 216,
   textureSheetSize: 256,
@@ -93,7 +91,6 @@ export function parseThemeJson(raw: unknown): BookTheme {
   const f = THEME_FALLBACK;
   return {
     bookTexture: str(w.book_texture, f.bookTexture),
-    widgetsTexture: str(w.widgets_texture, f.widgetsTexture),
     bookTexWidth: num(w.book_tex_width, f.bookTexWidth),
     bookTexHeight: num(w.book_tex_height, f.bookTexHeight),
     textureSheetSize: num(w.texture_sheet_size, f.textureSheetSize),
@@ -123,7 +120,6 @@ export function parseThemeJson(raw: unknown): BookTheme {
 export function themeToWire(t: BookTheme): ThemeWire {
   return {
     book_texture: t.bookTexture,
-    widgets_texture: t.widgetsTexture,
     book_tex_width: t.bookTexWidth,
     book_tex_height: t.bookTexHeight,
     texture_sheet_size: t.textureSheetSize,
