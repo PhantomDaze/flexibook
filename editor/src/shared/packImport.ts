@@ -41,6 +41,8 @@ export interface PackImportResult {
   fonts: ImportedFont[];
   textures: {
     book: ArrayBuffer | null;
+    /** Item icon PNG (flexi_book) */
+    item: ArrayBuffer | null;
   };
   packFormat: number | null;
   warnings: string[];
@@ -368,7 +370,7 @@ export function parsePackFiles(filesIn: PackImportFile[]): PackImportResult {
     }
   }
 
-  // Textures (book panel only; page buttons use vanilla GUI, not a pack texture)
+  // Textures: book panel + optional item icon (page buttons use vanilla GUI)
   let bookTex: ArrayBuffer | null = null;
   if (base) {
     const bookP = `${base}textures/gui/book.png`;
@@ -380,7 +382,21 @@ export function parsePackFiles(filesIn: PackImportFile[]): PackImportResult {
     if (p) bookTex = u8ToArrayBuffer(byPath.get(p)!);
   }
 
-  if (!theme && !content && !Object.keys(langTables).length && !fonts.length && !bookTex) {
+  let itemTex: ArrayBuffer | null = null;
+  if (base) {
+    const itemP = `${base}textures/item/flexi_book.png`;
+    if (byPath.has(itemP)) itemTex = u8ToArrayBuffer(byPath.get(itemP)!);
+  }
+  // game override path used by export
+  if (!itemTex && byPath.has('assets/flexibook/textures/item/flexi_book.png')) {
+    itemTex = u8ToArrayBuffer(byPath.get('assets/flexibook/textures/item/flexi_book.png')!);
+  }
+  if (!itemTex) {
+    const p = files.find((x) => /\/textures\/item\/flexi_book\.png$/i.test(x));
+    if (p) itemTex = u8ToArrayBuffer(byPath.get(p)!);
+  }
+
+  if (!theme && !content && !Object.keys(langTables).length && !fonts.length && !bookTex && !itemTex) {
     warnings.push('no FlexiBook theme/content/lang/font/texture found in pack');
   }
 
@@ -393,7 +409,7 @@ export function parsePackFiles(filesIn: PackImportFile[]): PackImportResult {
     bookFont,
     langTables,
     fonts,
-    textures: { book: bookTex },
+    textures: { book: bookTex, item: itemTex },
     packFormat,
     warnings,
     files,

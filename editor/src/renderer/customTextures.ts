@@ -11,15 +11,22 @@ export interface CustomTexture {
   bytes?: ArrayBuffer;
 }
 
-export type TextureSlot = 'book';
+export type TextureSlot = 'book' | 'item';
 
 export interface CustomTextures {
+  /** Book panel background (theme book_texture / textures/gui/book.png) */
   book: CustomTexture | null;
+  /** Inventory / hotbar icon for flexibook:flexi_book (textures/item/flexi_book.png) */
+  item: CustomTexture | null;
 }
 
 export const EMPTY_CUSTOM_TEXTURES: CustomTextures = {
   book: null,
+  item: null,
 };
+
+/** Default item icon path (mod asset; RL form). */
+export const DEFAULT_ITEM_TEXTURE = 'flexibook:textures/item/flexi_book.png';
 
 /** Resolve a flexibook:/assets path to a URL Vite can fetch. */
 export function resolveThemeAssetUrl(key: string): string {
@@ -49,6 +56,7 @@ export function revokeCustomTexture(tex: CustomTexture | null | undefined) {
 
 export function revokeAllCustomTextures(map: CustomTextures) {
   revokeCustomTexture(map.book);
+  revokeCustomTexture(map.item);
 }
 
 /**

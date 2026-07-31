@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useT } from './UiI18n';
 import type { PackParts } from '../shared/packExport';
 
 export interface PackExportFormValues {
@@ -15,41 +16,41 @@ export type PackExportMode = 'full' | 'theme' | 'content' | 'lang' | 'fonts' | '
 
 const MODE_META: Record<
   PackExportMode,
-  { title: string; hint: string; parts: PackParts; showThemeId?: boolean; showBookId?: boolean }
+  { titleKey: string; hintKey: string; parts: PackParts; showThemeId?: boolean; showBookId?: boolean }
 > = {
   full: {
-    title: '导出完整资源包',
-    hint: '主题 + 正文/索引 + 翻译 + 字体 + 纹理',
+    titleKey: 'pack.mode.full.title',
+    hintKey: 'pack.mode.full.hint',
     parts: { meta: true, theme: true, textures: true, content: true, lang: true, fonts: true },
     showThemeId: true,
     showBookId: true,
   },
   theme: {
-    title: '导出主题资源包',
-    hint: '仅 flexibook/themes/*.json（不含纹理文件）',
+    titleKey: 'pack.mode.theme.title',
+    hintKey: 'pack.mode.theme.hint',
     parts: { meta: true, theme: true, textures: false, content: false, lang: false, fonts: false },
     showThemeId: true,
   },
   textures: {
-    title: '导出纹理资源包',
-    hint: '仅 textures/gui/book.png',
+    titleKey: 'pack.mode.textures.title',
+    hintKey: 'pack.mode.textures.hint',
     parts: { meta: true, theme: false, textures: true, content: false, lang: false, fonts: false },
   },
   content: {
-    title: '导出内容资源包',
-    hint: 'flexibook/contents + books 索引（引用当前主题 id）',
+    titleKey: 'pack.mode.content.title',
+    hintKey: 'pack.mode.content.hint',
     parts: { meta: true, theme: false, textures: false, content: true, lang: false, fonts: false },
     showThemeId: true,
     showBookId: true,
   },
   lang: {
-    title: '导出翻译资源包',
-    hint: '仅 assets/<ns>/lang/*.json',
+    titleKey: 'pack.mode.lang.title',
+    hintKey: 'pack.mode.lang.hint',
     parts: { meta: true, theme: false, textures: false, content: false, lang: true, fonts: false },
   },
   fonts: {
-    title: '导出字体资源包',
-    hint: '仅已导入的 TTF/OTF + font/*.json',
+    titleKey: 'pack.mode.fonts.title',
+    hintKey: 'pack.mode.fonts.hint',
     parts: { meta: true, theme: false, textures: false, content: false, lang: false, fonts: true },
   },
 };
@@ -69,6 +70,7 @@ export function PackExportForm({
   initial,
   buttonLabel,
 }: PackExportFormProps) {
+  const t = useT();
   const meta = MODE_META[mode];
   const [packNamespace, setPackNamespace] = useState(initial?.namespace ?? 'myguide');
   const [packThemeId, setPackThemeId] = useState(initial?.themeId ?? 'main');
@@ -100,7 +102,7 @@ export function PackExportForm({
   return (
     <div className="pack-export-form">
       <p className="section-hint" style={{ marginTop: 0 }}>
-        {meta.hint}
+        {t(meta.hintKey)}
       </p>
       <div className="field-grid">
         <div className="field">
@@ -119,7 +121,7 @@ export function PackExportForm({
         </div>
         {meta.showThemeId && (
           <div className="field">
-            <label htmlFor={`pack-theme-${mode}`}>themeId</label>
+            <label htmlFor={`pack-theme-${mode}`}>{t('pack.themeId')}</label>
             <input
               id={`pack-theme-${mode}`}
               type="text"
@@ -133,7 +135,7 @@ export function PackExportForm({
         )}
         {meta.showBookId && (
           <div className="field">
-            <label htmlFor={`pack-book-${mode}`}>bookId</label>
+            <label htmlFor={`pack-book-${mode}`}>{t('pack.bookId')}</label>
             <input
               id={`pack-book-${mode}`}
               type="text"
@@ -146,7 +148,7 @@ export function PackExportForm({
           </div>
         )}
         <div className="field">
-          <label htmlFor={`pack-fmt-${mode}`}>pack_format</label>
+          <label htmlFor={`pack-fmt-${mode}`}>{t('pack.packFormat')}</label>
           <input
             id={`pack-fmt-${mode}`}
             type="number"
@@ -163,9 +165,9 @@ export function PackExportForm({
           className="primary"
           onClick={handleExport}
           disabled={!nsOk}
-          title={meta.hint}
+          title={t(meta.hintKey)}
         >
-          {buttonLabel || `${meta.title}…`}
+          {buttonLabel || `${t(meta.titleKey)}…`}
         </button>
       </div>
     </div>
@@ -185,6 +187,7 @@ export function PackExportModal({
   mode?: PackExportMode;
   initial?: Partial<PackExportFormValues>;
 }) {
+  const t = useT();
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
@@ -202,13 +205,13 @@ export function PackExportModal({
       <div className="modal-panel" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <div>
-            <strong>{meta.title}</strong>
+            <strong>{t(meta.titleKey)}</strong>
             <div className="muted" style={{ fontSize: 11, marginTop: 2 }}>
-              {meta.hint}
+              {t(meta.hintKey)}
             </div>
           </div>
           <button type="button" onClick={onClose}>
-            关闭
+            {t('pack.close')}
           </button>
         </div>
         {/* remount form when mode/open changes so initial ns/ids apply */}

@@ -230,14 +230,11 @@ export function PreviewCanvas(props: PreviewCanvasProps) {
     const prevX = ox;
     const nextX = ox + drawW - btnW;
 
-    // Editor-only chrome: simple nav affordance (in-game uses vanilla Button widgets)
+    // Editor-only chrome: simple nav affordance (in-game uses vanilla Button widgets).
+    // Solid bars only — no glyph/fillText arrows (baseline drifts by scale/font).
     g.fillStyle = '#555';
     g.fillRect(prevX, btnY, btnW, btnH);
     g.fillRect(nextX, btnY, btnW, btnH);
-    g.fillStyle = '#fff';
-    g.font = `${Math.max(10, Math.floor(10 * scale))}px sans-serif`;
-    g.fillText('◀', prevX + 6, btnY + Math.floor(btnH * 0.7));
-    g.fillText('▶', nextX + 6, btnY + Math.floor(btnH * 0.7));
   }, [
     pages,
     pageIndex,

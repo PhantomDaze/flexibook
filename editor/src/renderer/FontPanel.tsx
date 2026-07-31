@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useT } from './UiI18n';
 import type { AdaptiveBookContent } from '../shared/types';
 import type { CustomFont } from '../shared/customFonts';
 import {
@@ -29,6 +30,7 @@ export function FontPanel({
   busy = false,
   onExportFontsPack,
 }: FontPanelProps) {
+  const t = useT();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   function updateFont(id: string, patch: Partial<CustomFont>) {
@@ -51,11 +53,11 @@ export function FontPanel({
   function renameId(oldId: string, newId: string) {
     const id = newId.trim();
     if (!isValidFontId(id)) {
-      alert('字体 id 需为 namespace:path，且符合 [a-z0-9_./-]+');
+      alert(t('font.badId'));
       return;
     }
     if (fonts.some((f) => f.id === id && f.id !== oldId)) {
-      alert('id 已存在');
+      alert(t('font.idExists'));
       return;
     }
     onChange(fonts.map((f) => (f.id === oldId ? { ...f, id } : f)));
@@ -68,7 +70,7 @@ export function FontPanel({
     <div>
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">自定义字体</h4>
+          <h4 className="section-title">{t('font.section.custom')}</h4>
           <span className="hint">{fonts.length} 个 · TTF/OTF</span>
         </div>
         <p className="section-hint">
@@ -85,7 +87,7 @@ export function FontPanel({
             disabled={busy}
             onClick={() => inputRef.current?.click()}
           >
-            导入 TTF/OTF…
+            {t('font.import')}
           </button>
           {onExportFontsPack && (
             <button
@@ -93,9 +95,9 @@ export function FontPanel({
               className="primary"
               disabled={fonts.length === 0}
               onClick={onExportFontsPack}
-              title="仅 font/*.json + ttf/otf"
+              title={t('font.exportPackTitle')}
             >
-              导出字体资源包…
+              {t('font.exportPack')}
             </button>
           )}
           <input
@@ -115,7 +117,7 @@ export function FontPanel({
 
       <div className="section">
         {fonts.length === 0 && (
-          <div className="empty-state">尚未导入自定义字体。unihex 默认始终可用。</div>
+          <div className="empty-state">尚未导入{t('font.section.custom')}。unihex 默认始终可用。</div>
         )}
         <div className="element-list">
           {fonts.map((f) => (
@@ -133,7 +135,7 @@ export function FontPanel({
                   {content.defaultFont === f.id && <span className="badge">书默认</span>}
                 </span>
                 <div className="element-actions">
-                  <button type="button" className="danger" title="删除" onClick={() => removeFont(f.id)}>
+                  <button type="button" className="danger" title={t('font.delete')} onClick={() => removeFont(f.id)}>
                     ✕
                   </button>
                 </div>
@@ -217,7 +219,7 @@ export function FontPanel({
 
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">当前书 defaultFont</h4>
+          <h4 className="section-title">{t('font.section.bookDefault')}</h4>
         </div>
         <input
           type="text"

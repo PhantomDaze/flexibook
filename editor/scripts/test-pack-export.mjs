@@ -175,6 +175,7 @@ async function main() {
     },
     customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
     defaultBookUrl: pathToFileURL(bookPng).href,
+    customItemPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
     langTables: {
       en_us: { 'myguide.book.guide.title': 'Guide', 'myguide.hello': 'Hello' },
       zh_cn: { 'myguide.book.guide.title': '指南' },
@@ -195,6 +196,7 @@ async function main() {
   const paths = files.map((f) => f.path).sort();
   const expected = [
     'HOW_TO_USE.txt',
+    'assets/flexibook/textures/item/flexi_book.png',
     'assets/myguide/flexibook/books/guide.json',
     'assets/myguide/flexibook/contents/guide.json',
     'assets/myguide/flexibook/themes/main.json',
@@ -203,6 +205,7 @@ async function main() {
     'assets/myguide/lang/en_us.json',
     'assets/myguide/lang/zh_cn.json',
     'assets/myguide/textures/gui/book.png',
+    'assets/myguide/textures/item/flexi_book.png',
     'pack.mcmeta',
   ].sort();
   assert(JSON.stringify(paths) === JSON.stringify(expected), 'file path set matches expected\n  got: ' + paths.join(', '));
@@ -363,9 +366,22 @@ async function main() {
     parts: { meta: true, theme: false, textures: true, content: false, lang: false, fonts: false },
     customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
     defaultBookUrl: pathToFileURL(bookPng).href,
+    customItemPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
   });
   assert(texOnly.some((f) => f.path.endsWith('textures/gui/book.png')), 'tex-only has book png');
+  assert(texOnly.some((f) => f.path === 'assets/myguide/textures/item/flexi_book.png'), 'tex-only has ns item');
+  assert(texOnly.some((f) => f.path === 'assets/flexibook/textures/item/flexi_book.png'), 'tex-only has flexibook item override');
   assert(!texOnly.some((f) => f.path.includes('/themes/')), 'tex-only no theme');
+
+  // 7g) textures without custom item → only book.png (no forced default item unless URL set)
+  const texBookOnly = await packMod.buildResourcePack({
+    namespace: 'myguide',
+    packFormat: 34,
+    parts: { meta: true, theme: false, textures: true, content: false, lang: false, fonts: false },
+    customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
+  });
+  assert(texBookOnly.some((f) => f.path.endsWith('textures/gui/book.png')), 'book-only has book');
+  assert(!texBookOnly.some((f) => f.path.includes('/item/')), 'book-only no item when not provided');
 
   // 8) bad namespace throws
   let threw = false;

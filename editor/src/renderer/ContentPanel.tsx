@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useT } from './UiI18n';
 import type {
   AdaptiveBookContent,
   BookElement,
@@ -26,14 +27,14 @@ export interface ContentPanelProps {
   onEnsureLangKey?: (key: string) => void;
 }
 
-const ADD_BUTTONS: { type: BookElement['type']; label: string }[] = [
-  { type: 'paragraph', label: '段落' },
-  { type: 'heading', label: '标题' },
-  { type: 'bullet', label: '列表项' },
-  { type: 'divider', label: '分隔线' },
-  { type: 'br', label: '换行' },
-  { type: 'image', label: '图片' },
-  { type: 'box', label: '容器' },
+const ADD_BUTTONS: { type: BookElement['type']; labelKey: string }[] = [
+  { type: 'paragraph', labelKey: 'content.el.paragraph' },
+  { type: 'heading', labelKey: 'content.el.heading' },
+  { type: 'bullet', labelKey: 'content.el.bullet' },
+  { type: 'divider', labelKey: 'content.el.divider' },
+  { type: 'br', labelKey: 'content.el.br' },
+  { type: 'image', labelKey: 'content.el.image' },
+  { type: 'box', labelKey: 'content.el.box' },
 ];
 
 function typeLabel(el: BookElement): string {
@@ -90,7 +91,9 @@ interface SpanEditorProps {
   onPickKey?: (apply: (key: string) => void) => void;
 }
 
-function SpanEditor({ spans, onChange, fontIds, onPickKey }: SpanEditorProps) {
+function SpanEditor({
+  spans, onChange, fontIds, onPickKey }: SpanEditorProps) {
+  const t = useT();
   const list = ensureSpans(spans);
 
   function update(i: number, patch: Partial<InlineSpan>) {
@@ -160,13 +163,13 @@ function SpanEditor({ spans, onChange, fontIds, onPickKey }: SpanEditorProps) {
             <div className="span-card-head">
               <span className="badge">span #{i + 1}</span>
               <div className="element-actions">
-                <button type="button" title="上移" disabled={i === 0} onClick={() => moveSpan(i, -1)}>
+                <button type="button" title={t('content.moveUp')} disabled={i === 0} onClick={() => moveSpan(i, -1)}>
                   ↑
                 </button>
-                <button type="button" title="下移" disabled={i >= list.length - 1} onClick={() => moveSpan(i, 1)}>
+                <button type="button" title={t('content.moveDown')} disabled={i >= list.length - 1} onClick={() => moveSpan(i, 1)}>
                   ↓
                 </button>
-                <button type="button" className="danger" title="删除 span" onClick={() => removeSpan(i)}>
+                <button type="button" className="danger" title={t('content.deleteSpan')} onClick={() => removeSpan(i)}>
                   ✕
                 </button>
               </div>
@@ -178,10 +181,10 @@ function SpanEditor({ spans, onChange, fontIds, onPickKey }: SpanEditorProps) {
                 style={{ flex: 1, minWidth: 0 }}
                 value={span.text}
                 onChange={(e) => update(i, { text: e.target.value })}
-                placeholder="文本键或字面量"
+                placeholder={t('content.placeholder.text')}
               />
               {span.translate && onPickKey && (
-                <button type="button" title="选择翻译键" onClick={() => onPickKey((key) => update(i, { text: key, translate: true }))}>
+                <button type="button" title={t('content.pickKey')} onClick={() => onPickKey((key) => update(i, { text: key, translate: true }))}>
                   键…
                 </button>
               )}
@@ -221,7 +224,7 @@ function SpanEditor({ spans, onChange, fontIds, onPickKey }: SpanEditorProps) {
                       const c = hexToColor(e.target.value);
                       updateStyle(i, { color: c });
                     }}
-                    title="选择颜色"
+                    title={t('content.pickColor')}
                   />
                   <input
                     type="text"
@@ -320,7 +323,9 @@ interface ElementListProps {
   onPickKey?: (apply: (key: string) => void) => void;
 }
 
-function ElementListEditor({ elements, onChange, depth = 0, fontIds, onPickKey }: ElementListProps) {
+function ElementListEditor({
+  elements, onChange, depth = 0, fontIds, onPickKey }: ElementListProps) {
+  const t = useT();
   function updateAt(idx: number, el: BookElement) {
     const arr = [...elements];
     arr[idx] = el;
@@ -385,7 +390,7 @@ function ElementListEditor({ elements, onChange, depth = 0, fontIds, onPickKey }
         <div className="toolbar">
           {ADD_BUTTONS.map((b) => (
             <button key={b.type} type="button" onClick={() => addElement(b.type)}>
-              + {b.label}
+              + {t(b.labelKey)}
             </button>
           ))}
         </div>
@@ -394,14 +399,14 @@ function ElementListEditor({ elements, onChange, depth = 0, fontIds, onPickKey }
         <div className="toolbar nested">
           {ADD_BUTTONS.map((b) => (
             <button key={b.type} type="button" onClick={() => addElement(b.type)}>
-              + {b.label}
+              + {t(b.labelKey)}
             </button>
           ))}
         </div>
       )}
 
       {elements.length === 0 && (
-        <div className="empty-state">{depth > 0 ? '容器为空 — 添加子元素' : '暂无内容。添加元素后会立即重排预览。'}</div>
+        <div className="empty-state">{depth > 0 ? t('content.emptyBox') : t('content.empty')}</div>
       )}
 
       {elements.map((el, idx) => (
@@ -417,18 +422,18 @@ function ElementListEditor({ elements, onChange, depth = 0, fontIds, onPickKey }
               <span className="badge">#{idx + 1}</span>
             </span>
             <div className="element-actions">
-              <button type="button" title="上移" disabled={idx === 0} onClick={() => move(idx, -1)}>
+              <button type="button" title={t('content.moveUp')} disabled={idx === 0} onClick={() => move(idx, -1)}>
                 ↑
               </button>
               <button
                 type="button"
-                title="下移"
+                title={t('content.moveDown')}
                 disabled={idx >= elements.length - 1}
                 onClick={() => move(idx, 1)}
               >
                 ↓
               </button>
-              <button type="button" className="danger" title="删除" onClick={() => removeAt(idx)}>
+              <button type="button" className="danger" title={t('content.delete')} onClick={() => removeAt(idx)}>
                 ✕
               </button>
             </div>
@@ -448,7 +453,7 @@ function ElementListEditor({ elements, onChange, depth = 0, fontIds, onPickKey }
                         text: { ...(el.text || { args: [] }), key: e.target.value },
                       })
                     }
-                    placeholder="标题键或字面量"
+                    placeholder={t('content.placeholder.title')}
                   />
                   {onPickKey && (
                     <button
@@ -576,7 +581,7 @@ function ElementListEditor({ elements, onChange, depth = 0, fontIds, onPickKey }
                 </div>
                 <div className="box-children">
                   <div className="section-head">
-                    <h4 className="section-title">子元素</h4>
+                    <h4 className="section-title">{t('content.children')}</h4>
                     <span className="hint">{el.children?.length || 0} 项</span>
                   </div>
                   <ElementListEditor
@@ -611,6 +616,7 @@ export function ContentPanel({
   langTables,
   onEnsureLangKey,
 }: ContentPanelProps) {
+  const t = useT();
   const elements = content.elements || [];
   const [keyPickerOpen, setKeyPickerOpen] = useState(false);
   const keyPickerApplyRef = useRef<((key: string) => void) | null>(null);
@@ -658,7 +664,7 @@ export function ContentPanel({
 
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">书标题</h4>
+          <h4 className="section-title">{t('content.section.title')}</h4>
         </div>
         <div className="field full">
           <label htmlFor="book-title">title key / 字面量</label>
@@ -669,7 +675,7 @@ export function ContentPanel({
               style={{ flex: 1 }}
               value={content.title?.key || ''}
               onChange={(e) => setTitleKey(e.target.value)}
-              placeholder="translation.key 或直接文字"
+              placeholder={t('content.placeholder.orLiteral')}
             />
             {langTables && (
               <button type="button" onClick={() => openKeyPicker((k) => setTitleKey(k))}>
@@ -695,12 +701,12 @@ export function ContentPanel({
             ))}
           </datalist>
         </div>
-        <p className="section-hint">带点号的键会当作翻译键；否则作为字面量。缺省字体为 flexibook:default。</p>
+        <p className="section-hint">{t('content.titleHint')}</p>
       </div>
 
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">内容元素</h4>
+          <h4 className="section-title">{t('content.section.elements')}</h4>
           <span className="hint">{elements.length} 项</span>
         </div>
         <ElementListEditor
@@ -719,17 +725,17 @@ export function ContentPanel({
 
       <div className="toolbar sticky-actions">
         {onLoad && (
-          <button type="button" onClick={onLoad} title="从磁盘加载内容 JSON">
+          <button type="button" onClick={onLoad} title={t('content.openTitle')}>
             打开…
           </button>
         )}
         {onSave && (
-          <button type="button" onClick={onSave} title="保存内容 JSON 到磁盘">
+          <button type="button" onClick={onSave} title={t('content.saveTitle')}>
             保存…
           </button>
         )}
         {onResetDemo && (
-          <button type="button" onClick={onResetDemo} title="恢复模组 demo_guide.json">
+          <button type="button" onClick={onResetDemo} title={t('content.resetDemoTitle')}>
             重置为模组模板
           </button>
         )}
@@ -743,7 +749,7 @@ export function ContentPanel({
             type="button"
             className="primary"
             onClick={onExportContentPack}
-            title="仅 contents + books 索引"
+            title={t('content.exportPackTitle')}
           >
             导出内容资源包…
           </button>

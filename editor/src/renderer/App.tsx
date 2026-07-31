@@ -9,6 +9,7 @@ import { PreviewCanvas } from './PreviewCanvas';
 import { FontPanel } from './FontPanel';
 import { LangPanel, TranslationValueWorkspace, type LangCode, type LangTables } from './LangPanel';
 import { PackExportModal, type PackExportFormValues, type PackExportMode } from './PackExportForm';
+import { useUiI18n } from './UiI18n';
 import {
   DEFAULT_LANG_CODES,
   ensureKeyInAllLangs,
@@ -110,16 +111,17 @@ function copyArrayBuffer(src: ArrayBuffer): ArrayBuffer {
   return src.slice(0);
 }
 
-function summarizeImport(r: PackImportResult): string {
+function summarizeImport(r: PackImportResult, t: (k: string, v?: Record<string, string | number>) => string): string {
   const parts = [
     r.namespace && `ns=${r.namespace}`,
     r.theme && `theme=${r.themeId || 'yes'}`,
     r.content && `book=${r.bookId || 'yes'}`,
     Object.keys(r.langTables).length && `lang=${Object.keys(r.langTables).join(',')}`,
     r.fonts.length && `fonts=${r.fonts.length}`,
-    r.textures.book && 'textures',
+    r.textures.book && 'book-tex',
+    r.textures.item && 'item-tex',
   ].filter(Boolean);
-  return parts.length ? `已加载：${parts.join(' · ')}` : '包内未识别到 FlexiBook 数据';
+  return parts.length ? t('dlg.importLoaded', { parts: parts.join(' · ') }) : t('dlg.importEmpty');
 }
 
 async function fetchLangJson(lang: string): Promise<Record<string, string>> {
@@ -275,7 +277,10 @@ function uint8ArrayToBase64(u8: Uint8Array): string {
 }
 
 export default function App() {
+  const { t, locale: uiLocale, setLocale: setUiLocale, locales: uiLocales, labels: uiLabels } = useUiI18n();
   const [lang, setLang] = useState<LangCode>('en_us');
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const langMenuRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState('');
   const [scale, setScale] = useState<1 | 2 | 3 | 4>(2);
   const [theme, setTheme] = useState<BookTheme>(DEFAULT_THEME);
@@ -395,13 +400,23 @@ export default function App() {
             setCustomFonts(next);
           }
 
-          if (draft.textures?.book) {
+          if (draft.textures?.book || draft.textures?.item) {
             try {
-              const book = await loadImageFromBytes(
-                draft.textures.book,
-                draft.textures.bookFileName || 'book.png',
-              );
-              setCustomTextures({ book });
+              let book: CustomTexture | null = null;
+              let item: CustomTexture | null = null;
+              if (draft.textures.book) {
+                book = await loadImageFromBytes(
+                  draft.textures.book,
+                  draft.textures.bookFileName || 'book.png',
+                );
+              }
+              if (draft.textures.item) {
+                item = await loadImageFromBytes(
+                  draft.textures.item,
+                  draft.textures.itemFileName || 'flexi_book.png',
+                );
+              }
+              setCustomTextures({ book, item });
             } catch {
               /* ignore */
             }
@@ -452,6 +467,8 @@ export default function App() {
         textures: {
           book: customTextures.book?.bytes ? copyArrayBuffer(customTextures.book.bytes) : null,
           bookFileName: customTextures.book?.fileName,
+          item: customTextures.item?.bytes ? copyArrayBuffer(customTextures.item.bytes) : null,
+          itemFileName: customTextures.item?.fileName,
         },
         fonts,
       };
@@ -589,7 +606,26 @@ export default function App() {
   const handleActiveLangChange = useCallback((code: LangCode) => {
     // langTables already hold latest keystrokes — safe to switch without flushing drafts
     setLang(code);
+    setLangMenuOpen(false);
   }, []);
+
+  // Close language dropdown on outside click / Escape
+  useEffect(() => {
+    if (!langMenuOpen) return;
+    const onPointer = (e: MouseEvent) => {
+      const el = langMenuRef.current;
+      if (el && !el.contains(e.target as Node)) setLangMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLangMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [langMenuOpen]);
 
   useEffect(() => {
     setPages(laidOut);
@@ -673,12 +709,12 @@ export default function App() {
       setTheme(next);
       await window.electronAPI?.showMessage?.({
         type: 'info',
-        title: '主题已加载',
+        title: t('dlg.themeLoaded'),
         message: picked.path || 'theme.json',
       });
     } catch (e: any) {
       console.error('[FlexiBook] load theme failed', e);
-      alert('加载主题失败：' + (e?.message || e));
+      alert(t('dlg.themeLoadFail', { err: e?.message || e }));
     }
   }, [theme.revision]);
 
@@ -687,7 +723,7 @@ export default function App() {
       await pickAndWriteJsonText('theme.json', themeToWire(theme));
     } catch (e: any) {
       console.error('[FlexiBook] save theme failed', e);
-      alert('保存主题失败：' + (e?.message || e));
+      alert(t('dlg.themeSaveFail', { err: e?.message || e }));
     }
   }, [theme]);
 
@@ -701,12 +737,12 @@ export default function App() {
       setPageIndex(0);
       await window.electronAPI?.showMessage?.({
         type: 'info',
-        title: '内容已加载',
+        title: t('dlg.contentLoaded'),
         message: picked.path || 'content.json',
       });
     } catch (e: any) {
       console.error('[FlexiBook] load content failed', e);
-      alert('加载内容失败：' + (e?.message || e));
+      alert(t('dlg.contentLoadFail', { err: e?.message || e }));
     }
   }, []);
 
@@ -715,7 +751,7 @@ export default function App() {
       await pickAndWriteJsonText('book.json', bookContentToWire(content));
     } catch (e: any) {
       console.error('[FlexiBook] save content failed', e);
-      alert('保存内容失败：' + (e?.message || e));
+      alert(t('dlg.contentSaveFail', { err: e?.message || e }));
     }
   }, [content]);
 
@@ -864,7 +900,7 @@ export default function App() {
       const resolved = resolvePackParts(parts);
       try {
         if (resolved.fonts && customFonts.length === 0 && packExportMode === 'fonts') {
-          alert('尚未导入自定义字体');
+          alert(t('dlg.noCustomFonts'));
           return;
         }
         const packFiles = await buildResourcePack({
@@ -879,6 +915,10 @@ export default function App() {
           customBookPng: resolved.textures ? customTextures.book?.bytes ?? null : null,
           defaultBookUrl: resolved.textures
             ? new URL('../../assets/textures/gui/book.png', import.meta.url).toString()
+            : undefined,
+          customItemPng: resolved.textures ? customTextures.item?.bytes ?? null : null,
+          defaultItemUrl: resolved.textures
+            ? new URL('../../assets/textures/item/flexi_book.png', import.meta.url).toString()
             : undefined,
           langTables: resolved.lang ? langTables : undefined,
           customFonts: resolved.fonts ? customFonts.map(toExportFont) : undefined,
@@ -912,11 +952,11 @@ export default function App() {
           if (res?.ok) {
             await api.showMessage?.({
               type: 'info',
-              title: '导出成功',
+              title: t('dlg.exportOk'),
               message: `资源包已写入：\n${res.root}\n\n共 ${packFiles.length} 个文件`,
             });
           } else {
-            alert('写入失败：' + (res?.error || '未知错误'));
+            alert(t('dlg.writeFail', { err: res?.error || t('dlg.unknown') }));
           }
         } else {
           const zipU8 = packFilesToZip(packFiles);
@@ -933,7 +973,7 @@ export default function App() {
         }
       } catch (e: any) {
         console.error('[FlexiBook] pack export failed', e);
-        alert('导出资源包失败：' + (e?.message || e));
+        alert(t('dlg.exportFail', { err: e?.message || e }));
       }
     },
     [theme, content, customTextures, langTables, customFonts, packExportMode],
@@ -1072,15 +1112,26 @@ export default function App() {
         );
       }
 
-      if (result.textures.book) {
+      if (result.textures.book || result.textures.item) {
         try {
-          const book = await loadImageFromBytes(result.textures.book, 'book.png');
+          let book: CustomTexture | null = null;
+          let item: CustomTexture | null = null;
+          if (result.textures.book) {
+            book = await loadImageFromBytes(result.textures.book, 'book.png');
+          }
+          if (result.textures.item) {
+            item = await loadImageFromBytes(result.textures.item, 'flexi_book.png');
+          }
           setCustomTextures((prev) => {
-            revokeCustomTexture(prev.book);
-            return { book };
+            if (result.textures.book) revokeCustomTexture(prev.book);
+            if (result.textures.item) revokeCustomTexture(prev.item);
+            return {
+              book: book ?? prev.book,
+              item: item ?? prev.item,
+            };
           });
         } catch (e) {
-          console.warn('book texture import failed', e);
+          console.warn('texture import failed', e);
         }
       }
 
@@ -1101,10 +1152,10 @@ export default function App() {
       if (api?.openFile && api?.readBinaryFile && api?.openDirectory && api?.readPack) {
         const choice = await api.showMessage?.({
           type: 'question',
-          title: '导入资源包',
-          message: '选择导入方式',
-          detail: 'ZIP 文件，或资源包根目录（含 pack.mcmeta / assets/）。',
-          buttons: ['ZIP 文件…', '文件夹…', '取消'],
+          title: t('dlg.importTitle'),
+          message: t('dlg.importMessage'),
+          detail: t('dlg.importDetail'),
+          buttons: [t('dlg.importZip'), t('dlg.importFolder'), t('dlg.cancel')],
           cancelId: 2,
           defaultId: 0,
         });
@@ -1123,17 +1174,17 @@ export default function App() {
           if (!filePath) return;
           const read = await api.readBinaryFile(filePath);
           if (!read?.ok || !read.base64) {
-            alert(read?.error || '读取 ZIP 失败');
+            alert(read?.error || t('dlg.readZipFail'));
             return;
           }
           const u8 = base64ToUint8Array(read.base64);
           const imported = importPackFromZip(u8);
           await applyPackImport(imported);
           sourceLabel = filePath;
-          const summary = summarizeImport(imported);
+          const summary = summarizeImport(imported, t);
           await api.showMessage?.({
             type: 'info',
-            title: '导入完成',
+            title: t('dlg.importDone'),
             message: summary + (imported.warnings.length ? `\n\n警告:\n- ${imported.warnings.join('\n- ')}` : ''),
           });
           return;
@@ -1147,7 +1198,7 @@ export default function App() {
         if (!dir) return;
         const pack = await api.readPack({ dir });
         if (!pack?.ok || !pack.files) {
-          alert(pack?.error || '读取目录失败');
+          alert(pack?.error || t('dlg.readDirFail'));
           return;
         }
         files = pack.files.map((f) => ({
@@ -1169,18 +1220,18 @@ export default function App() {
         const imported = importPackFromZip(buf);
         await applyPackImport(imported);
         sourceLabel = file.name;
-        alert(summarizeImport(imported) + (imported.warnings.length ? `\n\n警告:\n- ${imported.warnings.join('\n- ')}` : ''));
+        alert(summarizeImport(imported, t) + (imported.warnings.length ? `\n\n警告:\n- ${imported.warnings.join('\n- ')}` : ''));
         return;
       }
 
       if (files) {
         const imported = parsePackFiles(files);
         await applyPackImport(imported);
-        const summary = summarizeImport(imported) + `\n来源: ${sourceLabel}`;
+        const summary = summarizeImport(imported, t) + `\n来源: ${sourceLabel}`;
         if (api?.showMessage) {
           await api.showMessage({
             type: 'info',
-            title: '导入完成',
+            title: t('dlg.importDone'),
             message:
               summary + (imported.warnings.length ? `\n\n警告:\n- ${imported.warnings.join('\n- ')}` : ''),
           });
@@ -1190,19 +1241,19 @@ export default function App() {
       }
     } catch (e: any) {
       console.error('[FlexiBook] pack import failed', e);
-      alert('导入失败：' + (e?.message || e));
+      alert(t('dlg.importFail', { err: e?.message || e }));
     } finally {
       setPackImportBusy(false);
     }
   }, [applyPackImport]);
 
   const handleClearDraft = useCallback(async () => {
-    if (!confirm('清除本地草稿缓存？（不会删除已导出的资源包）')) return;
+    if (!confirm(t('dlg.clearDraftConfirm'))) return;
     draftAutosaveRef.current.cancel();
     await clearWorkspaceDraft();
     setDraftSavedAt(null);
     setDraftStatus('ready');
-    alert('草稿已清除。刷新后将使用默认 demo + 内置语言表。');
+    alert(t('dlg.draftCleared'));
   }, []);
 
   const changePage = useCallback(
@@ -1249,6 +1300,20 @@ export default function App() {
           <div className="brand-mark" aria-hidden>
             F
           </div>
+
+        <label className="ui-lang-select" title={t('app.uiLang.title')}>
+          <span className="ui-lang-label">{t('app.uiLang.label')}</span>
+          <select
+            value={uiLocale}
+            onChange={(e) => setUiLocale(e.target.value as typeof uiLocale)}
+          >
+            {uiLocales.map((code) => (
+              <option key={code} value={code}>
+                {uiLabels[code]}
+              </option>
+            ))}
+          </select>
+        </label>
           <div>
             <div className="title">FlexiBook Editor</div>
           </div>
@@ -1262,7 +1327,7 @@ export default function App() {
             type="button"
             className={workspaceMode === 'preview' ? 'active' : ''}
             onClick={() => setWorkspaceMode('preview')}
-            title="书籍预览"
+            title={t('app.mode.previewTitle')}
           >
             预览
           </button>
@@ -1273,30 +1338,61 @@ export default function App() {
               setWorkspaceMode('content-edit');
               setLeftTab('lang');
             }}
-            title="大编辑器编写翻译键值（不显示书预览）"
+            title={t('app.mode.contentEditTitle')}
           >
             内容编辑
           </button>
         </div>
 
-        <div className="lang-chip-row topbar-langs" title="切换语言（译文已实时缓存，不会因切换丢失）">
-          {listLangCodes(langTables).map((code) => (
-            <button
-              key={code}
-              type="button"
-              className={`chip-btn ${lang === code ? 'active' : ''}`}
-              onClick={() => handleActiveLangChange(code)}
-            >
-              {code}
-            </button>
-          ))}
+        <div
+          className={`lang-dropdown topbar-langs ${langMenuOpen ? 'open' : ''}`}
+          ref={langMenuRef}
+          title={t('app.lang.switchTitle')}
+        >
+          <button
+            type="button"
+            className="lang-dropdown-trigger"
+            aria-haspopup="listbox"
+            aria-expanded={langMenuOpen}
+            onClick={() => setLangMenuOpen((o) => !o)}
+          >
+            <span className="lang-dropdown-code mono">{lang}</span>
+            <span className="lang-dropdown-meta">
+              {t('app.lang.count', { n: listLangCodes(langTables).length })}
+            </span>
+            <span className="lang-dropdown-caret" aria-hidden>
+              ▾
+            </span>
+          </button>
+          {langMenuOpen && (
+            <ul className="lang-dropdown-menu" role="listbox" aria-label={t('app.lang.listAria')}>
+              {listLangCodes(langTables).map((code) => {
+                const keyCount = Object.keys(langTables[code] || {}).length;
+                return (
+                  <li key={code} role="option" aria-selected={code === lang}>
+                    <button
+                      type="button"
+                      className={`lang-dropdown-item ${code === lang ? 'active' : ''}`}
+                      onClick={() => handleActiveLangChange(code)}
+                    >
+                      <span className="mono">{code}</span>
+                      <span className="lang-dropdown-item-meta">{t('app.lang.keys', { n: keyCount })}</span>
+                    </button>
+                  </li>
+                );
+              })}
+              {listLangCodes(langTables).length === 0 && (
+                <li className="lang-dropdown-empty">{t('app.lang.empty')}</li>
+              )}
+            </ul>
+          )}
         </div>
 
         {workspaceMode === 'preview' && (
           <input
             className="search"
             type="search"
-            placeholder="搜索内容…"
+            placeholder={t('app.searchPlaceholder')}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -1311,16 +1407,16 @@ export default function App() {
           type="button"
           disabled={packImportBusy}
           onClick={() => void handleImportPack()}
-          title="从 ZIP 或资源包目录导入主题/正文/翻译/字体/纹理"
+          title={t('app.importPackTitle')}
         >
-          {packImportBusy ? '导入中…' : '导入资源包…'}
+          {packImportBusy ? t('app.importing') : t('app.importPack')}
         </button>
 
         <button
           type="button"
           className="primary topbar-pack-export"
           onClick={() => openPackExport('full')}
-          title="导出完整 Minecraft 资源包（主题/书/翻译/字体/纹理）"
+          title={t('app.exportFullTitle')}
         >
           导出完整资源包…
         </button>
@@ -1329,14 +1425,14 @@ export default function App() {
           type="button"
           className="ghost"
           onClick={() => void handleClearDraft()}
-          title="清除 IndexedDB 工作区草稿"
+          title={t('app.clearDraftTitle')}
         >
           清草稿
         </button>
 
         {workspaceMode === 'preview' && (
           <div className="chip" title="当前页码">
-            Page <strong>{pageLabel}</strong>
+            {t('app.pageChip')} <strong>{pageLabel}</strong>
           </div>
         )}
       </header>
@@ -1346,10 +1442,10 @@ export default function App() {
           <div className="tabs" role="tablist">
             {(
               [
-                ['theme', 'Theme'],
-                ['content', 'Content'],
-                ['lang', 'Lang'],
-                ['fonts', 'Fonts'],
+                ['theme', t('app.tab.theme')],
+                ['content', t('app.tab.content')],
+                ['lang', t('app.tab.lang')],
+                ['fonts', t('app.tab.fonts')],
               ] as const
             ).map(([id, label]) => (
               <button
@@ -1439,7 +1535,27 @@ export default function App() {
           ) : (
             <>
               <div className="preview-header">
-                <div className="label">Preview</div>
+                <div className="label">{t('app.preview')}</div>
+                <div
+                  className="item-icon-preview"
+                  title={
+                    customTextures.item
+                      ? t('app.itemIconCustom', { name: customTextures.item.fileName })
+                      : t('app.itemIconDefault')
+                  }
+                >
+                  <img
+                    src={
+                      customTextures.item?.url ||
+                      new URL('../../assets/textures/item/flexi_book.png', import.meta.url).toString()
+                    }
+                    alt=""
+                    width={32}
+                    height={32}
+                    draggable={false}
+                    style={{ imageRendering: 'pixelated' }}
+                  />
+                </div>
                 <div className="scale" role="group" aria-label="Visual scale">
                   {([1, 2, 3, 4] as const).map((s) => (
                     <button
@@ -1447,7 +1563,7 @@ export default function App() {
                       type="button"
                       className={scale === s ? 'active' : ''}
                       onClick={() => setScale(s)}
-                      title={`视觉缩放 ${s}x（不影响布局）`}
+                      title={t('app.scaleTitle', { n: s })}
                     >
                       {s}x
                     </button>
@@ -1457,13 +1573,13 @@ export default function App() {
                   type="button"
                   className="relayout-btn"
                   onClick={handleRelayout}
-                  title="清空布局缓存并强制重新布局"
+                  title={t('app.relayoutTitle')}
                 >
                   重新布局
                 </button>
                 <div className="page-meta">Page {pageLabel}</div>
                 <div className="preview-nav">
-                  <button type="button" className="icon" onClick={onPrev} disabled={pageIndex <= 0} title="上一页">
+                  <button type="button" className="icon" onClick={onPrev} disabled={pageIndex <= 0} title={t('app.prevPage')}>
                     ◀
                   </button>
                   <button
@@ -1471,7 +1587,7 @@ export default function App() {
                     className="icon"
                     onClick={onNext}
                     disabled={pageIndex >= pages.length - 1}
-                    title="下一页"
+                    title={t('app.nextPage')}
                   >
                     ▶
                   </button>
@@ -1480,13 +1596,13 @@ export default function App() {
 
               {unregisteredFonts.length > 0 && (
                 <div className="banner banner-warn preview-font-banner" role="status">
-                  外部字体未导入，预览回退 unihex：
+                  {t('app.fontBanner.external')}
                   <span className="mono"> {unregisteredFonts.join(', ')}</span>
                 </div>
               )}
               {customFonts.some((f) => f.status === 'ready') && unregisteredFonts.length === 0 && (
                 <div className="banner preview-font-banner banner-info" role="status">
-                  自定义 TTF 预览为浏览器近似，与游戏 advance 可能不一致
+                  {t('app.fontBanner.approx')}
                   {approxCustomFonts.length ? (
                     <span className="mono"> · default {approxCustomFonts.join(', ')}</span>
                   ) : null}
@@ -1539,24 +1655,24 @@ export default function App() {
           }`}
         />
         <span>
-          Font:{' '}
+          {t('app.status.font')}:{' '}
           {fontReady
             ? unregisteredFonts.length
-              ? `unihex (fallback · ${unregisteredFonts.length} missing)`
+              ? t('app.status.fontFallback', { n: unregisteredFonts.length })
               : customFonts.some((f) => f.status === 'ready')
-                ? 'unihex + custom TTF (approx)'
-                : 'flexibook unihex'
-            : 'loading'}
+                ? t('app.status.fontApprox')
+                : t('app.status.fontUnihex')
+            : t('app.status.fontLoading')}
         </span>
         <span className="sep" />
         <span>
-          Draft:{' '}
+          {t('app.status.draft')}:{' '}
           {draftStatus === 'loading'
             ? '…'
             : draftSavedAt
-              ? `saved ${new Date(draftSavedAt).toLocaleTimeString()}`
+              ? t('app.status.draftSaved', { time: new Date(draftSavedAt).toLocaleTimeString() })
               : draftStatus === 'error'
-                ? 'error'
+                ? t('app.status.draftError')
                 : '—'}
         </span>
         <span className="sep" />
@@ -1564,19 +1680,19 @@ export default function App() {
           {packNamespace}:{packBookId}
         </span>
         <span className="sep" />
-        <span>Lang: {langTablesReady ? `${Object.keys(langTables).length}L / ${Object.values(langTables).reduce((n, t) => Math.max(n, Object.keys(t || {}).length), 0)} keys` : '…'}</span>
+        <span>{t('app.status.lang')}: {langTablesReady ? `${Object.keys(langTables).length}L / ${Object.values(langTables).reduce((n, t) => Math.max(n, Object.keys(t || {}).length), 0)} keys` : '…'}</span>
         <span className="sep" />
-        <span>Mode: {workspaceMode === 'preview' ? '预览' : '内容编辑'}</span>
+        <span>{t('app.status.mode')}: {workspaceMode === 'preview' ? t('app.status.modePreview') : t('app.status.modeEdit')}</span>
         <span className="sep" />
         <span>
-          BG: {customTextures.book ? customTextures.book.fileName : bookReady ? 'theme' : 'missing'}
+          {t('app.status.bg')}: {customTextures.book ? customTextures.book.fileName : bookReady ? 'theme' : 'missing'}
+          {' · '}
+          {t('app.status.item')}: {customTextures.item ? customTextures.item.fileName : t('app.status.itemDefault')}
         </span>
         <span className="sep" />
         <span className="grow">
-          {workspaceMode === 'content-edit'
-            ? '内容编辑：大编辑器写译文 · 切换语言实时缓存 · 不丢数据'
-            : '预览：搜索触发布局 · Scale 仅视觉 · 「重新布局」清缓存'}
-          {window.electronAPI ? ' · 原生打开/保存' : ' · 浏览器下载'}
+          {workspaceMode === 'content-edit' ? t('app.status.hintEdit') : t('app.status.hintPreview')}
+          {window.electronAPI ? t('app.status.nativeIo') : t('app.status.browserIo')}
         </span>
       </footer>
     </div>

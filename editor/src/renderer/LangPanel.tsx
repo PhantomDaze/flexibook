@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useT } from './UiI18n';
 import { MarkupEditor } from './MarkupEditor';
 import type { LangCode, LangTables } from '../shared/langTables';
 import {
@@ -36,6 +37,7 @@ export function LangPanel({
   onSelectedKeyChange,
   onExportLangPack,
 }: LangPanelProps) {
+  const t = useT();
   const [filter, setFilter] = useState('');
   const [newKeyDraft, setNewKeyDraft] = useState('');
   const [newLangDraft, setNewLangDraft] = useState('');
@@ -72,7 +74,7 @@ export function LangPanel({
   function addLang() {
     const code = normalizeLangCode(newLangDraft);
     if (!code) {
-      alert('语言代码格式：en_us / zh_cn / ja_jp …');
+      alert(t('lang.badCode'));
       return;
     }
     if (tables[code]) {
@@ -92,10 +94,10 @@ export function LangPanel({
 
   function removeLang(code: LangCode) {
     if (langs.length <= 1) {
-      alert('至少保留一种语言');
+      alert(t('lang.keepOne'));
       return;
     }
-    if (!confirm(`删除语言表 ${code}？此操作可从本地缓存恢复前请先导出。`)) return;
+    if (!confirm(t('lang.deleteConfirm', { code }))) return;
     const next = { ...tables };
     delete next[code];
     onChange(next);
@@ -108,25 +110,25 @@ export function LangPanel({
     <div>
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">翻译表</h4>
+          <h4 className="section-title">{t('lang.section.tables')}</h4>
           <span className="hint">
             {keys.length} 键 · {langs.length} 语言 · 实时缓存
           </span>
         </div>
         <p className="section-hint">
           支持多种语言代码（如 en_us / zh_cn / ja_jp）。右侧「内容编辑」模式用大编辑器写当前键的值；切换语言会先写入缓存，不会丢字。
-          「导出翻译资源包」只含 <span className="mono">assets/&lt;ns&gt;/lang/*.json</span>；完整包用顶栏。
+          {t('lang.exportHelp')}
         </p>
         {onExportLangPack && (
           <div className="toolbar" style={{ marginTop: 8 }}>
             <button type="button" className="primary" onClick={onExportLangPack}>
-              导出翻译资源包…
+              {t('lang.exportPack')}
             </button>
           </div>
         )}
 
         <div className="section-head" style={{ marginTop: 8 }}>
-          <h4 className="section-title">语言</h4>
+          <h4 className="section-title">{t('lang.section.langs')}</h4>
         </div>
         <div className="lang-chip-row">
           {langs.map((l) => (
@@ -145,7 +147,7 @@ export function LangPanel({
             type="text"
             className="mono"
             style={{ flex: 1, minWidth: 0 }}
-            placeholder="添加语言 ja_jp"
+            placeholder={t('lang.addPlaceholder')}
             value={newLangDraft}
             onChange={(e) => setNewLangDraft(e.target.value)}
             onKeyDown={(e) => {
@@ -156,7 +158,7 @@ export function LangPanel({
             添加语言
           </button>
           {langs.length > 1 && (
-            <button type="button" className="danger" onClick={() => removeLang(activeLang)} title="删除当前语言表">
+            <button type="button" className="danger" onClick={() => removeLang(activeLang)} title={t('lang.removeTitle')}>
               删语言
             </button>
           )}
@@ -169,7 +171,7 @@ export function LangPanel({
             type="search"
             className="search"
             style={{ flex: 1, minWidth: 0 }}
-            placeholder="过滤键或译文…"
+            placeholder={t('lang.filterPlaceholder')}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           />
@@ -242,6 +244,7 @@ export function LangKeyPickerModal({
   onCreateAndPick: (key: string) => void;
   onClose: () => void;
 }) {
+  const t = useT();
   const [filter, setFilter] = useState('');
   const [draft, setDraft] = useState('');
   const keys = useMemo(() => {
@@ -266,14 +269,14 @@ export function LangKeyPickerModal({
     <div className="modal-backdrop" role="dialog" aria-modal="true" onClick={onClose}>
       <div className="modal-panel" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
-          <strong>选择翻译键</strong>
+          <strong>{t('content.pickKey')}</strong>
           <button type="button" onClick={onClose}>
-            关闭
+            {t('pack.close')}
           </button>
         </div>
         <input
           type="search"
-          placeholder="搜索…"
+          placeholder={t('lang.searchPlaceholder')}
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           autoFocus
@@ -302,7 +305,7 @@ export function LangKeyPickerModal({
             type="text"
             className="mono"
             style={{ flex: 1 }}
-            placeholder="新建键…"
+            placeholder={t('lang.newKeyPlaceholder')}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
@@ -315,7 +318,7 @@ export function LangKeyPickerModal({
               onClose();
             }}
           >
-            新建并选用
+            {t('lang.createAndUse')}
           </button>
         </div>
       </div>

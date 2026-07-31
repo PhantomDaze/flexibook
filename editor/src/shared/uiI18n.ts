@@ -1,0 +1,488 @@
+/**
+ * Editor chrome i18n (menus, buttons, panels).
+ * Separate from book content langTables — switching UI locale does not change preview book language.
+ */
+
+export type UiLocale = 'zh_cn' | 'en_us';
+
+export const UI_LOCALE_STORAGE_KEY = 'flexibook.editor.uiLocale.v1';
+export const UI_LOCALES: UiLocale[] = ['zh_cn', 'en_us'];
+
+export const UI_LOCALE_LABELS: Record<UiLocale, string> = {
+  zh_cn: '中文',
+  en_us: 'English',
+};
+
+type Dict = Record<string, string>;
+
+const zh: Dict = {
+  // App topbar
+  'app.brand': 'FlexiBook Editor',
+  'app.mode.preview': '预览',
+  'app.mode.previewTitle': '书籍预览',
+  'app.mode.contentEdit': '内容编辑',
+  'app.mode.contentEditTitle': '大编辑器编写翻译键值（不显示书预览）',
+  'app.lang.switchTitle': '切换预览/编辑语言（译文已实时缓存）',
+  'app.lang.listAria': '语言列表',
+  'app.lang.empty': '暂无语言 — 请到 Lang 面板添加',
+  'app.lang.keys': '{n} keys',
+  'app.lang.count': '{n} lang',
+  'app.searchPlaceholder': '搜索内容…',
+  'app.importPack': '导入资源包…',
+  'app.importing': '导入中…',
+  'app.importPackTitle': '从 ZIP 或资源包目录导入主题/正文/翻译/字体/纹理',
+  'app.exportFull': '导出完整资源包…',
+  'app.exportFullTitle': '导出完整 Minecraft 资源包（主题/书/翻译/字体/纹理）',
+  'app.clearDraft': '清草稿',
+  'app.clearDraftTitle': '清除 IndexedDB 工作区草稿',
+  'app.pageChip': 'Page',
+  'app.tab.theme': 'Theme',
+  'app.tab.content': 'Content',
+  'app.tab.lang': 'Lang',
+  'app.tab.fonts': 'Fonts',
+  'app.preview': 'Preview',
+  'app.itemIconDefault': '物品图标: flexibook:item/flexi_book（默认）',
+  'app.itemIconCustom': '物品图标: {name}',
+  'app.scaleTitle': '视觉缩放 {n}x（不影响布局）',
+  'app.relayout': '重新布局',
+  'app.relayoutTitle': '清空布局缓存并强制重新布局',
+  'app.prevPage': '上一页',
+  'app.nextPage': '下一页',
+  'app.fontBanner.external': '外部字体未导入，预览回退 unihex：',
+  'app.fontBanner.approx': '自定义 TTF 预览为浏览器近似，与游戏 advance 可能不一致',
+  'app.status.font': 'Font',
+  'app.status.fontLoading': 'loading',
+  'app.status.fontUnihex': 'flexibook unihex',
+  'app.status.fontFallback': 'unihex (fallback · {n} missing)',
+  'app.status.fontApprox': 'unihex + custom TTF (approx)',
+  'app.status.draft': 'Draft',
+  'app.status.draftSaved': 'saved {time}',
+  'app.status.draftError': 'error',
+  'app.status.lang': 'Lang',
+  'app.status.mode': 'Mode',
+  'app.status.modePreview': '预览',
+  'app.status.modeEdit': '内容编辑',
+  'app.status.bg': 'BG',
+  'app.status.item': 'Item',
+  'app.status.itemDefault': 'default',
+  'app.status.hintPreview': '预览：搜索触发布局 · Scale 仅视觉 · 「重新布局」清缓存',
+  'app.status.hintEdit': '内容编辑：大编辑器写译文 · 切换语言实时缓存 · 不丢数据',
+  'app.status.nativeIo': ' · 原生打开/保存',
+  'app.status.browserIo': ' · 浏览器下载',
+  'app.uiLang.title': '编辑器界面语言',
+  'app.uiLang.label': 'UI',
+
+  // Dialogs / alerts (App)
+  'dlg.readFail': '读取失败',
+  'dlg.cannotRead': '无法读取文件',
+  'dlg.saveFail': '保存失败',
+  'dlg.cannotWrite': '无法写入文件',
+  'dlg.saved': '已保存',
+  'dlg.themeLoaded': '主题已加载',
+  'dlg.themeLoadFail': '加载主题失败：{err}',
+  'dlg.themeSaveFail': '保存主题失败：{err}',
+  'dlg.contentLoaded': '内容已加载',
+  'dlg.contentLoadFail': '加载内容失败：{err}',
+  'dlg.contentSaveFail': '保存内容失败：{err}',
+  'dlg.noCustomFonts': '尚未导入自定义字体',
+  'dlg.exportOk': '导出成功',
+  'dlg.writeFail': '写入失败：{err}',
+  'dlg.exportFail': '导出资源包失败：{err}',
+  'dlg.importTitle': '导入资源包',
+  'dlg.importMessage': '选择导入方式',
+  'dlg.importDetail': 'ZIP 文件，或资源包根目录（含 pack.mcmeta / assets/）。',
+  'dlg.importZip': 'ZIP 文件…',
+  'dlg.importFolder': '文件夹…',
+  'dlg.cancel': '取消',
+  'dlg.readZipFail': '读取 ZIP 失败',
+  'dlg.importDone': '导入完成',
+  'dlg.readDirFail': '读取目录失败',
+  'dlg.importFail': '导入失败：{err}',
+  'dlg.clearDraftConfirm': '清除本地草稿缓存？（不会删除已导出的资源包）',
+  'dlg.draftCleared': '草稿已清除。刷新后将使用默认 demo + 内置语言表。',
+  'dlg.importLoaded': '已加载：{parts}',
+  'dlg.importEmpty': '包内未识别到 FlexiBook 数据',
+  'dlg.unknown': '未知错误',
+
+  // Theme panel
+  'theme.section.textures': '纹理 / 背景',
+  'theme.section.texturesHint': '本地文件仅预览用',
+  'theme.bookBg': '书背景 book',
+  'theme.itemIcon': '物品图标 item',
+  'theme.texturesHelp':
+    '书背景：本地 book.png 立即用于预览。游戏与编辑器一致——固定 2048×2048 图集整张映射到 bookTexWidth×bookTexHeight（默认 192×216）。翻页用原版 GUI 按钮。',
+  'theme.itemHelp':
+    '物品图标：覆盖 flexibook:item/flexi_book（通常 16×16）。导出纹理包会写入 textures/item/flexi_book.png，并覆盖模组默认物品贴图；启用资源包后创造栏/手上图标会变。编辑器右侧会显示物品预览，不参与书页布局。',
+  'theme.exportTextures': '导出纹理资源包…',
+  'theme.exportTexturesTitle': 'textures/gui/book.png + textures/item/flexi_book.png',
+  'theme.section.layout': '布局参数',
+  'theme.section.layoutHint': '改动会触发重排',
+  'theme.section.offsets': '偏移与标签',
+  'theme.section.colors': '颜色',
+  'theme.section.colorsHint': '仅重绘',
+  'theme.section.imageFit': '图片适配',
+  'theme.imageFit.stretch': 'STRETCH — 填满（可能变形）',
+  'theme.imageFit.contain': 'CONTAIN — 保持比例居中',
+  'theme.section.export': '导出主题',
+  'theme.section.exportHint': '分项资源包',
+  'theme.exportHelp':
+    '「导出主题资源包」只含 flexibook/themes/*.json；纹理在上方「纹理 / 背景」单独导出。完整包（主题+书+翻译+字体+纹理）请用顶栏按钮。',
+  'theme.exportThemePack': '导出主题资源包…',
+  'theme.exportThemePackTitle': '仅 themes/*.json',
+  'theme.exportJson': '导出主题 JSON',
+  'theme.exportJsonTitle': '单文件 theme JSON（非资源包）',
+  'theme.open': '打开…',
+  'theme.openTitle': '从磁盘加载主题 JSON',
+  'theme.save': '保存…',
+  'theme.saveTitle': '保存主题 JSON 到磁盘',
+  'theme.resetDefault': '重置默认',
+  'theme.loadContain': 'Contain 示例',
+  'theme.badge.local': '本地文件',
+  'theme.badge.default': '默认',
+  'theme.badge.path': '资源路径',
+  'theme.pickImage': '选择图片…',
+  'theme.clearLocal': '清除本地',
+  'theme.resetPath': '恢复默认',
+  'theme.pathLocked': '固定为游戏物品贴图路径（导出覆盖 flexibook:item/flexi_book）',
+  'theme.pathCustomLocked': '使用本地文件时路径锁定；清除后可改资源路径',
+  'theme.pathEditable': '资源定位符，预览会从 assets 加载',
+  'theme.none': '无',
+
+  // Content panel
+  'content.el.paragraph': '段落',
+  'content.el.heading': '标题',
+  'content.el.bullet': '列表项',
+  'content.el.divider': '分隔线',
+  'content.el.br': '换行',
+  'content.el.image': '图片',
+  'content.el.box': '容器',
+  'content.section.title': '书标题',
+  'content.section.elements': '内容元素',
+  'content.titleHint': '带点号的键会当作翻译键；否则作为字面量。缺省字体为 flexibook:default。',
+  'content.empty': '暂无内容。添加元素后会立即重排预览。',
+  'content.emptyBox': '容器为空 — 添加子元素',
+  'content.open': '打开…',
+  'content.openTitle': '从磁盘加载内容 JSON',
+  'content.save': '保存…',
+  'content.saveTitle': '保存内容 JSON 到磁盘',
+  'content.resetDemo': '重置为 Demo',
+  'content.resetDemoTitle': '恢复模组 demo_guide.json',
+  'content.exportJson': '导出内容 JSON',
+  'content.exportPack': '导出内容资源包…',
+  'content.exportPackTitle': '仅 contents + books 索引',
+  'content.moveUp': '上移',
+  'content.moveDown': '下移',
+  'content.delete': '删除',
+  'content.deleteSpan': '删除 span',
+  'content.pickKey': '选择翻译键',
+  'content.pickColor': '选择颜色',
+  'content.placeholder.text': '文本键或字面量',
+  'content.placeholder.title': '标题键或字面量',
+  'content.placeholder.orLiteral': 'translation.key 或直接文字',
+  'content.children': '子元素',
+
+  // Lang panel
+  'lang.section.tables': '翻译表',
+  'lang.exportPack': '导出翻译资源包…',
+  'lang.exportHelp': '「导出翻译资源包」只含 assets/<ns>/lang/*.json；完整包用顶栏。',
+  'lang.section.langs': '语言',
+  'lang.addPlaceholder': '添加语言 ja_jp',
+  'lang.remove': '删除',
+  'lang.removeTitle': '删除当前语言表',
+  'lang.filterPlaceholder': '过滤键或译文…',
+  'lang.searchPlaceholder': '搜索…',
+  'lang.newKeyPlaceholder': '新建键…',
+  'lang.createAndUse': '新建并选用',
+  'lang.badCode': '语言代码格式：en_us / zh_cn / ja_jp …',
+  'lang.keepOne': '至少保留一种语言',
+  'lang.deleteConfirm': '删除语言表 {code}？此操作可从本地缓存恢复前请先导出。',
+
+  // Font panel
+  'font.section.custom': '自定义字体',
+  'font.import': '导入 TTF/OTF…',
+  'font.exportPack': '导出字体资源包…',
+  'font.exportPackTitle': '仅 font/*.json + ttf/otf',
+  'font.help':
+    '导入后可作书级 defaultFont 或 span/heading 的 font。导出写入 assets/<ns>/font/*.json + ttf/otf。默认书字体仍为 flexibook:default。预览为浏览器近似。',
+  'font.section.bookDefault': '当前书 defaultFont',
+  'font.badId': '字体 id 需为 namespace:path，且符合 [a-z0-9_./-]+',
+  'font.idExists': 'id 已存在',
+  'font.delete': '删除',
+
+  // Pack export modal
+  'pack.mode.full.title': '导出完整资源包',
+  'pack.mode.full.hint': '主题 + 正文/索引 + 翻译 + 字体 + 纹理',
+  'pack.mode.theme.title': '导出主题资源包',
+  'pack.mode.theme.hint': '仅 flexibook/themes/*.json（不含纹理文件）',
+  'pack.mode.textures.title': '导出纹理资源包',
+  'pack.mode.textures.hint':
+    'textures/gui/book.png + textures/item/flexi_book.png（物品图标覆盖 flexibook 默认）',
+  'pack.mode.content.title': '导出内容资源包',
+  'pack.mode.content.hint': 'flexibook/contents + books 索引（引用当前主题 id）',
+  'pack.mode.lang.title': '导出翻译资源包',
+  'pack.mode.lang.hint': '仅 assets/<ns>/lang/*.json',
+  'pack.mode.fonts.title': '导出字体资源包',
+  'pack.mode.fonts.hint': '仅已导入的 TTF/OTF + font/*.json',
+  'pack.namespace': 'namespace',
+  'pack.themeId': 'themeId',
+  'pack.bookId': 'bookId',
+  'pack.packFormat': 'pack_format',
+  'pack.export': '导出…',
+  'pack.close': '关闭',
+};
+
+const en: Dict = {
+  'app.brand': 'FlexiBook Editor',
+  'app.mode.preview': 'Preview',
+  'app.mode.previewTitle': 'Book preview',
+  'app.mode.contentEdit': 'Content edit',
+  'app.mode.contentEditTitle': 'Large editor for translation values (hides book preview)',
+  'app.lang.switchTitle': 'Switch preview/edit language (translations cached live)',
+  'app.lang.listAria': 'Languages',
+  'app.lang.empty': 'No languages — add some in the Lang panel',
+  'app.lang.keys': '{n} keys',
+  'app.lang.count': '{n} lang',
+  'app.searchPlaceholder': 'Search content…',
+  'app.importPack': 'Import pack…',
+  'app.importing': 'Importing…',
+  'app.importPackTitle': 'Import theme/content/lang/fonts/textures from ZIP or pack folder',
+  'app.exportFull': 'Export full pack…',
+  'app.exportFullTitle': 'Export full Minecraft resource pack (theme/book/lang/fonts/textures)',
+  'app.clearDraft': 'Clear draft',
+  'app.clearDraftTitle': 'Clear IndexedDB workspace draft',
+  'app.pageChip': 'Page',
+  'app.tab.theme': 'Theme',
+  'app.tab.content': 'Content',
+  'app.tab.lang': 'Lang',
+  'app.tab.fonts': 'Fonts',
+  'app.preview': 'Preview',
+  'app.itemIconDefault': 'Item icon: flexibook:item/flexi_book (default)',
+  'app.itemIconCustom': 'Item icon: {name}',
+  'app.scaleTitle': 'Visual scale {n}x (no reflow)',
+  'app.relayout': 'Relayout',
+  'app.relayoutTitle': 'Clear layout cache and force relayout',
+  'app.prevPage': 'Previous page',
+  'app.nextPage': 'Next page',
+  'app.fontBanner.external': 'External fonts not imported — preview falls back to unihex:',
+  'app.fontBanner.approx': 'Custom TTF preview is browser-approximate; advances may differ in-game',
+  'app.status.font': 'Font',
+  'app.status.fontLoading': 'loading',
+  'app.status.fontUnihex': 'flexibook unihex',
+  'app.status.fontFallback': 'unihex (fallback · {n} missing)',
+  'app.status.fontApprox': 'unihex + custom TTF (approx)',
+  'app.status.draft': 'Draft',
+  'app.status.draftSaved': 'saved {time}',
+  'app.status.draftError': 'error',
+  'app.status.lang': 'Lang',
+  'app.status.mode': 'Mode',
+  'app.status.modePreview': 'Preview',
+  'app.status.modeEdit': 'Content edit',
+  'app.status.bg': 'BG',
+  'app.status.item': 'Item',
+  'app.status.itemDefault': 'default',
+  'app.status.hintPreview': 'Preview: search relayouts · Scale is visual only · Relayout clears cache',
+  'app.status.hintEdit': 'Content edit: large translation editor · live lang cache · no data loss',
+  'app.status.nativeIo': ' · native open/save',
+  'app.status.browserIo': ' · browser download',
+  'app.uiLang.title': 'Editor UI language',
+  'app.uiLang.label': 'UI',
+
+  'dlg.readFail': 'Read failed',
+  'dlg.cannotRead': 'Could not read file',
+  'dlg.saveFail': 'Save failed',
+  'dlg.cannotWrite': 'Could not write file',
+  'dlg.saved': 'Saved',
+  'dlg.themeLoaded': 'Theme loaded',
+  'dlg.themeLoadFail': 'Failed to load theme: {err}',
+  'dlg.themeSaveFail': 'Failed to save theme: {err}',
+  'dlg.contentLoaded': 'Content loaded',
+  'dlg.contentLoadFail': 'Failed to load content: {err}',
+  'dlg.contentSaveFail': 'Failed to save content: {err}',
+  'dlg.noCustomFonts': 'No custom fonts imported yet',
+  'dlg.exportOk': 'Export succeeded',
+  'dlg.writeFail': 'Write failed: {err}',
+  'dlg.exportFail': 'Pack export failed: {err}',
+  'dlg.importTitle': 'Import resource pack',
+  'dlg.importMessage': 'Choose import source',
+  'dlg.importDetail': 'ZIP file, or pack root folder (pack.mcmeta / assets/).',
+  'dlg.importZip': 'ZIP file…',
+  'dlg.importFolder': 'Folder…',
+  'dlg.cancel': 'Cancel',
+  'dlg.readZipFail': 'Failed to read ZIP',
+  'dlg.importDone': 'Import complete',
+  'dlg.readDirFail': 'Failed to read folder',
+  'dlg.importFail': 'Import failed: {err}',
+  'dlg.clearDraftConfirm': 'Clear local draft cache? (Does not delete exported packs)',
+  'dlg.draftCleared': 'Draft cleared. Reload will use default demo + bundled lang tables.',
+  'dlg.importLoaded': 'Loaded: {parts}',
+  'dlg.importEmpty': 'No FlexiBook data found in pack',
+  'dlg.unknown': 'Unknown error',
+
+  'theme.section.textures': 'Textures / background',
+  'theme.section.texturesHint': 'Local files for preview only',
+  'theme.bookBg': 'Book background',
+  'theme.itemIcon': 'Item icon',
+  'theme.texturesHelp':
+    'Book background: local book.png applies immediately. Same as game — fixed 2048×2048 atlas mapped into bookTexWidth×bookTexHeight (default 192×216). Page turns use vanilla GUI buttons.',
+  'theme.itemHelp':
+    'Item icon: overrides flexibook:item/flexi_book (typically 16×16). Texture pack export writes textures/item/flexi_book.png and overrides the mod default so creative/hotbar icons change. Preview shows the icon; it does not affect page layout.',
+  'theme.exportTextures': 'Export textures pack…',
+  'theme.exportTexturesTitle': 'textures/gui/book.png + textures/item/flexi_book.png',
+  'theme.section.layout': 'Layout',
+  'theme.section.layoutHint': 'Changes trigger relayout',
+  'theme.section.offsets': 'Offsets & labels',
+  'theme.section.colors': 'Colors',
+  'theme.section.colorsHint': 'Redraw only',
+  'theme.section.imageFit': 'Image fit',
+  'theme.imageFit.stretch': 'STRETCH — fill (may distort)',
+  'theme.imageFit.contain': 'CONTAIN — keep aspect, center',
+  'theme.section.export': 'Export theme',
+  'theme.section.exportHint': 'Partial packs',
+  'theme.exportHelp':
+    'Theme pack export is only flexibook/themes/*.json; textures export separately above. Full pack (theme+book+lang+fonts+textures) uses the top bar.',
+  'theme.exportThemePack': 'Export theme pack…',
+  'theme.exportThemePackTitle': 'themes/*.json only',
+  'theme.exportJson': 'Export theme JSON',
+  'theme.exportJsonTitle': 'Single theme JSON file (not a pack)',
+  'theme.open': 'Open…',
+  'theme.openTitle': 'Load theme JSON from disk',
+  'theme.save': 'Save…',
+  'theme.saveTitle': 'Save theme JSON to disk',
+  'theme.resetDefault': 'Reset default',
+  'theme.loadContain': 'Contain sample',
+  'theme.badge.local': 'Local file',
+  'theme.badge.default': 'Default',
+  'theme.badge.path': 'Resource path',
+  'theme.pickImage': 'Choose image…',
+  'theme.clearLocal': 'Clear local',
+  'theme.resetPath': 'Reset default',
+  'theme.pathLocked': 'Fixed game item path (export overrides flexibook:item/flexi_book)',
+  'theme.pathCustomLocked': 'Path locked while using a local file; clear to edit RL',
+  'theme.pathEditable': 'Resource location; preview loads from assets',
+  'theme.none': 'None',
+
+  'content.el.paragraph': 'Paragraph',
+  'content.el.heading': 'Heading',
+  'content.el.bullet': 'Bullet',
+  'content.el.divider': 'Divider',
+  'content.el.br': 'Line break',
+  'content.el.image': 'Image',
+  'content.el.box': 'Box',
+  'content.section.title': 'Book title',
+  'content.section.elements': 'Elements',
+  'content.titleHint':
+    'Keys with dots are translation keys; otherwise literals. Default font is flexibook:default.',
+  'content.empty': 'No content. Add elements to relayout the preview.',
+  'content.emptyBox': 'Empty box — add children',
+  'content.open': 'Open…',
+  'content.openTitle': 'Load content JSON from disk',
+  'content.save': 'Save…',
+  'content.saveTitle': 'Save content JSON to disk',
+  'content.resetDemo': 'Reset demo',
+  'content.resetDemoTitle': 'Restore mod demo_guide.json',
+  'content.exportJson': 'Export content JSON',
+  'content.exportPack': 'Export content pack…',
+  'content.exportPackTitle': 'contents + books index only',
+  'content.moveUp': 'Move up',
+  'content.moveDown': 'Move down',
+  'content.delete': 'Delete',
+  'content.deleteSpan': 'Delete span',
+  'content.pickKey': 'Pick translation key',
+  'content.pickColor': 'Pick color',
+  'content.placeholder.text': 'Key or literal',
+  'content.placeholder.title': 'Title key or literal',
+  'content.placeholder.orLiteral': 'translation.key or plain text',
+  'content.children': 'Children',
+
+  'lang.section.tables': 'Translation tables',
+  'lang.exportPack': 'Export lang pack…',
+  'lang.exportHelp': 'Lang pack export is only assets/<ns>/lang/*.json; full pack uses the top bar.',
+  'lang.section.langs': 'Languages',
+  'lang.addPlaceholder': 'Add language ja_jp',
+  'lang.remove': 'Remove',
+  'lang.removeTitle': 'Delete current language table',
+  'lang.filterPlaceholder': 'Filter keys or values…',
+  'lang.searchPlaceholder': 'Search…',
+  'lang.newKeyPlaceholder': 'New key…',
+  'lang.createAndUse': 'Create & use',
+  'lang.badCode': 'Language code format: en_us / zh_cn / ja_jp …',
+  'lang.keepOne': 'Keep at least one language',
+  'lang.deleteConfirm': 'Delete language table {code}? Export first if you need a backup.',
+
+  'font.section.custom': 'Custom fonts',
+  'font.import': 'Import TTF/OTF…',
+  'font.exportPack': 'Export fonts pack…',
+  'font.exportPackTitle': 'font/*.json + ttf/otf only',
+  'font.help':
+    'Imported fonts can be book defaultFont or span/heading font. Export writes assets/<ns>/font/*.json + ttf/otf. Default remains flexibook:default. Preview is browser-approximate.',
+  'font.section.bookDefault': 'Book defaultFont',
+  'font.badId': 'Font id must be namespace:path matching [a-z0-9_./-]+',
+  'font.idExists': 'id already exists',
+  'font.delete': 'Delete',
+
+  'pack.mode.full.title': 'Export full pack',
+  'pack.mode.full.hint': 'Theme + content/index + lang + fonts + textures',
+  'pack.mode.theme.title': 'Export theme pack',
+  'pack.mode.theme.hint': 'flexibook/themes/*.json only (no texture files)',
+  'pack.mode.textures.title': 'Export textures pack',
+  'pack.mode.textures.hint':
+    'textures/gui/book.png + textures/item/flexi_book.png (item icon overrides flexibook default)',
+  'pack.mode.content.title': 'Export content pack',
+  'pack.mode.content.hint': 'flexibook/contents + books index (references current theme id)',
+  'pack.mode.lang.title': 'Export lang pack',
+  'pack.mode.lang.hint': 'assets/<ns>/lang/*.json only',
+  'pack.mode.fonts.title': 'Export fonts pack',
+  'pack.mode.fonts.hint': 'Imported TTF/OTF + font/*.json only',
+  'pack.namespace': 'namespace',
+  'pack.themeId': 'themeId',
+  'pack.bookId': 'bookId',
+  'pack.packFormat': 'pack_format',
+  'pack.export': 'Export…',
+  'pack.close': 'Close',
+};
+
+const CATALOG: Record<UiLocale, Dict> = { zh_cn: zh, en_us: en };
+
+export function detectDefaultUiLocale(): UiLocale {
+  try {
+    const nav = typeof navigator !== 'undefined' ? navigator.language || '' : '';
+    if (nav.toLowerCase().startsWith('zh')) return 'zh_cn';
+  } catch {
+    /* ignore */
+  }
+  return 'en_us';
+}
+
+export function loadUiLocale(): UiLocale {
+  try {
+    const raw = localStorage.getItem(UI_LOCALE_STORAGE_KEY);
+    if (raw === 'zh_cn' || raw === 'en_us') return raw;
+  } catch {
+    /* ignore */
+  }
+  return detectDefaultUiLocale();
+}
+
+export function saveUiLocale(locale: UiLocale): void {
+  try {
+    localStorage.setItem(UI_LOCALE_STORAGE_KEY, locale);
+  } catch {
+    /* ignore */
+  }
+}
+
+export type TranslateFn = (key: string, vars?: Record<string, string | number>) => string;
+
+export function createTranslator(locale: UiLocale): TranslateFn {
+  const primary = CATALOG[locale] || CATALOG.en_us;
+  const fallback = CATALOG.en_us;
+  return (key, vars) => {
+    let s = primary[key] ?? fallback[key] ?? key;
+    if (vars) {
+      for (const [k, v] of Object.entries(vars)) {
+        s = s.replaceAll(`{${k}}`, String(v));
+      }
+    }
+    return s;
+  };
+}

@@ -1,7 +1,8 @@
 import { useRef } from 'react';
+import { useT } from './UiI18n';
 import type { BookTheme } from '../shared/types';
 import type { CustomTexture, CustomTextures, TextureSlot } from './customTextures';
-import { loadImageFile, resolveThemeAssetUrl } from './customTextures';
+import { DEFAULT_ITEM_TEXTURE, loadImageFile, resolveThemeAssetUrl } from './customTextures';
 import { DEFAULT_THEME } from './defaults';
 export interface ThemePanelProps {
   theme: BookTheme;
@@ -54,6 +55,7 @@ export function ThemePanel({
   onExportThemePack,
   onExportTexturesPack,
 }: ThemePanelProps) {
+  const t = useT();
   function set<K extends keyof BookTheme>(key: K, value: BookTheme[K]) {
     const next = { ...theme, [key]: value } as BookTheme;
     if (LAYOUT_KEYS.includes(key)) {
@@ -75,12 +77,12 @@ export function ThemePanel({
     <div>
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">纹理 / 背景</h4>
-          <span className="hint">本地文件仅预览用</span>
+          <h4 className="section-title">{t('theme.section.textures')}</h4>
+          <span className="hint">{t('theme.section.texturesHint')}</span>
         </div>
 
         <TexturePicker
-          title="书背景 book"
+          title="{t('theme.bookBg')}"
           path={theme.bookTexture}
           defaultPath={DEFAULT_THEME.bookTexture}
           custom={customTextures.book}
@@ -97,6 +99,25 @@ export function ThemePanel({
             set('bookTexHeight', DEFAULT_THEME.bookTexHeight);
           }}
         />
+
+        <div style={{ marginTop: 10 }}>
+          <TexturePicker
+            title="{t('theme.itemIcon')}"
+            path={DEFAULT_ITEM_TEXTURE}
+            defaultPath={DEFAULT_ITEM_TEXTURE}
+            custom={customTextures.item}
+            onPathChange={() => {
+              /* fixed game path: flexibook:item/flexi_book */
+            }}
+            onPickFile={async (file) => {
+              const tex = await loadImageFile(file);
+              onCustomTexture('item', tex);
+            }}
+            onClearCustom={() => onCustomTexture('item', null)}
+            onResetPath={() => onCustomTexture('item', null)}
+            pathLocked
+          />
+        </div>
 
         <div className="field-grid" style={{ marginTop: 10 }}>
           <NumField
@@ -116,10 +137,9 @@ export function ThemePanel({
           />
         </div>
         <p className="section-hint">
-          选择本地 book.png 后立即在预览中使用。游戏与编辑器一致：贴图按固定 2048×2048 图集，
-          整张映射到书页面板（bookTexWidth×bookTexHeight，默认 192×216）。
-          请提供 2048×2048 的 book.png（或会被按整图取样）；布局尺寸改 bookTexWidth/Height。
-          翻页使用预览区下方简单按钮（游戏内为原版 GUI 按钮）。
+          {t('theme.texturesHelp')}
+          <br />
+          {t('theme.itemHelp')}
         </p>
         {onExportTexturesPack && (
           <div className="toolbar" style={{ marginTop: 8 }}>
@@ -127,7 +147,7 @@ export function ThemePanel({
               type="button"
               className="primary"
               onClick={onExportTexturesPack}
-              title="仅 textures/gui PNG"
+              title={t('theme.exportTexturesTitle')}
             >
               导出纹理资源包…
             </button>
@@ -137,8 +157,8 @@ export function ThemePanel({
 
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">布局参数</h4>
-          <span className="hint">改动会触发重排</span>
+          <h4 className="section-title">{t('theme.section.layout')}</h4>
+          <span className="hint">{t('theme.section.layoutHint')}</span>
         </div>
         <div className="field-grid">
           <NumField label="pageContentWidth" value={theme.pageContentWidth} onChange={(v) => set('pageContentWidth', v)} />
@@ -154,7 +174,7 @@ export function ThemePanel({
 
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">偏移与标签</h4>
+          <h4 className="section-title">{t('theme.section.offsets')}</h4>
         </div>
         <div className="field-grid">
           <NumField label="contentLeft" value={theme.contentLeft} onChange={(v) => set('contentLeft', v)} />
@@ -167,8 +187,8 @@ export function ThemePanel({
 
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">颜色</h4>
-          <span className="hint">仅重绘</span>
+          <h4 className="section-title">{t('theme.section.colors')}</h4>
+          <span className="hint">{t('theme.section.colorsHint')}</span>
         </div>
         <div className="field-grid">
           <ColorField label="pageText" value={theme.pageTextColor} onChange={(hex) => setColor('pageTextColor', hex)} />
@@ -180,7 +200,7 @@ export function ThemePanel({
 
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">图片适配</h4>
+          <h4 className="section-title">{t('theme.section.imageFit')}</h4>
         </div>
         <div className="field">
           <label htmlFor="imageFit">imageFit</label>
@@ -189,20 +209,19 @@ export function ThemePanel({
             value={theme.imageFit}
             onChange={(e) => set('imageFit', e.target.value as 'stretch' | 'contain')}
           >
-            <option value="stretch">STRETCH — 填满（可能变形）</option>
-            <option value="contain">CONTAIN — 保持比例居中</option>
+            <option value="stretch">{t('theme.imageFit.stretch')}</option>
+            <option value="contain">{t('theme.imageFit.contain')}</option>
           </select>
         </div>
       </div>
 
       <div className="section">
         <div className="section-head">
-          <h4 className="section-title">导出主题</h4>
-          <span className="hint">分项资源包</span>
+          <h4 className="section-title">{t('theme.section.export')}</h4>
+          <span className="hint">{t('theme.section.exportHint')}</span>
         </div>
         <p className="section-hint">
-          「导出主题资源包」只含 <span className="mono">flexibook/themes/*.json</span>；
-          纹理在上方「纹理 / 背景」单独导出。完整包（主题+书+翻译+字体+纹理）请用顶栏按钮。
+          {t('theme.exportHelp')}
         </p>
         <div className="toolbar" style={{ marginTop: 8 }}>
           {onExportThemePack && (
@@ -210,12 +229,12 @@ export function ThemePanel({
               type="button"
               className="primary"
               onClick={onExportThemePack}
-              title="仅 themes/*.json"
+              title={t('theme.exportThemePackTitle')}
             >
               导出主题资源包…
             </button>
           )}
-          <button type="button" onClick={onExport} title="单文件 theme JSON（非资源包）">
+          <button type="button" onClick={onExport} title={t('theme.exportJsonTitle')}>
             导出主题 JSON
           </button>
         </div>
@@ -223,12 +242,12 @@ export function ThemePanel({
 
       <div className="toolbar sticky-actions">
         {onLoad && (
-          <button type="button" onClick={onLoad} title="从磁盘加载主题 JSON">
+          <button type="button" onClick={onLoad} title={t('theme.openTitle')}>
             打开…
           </button>
         )}
         {onSave && (
-          <button type="button" onClick={onSave} title="保存主题 JSON 到磁盘">
+          <button type="button" onClick={onSave} title={t('theme.saveTitle')}>
             保存…
           </button>
         )}
@@ -244,6 +263,8 @@ export function ThemePanel({
 }
 
 function TexturePicker({
+  // i18n
+
   title,
   path,
   defaultPath,
@@ -252,6 +273,7 @@ function TexturePicker({
   onPickFile,
   onClearCustom,
   onResetPath,
+  pathLocked = false,
 }: {
   title: string;
   path: string;
@@ -261,7 +283,10 @@ function TexturePicker({
   onPickFile: (file: File) => void | Promise<void>;
   onClearCustom: () => void;
   onResetPath: () => void;
+  /** When true, resource path is display-only (e.g. fixed item icon). */
+  pathLocked?: boolean;
 }) {
+  const t = useT();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const previewSrc = custom?.url || resolveThemeAssetUrl(path);
   const isCustom = !!custom;
@@ -272,7 +297,7 @@ function TexturePicker({
       <div className="texture-card-head">
         <div className="texture-title">{title}</div>
         <span className={`texture-badge ${isCustom ? 'custom' : isDefault ? 'default' : 'path'}`}>
-          {isCustom ? '本地文件' : isDefault ? '默认' : '资源路径'}
+          {isCustom ? t('theme.badge.local') : isDefault ? t('theme.badge.default') : t('theme.badge.path')}
         </span>
       </div>
 
@@ -281,7 +306,7 @@ function TexturePicker({
           {previewSrc ? (
             <img src={previewSrc} alt="" draggable={false} />
           ) : (
-            <span className="muted">无</span>
+            <span className="muted">{t('theme.none')}</span>
           )}
         </div>
         <div className="texture-meta">
@@ -289,11 +314,17 @@ function TexturePicker({
             type="text"
             className="mono"
             value={isCustom ? custom!.fileName : path}
-            disabled={isCustom}
+            disabled={isCustom || pathLocked}
             spellCheck={false}
             onChange={(e) => onPathChange(e.target.value.trim())}
             placeholder="namespace:textures/gui/book.png"
-            title={isCustom ? '使用本地文件时路径锁定；清除后可改资源路径' : '资源定位符，预览会从 assets 加载'}
+            title={
+              pathLocked
+                ? t('theme.pathLocked')
+                : isCustom
+                  ? t('theme.pathCustomLocked')
+                  : t('theme.pathEditable')
+            }
           />
           {isCustom && (
             <div className="hint">

@@ -11,7 +11,7 @@ export interface PackParts {
   meta?: boolean;
   /** flexibook/themes/*.json */
   theme?: boolean;
-  /** textures/gui book.png */
+  /** textures/gui/book.png + textures/item/flexi_book.png */
   textures?: boolean;
   /** flexibook/contents + flexibook/books index */
   content?: boolean;
@@ -68,10 +68,14 @@ export interface PackExportOptions {
   parts?: PackParts;
   theme?: BookTheme;
   content?: AdaptiveBookContent;
-  /** Custom texture raw bytes (from loadImageFile). If absent, fetch defaults. */
+  /** Custom book panel PNG bytes (from loadImageFile). If absent, fetch defaultBookUrl. */
   customBookPng?: ArrayBuffer | null;
-  /** Vite-fetchable default texture URLs, e.g. '/assets/textures/gui/book.png' */
+  /** Vite-fetchable default book panel URL, e.g. '/assets/textures/gui/book.png' */
   defaultBookUrl?: string;
+  /** Custom item icon PNG (flexibook:flexi_book). If absent, fetch defaultItemUrl when set. */
+  customItemPng?: ArrayBuffer | null;
+  /** Vite-fetchable default item icon URL, e.g. '/assets/textures/item/flexi_book.png' */
+  defaultItemUrl?: string;
   /** Full language tables to embed as assets/<ns>/lang/<lang>.json */
   langTables?: Record<string, Record<string, string>>;
   /** Custom TTF/OTF fonts to embed under assets/<ns>/font/ */
@@ -229,6 +233,7 @@ export async function buildResourcePack(opts: PackExportOptions): Promise<PackFi
   const exportTextures = parts.textures;
 
   let bookPng: ArrayBuffer | null = null;
+  let itemPng: ArrayBuffer | null = null;
   if (exportTextures) {
     if (opts.customBookPng && opts.customBookPng.byteLength > 0) {
       bookPng = opts.customBookPng;
@@ -236,6 +241,15 @@ export async function buildResourcePack(opts: PackExportOptions): Promise<PackFi
       bookPng = await fetchArrayBuffer(opts.defaultBookUrl);
     } else {
       throw new Error('textures export requires defaultBookUrl or customBookPng');
+    }
+    if (opts.customItemPng && opts.customItemPng.byteLength > 0) {
+      itemPng = opts.customItemPng;
+    } else if (opts.defaultItemUrl) {
+      try {
+        itemPng = await fetchArrayBuffer(opts.defaultItemUrl);
+      } catch {
+        itemPng = null; // optional — pack still valid without item icon
+      }
     }
   }
 
@@ -294,7 +308,9 @@ export async function buildResourcePack(opts: PackExportOptions): Promise<PackFi
 
     const included = [
       parts.theme && `themes → assets/${namespace}/flexibook/themes/${themeId}.json`,
-      parts.textures && `textures → assets/${namespace}/textures/gui/…`,
+      parts.textures &&
+        `textures → assets/${namespace}/textures/gui/book.png` +
+          (itemPng ? ` + item/flexi_book.png (also overrides flexibook:item/flexi_book)` : ''),
       parts.content && `contents → assets/${namespace}/flexibook/contents/${bookId}.json`,
       parts.content && `books → assets/${namespace}/flexibook/books/${bookId}.json`,
       parts.lang && `lang → assets/${namespace}/lang/…`,
@@ -329,8 +345,20 @@ ${fontLines}
   }
 
   if (exportTextures && bookPng) {
-    const texBase = `assets/${namespace}/textures/gui/`;
-    files.push({ path: texBase + 'book.png', data: new Uint8Array(bookPng) });
+    const guiBase = `assets/${namespace}/textures/gui/`;
+    files.push({ path: guiBase + 'book.png', data: new Uint8Array(bookPng) });
+  }
+  if (exportTextures && itemPng) {
+    // Pack-namespace copy (round-trip import) + flexibook override so the item icon changes in-game
+    const itemBytes = new Uint8Array(itemPng);
+    files.push({
+      path: `assets/${namespace}/textures/item/flexi_book.png`,
+      data: itemBytes,
+    });
+    files.push({
+      path: 'assets/flexibook/textures/item/flexi_book.png',
+      data: new Uint8Array(itemPng),
+    });
   }
 
   if (parts.theme && themeWire) {

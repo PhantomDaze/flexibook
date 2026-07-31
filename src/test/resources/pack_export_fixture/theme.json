@@ -2,7 +2,7 @@
   "book_texture": "myguide:textures/gui/book.png",
   "book_tex_width": 192,
   "book_tex_height": 216,
-  "texture_sheet_size": 2048,
+  "texture_sheet_size": 256,
   "content_left": 16,
   "content_top": 10,
   "title_offset_y": 5,

@@ -30,6 +30,9 @@ export interface WorkspaceDraftV1 {
   textures: {
     book: ArrayBuffer | null;
     bookFileName?: string;
+    /** Inventory icon (flexi_book item) */
+    item?: ArrayBuffer | null;
+    itemFileName?: string;
   };
   fonts: CustomFontExport[];
 }
@@ -85,7 +88,7 @@ export async function saveWorkspaceDraft(draft: WorkspaceDraftV1): Promise<void>
       bookId: draft.packBookId,
       themeId: draft.packThemeId,
       hasFonts: (draft.fonts?.length || 0) > 0,
-      hasTextures: !!draft.textures?.book,
+      hasTextures: !!(draft.textures?.book || draft.textures?.item),
     });
   } finally {
     db.close();

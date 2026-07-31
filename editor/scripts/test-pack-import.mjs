@@ -95,6 +95,7 @@ async function main() {
     },
     customBookPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
     defaultBookUrl: pathToFileURL(bookPng).href,
+    customItemPng: bookBytes.buffer.slice(bookBytes.byteOffset, bookBytes.byteOffset + bookBytes.byteLength),
     langTables: {
       en_us: { 'myguide.book.guide.title': 'Guide', 'myguide.hello': 'Hello' },
       zh_cn: { 'myguide.book.guide.title': '指南' },
@@ -127,6 +128,7 @@ async function main() {
   assert(parsed.fonts[0].id === 'myguide:title', 'font rewritten id');
   assert(parsed.fonts[0].bytes.byteLength === fakeTtf.byteLength, 'font bytes');
   assert(!!parsed.textures.book && parsed.textures.book.byteLength === bookBytes.length, 'book tex');
+  assert(!!parsed.textures.item && parsed.textures.item.byteLength === bookBytes.length, 'item tex');
   assert(parsed.packFormat === 34, 'pack_format');
 
   // 2) zip roundtrip import
