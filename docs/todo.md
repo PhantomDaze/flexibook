@@ -42,10 +42,12 @@ Cross-check: layout numbers, wrap points, page counts, CJK scale, imageFit (no r
 - [x] **翻译表编辑 + 导出 lang**：Lang 面板（全表 en_us/zh_cn）、全屏键编辑、Content 键选择器；导出 `assets/<ns>/lang/*.json`
 - [x] **自定义 TTF/OTF**：Fonts 面板导入；书级/行内 font；FontRouter 预览（浏览器近似）；导出 font JSON + ttf/otf 并重写 id
 - [x] **分项资源包导出**：完整包仅顶栏；Theme/Content/Lang/Fonts 各自只导出本分项（`PackParts`）
+- [x] **Theme 面板导出分区**：纹理导出放「纹理 / 背景」；主题资源包/JSON 放「导出主题」；sticky 仅打开/保存/重置
 - [x] **资源包导入**：ZIP / 目录 → theme/content/lang/fonts/textures；`npm run test:import`
 - [x] **工作区草稿持久化**：IndexedDB autosave（未导出内容跨刷新保留）；顶栏清草稿
+- [x] **书背景/插图半透明**：`AdaptiveBookScreen` blit 前 `enableBlend`（软边不再变实心）
 - 游戏端手测对照编辑器 1x/2x（F3+T 后标题/粗体/中文/页码）— 自动化已绿，客户端目视可选
-- 游戏端手测资源包加载 / 跨模组 API（见 PLAN 验收未勾项）
+- 游戏端手测资源包加载 / 跨模组 API（见 PLAN 验收未勾项）；自定义 pack 用 `/flexibook give <id>` + F3+T
 
 ## Rules (keep)
 - Mark [x] when done.

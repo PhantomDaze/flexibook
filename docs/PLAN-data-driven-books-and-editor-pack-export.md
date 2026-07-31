@@ -32,12 +32,13 @@
 ## 实现明细
 
 ### 资源包导出（已完成）
-- [x] 入口：ThemePanel 底部「导出资源包」区块（namespace、themeId、bookId、includeBook、pack_format）
-- [x] 纯函数 `buildResourcePack` + `packFilesToZip`（`editor/src/shared/packExport.ts`）
+- [x] 入口：顶栏完整包；各面板分项导出。Theme：**纹理 / 背景** → 导出纹理资源包；**导出主题** → 主题资源包 / 主题 JSON（不再堆在 sticky 底栏）
+- [x] 纯函数 `buildResourcePack` + `packFilesToZip`（`editor/src/shared/packExport.ts`）+ `PackParts` 分项
 - [x] CustomTexture 补 bytes（loadImageFile）
 - [x] Electron IPC：dialog:openDirectory + fs:writePack（安全路径校验）
 - [x] 主题路径重写 + 可选书内容 theme 指向 + pack.mcmeta + HOW_TO_USE（中英）
 - [x] 浏览器降级 zip 下载；成功提示
+- [x] 游戏内发放：`/flexibook give <bookId>` / `list`（权限 2）；创造栏不含自定义数据书
 
 ### 模板继承（其他 mod 用法）
 - **文档已补充**：见 `docs/API.md` §14.4–14.5（分发方式、依赖、自有物品、Function override、主题引用）。

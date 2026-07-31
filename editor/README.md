@@ -16,7 +16,7 @@ Working desktop / web app:
 - Visual GUI scale 1/2/3/4 (draw only, no reflow)
 - Search highlight; page nav is simple editor chrome (in-game: vanilla buttons)
 - Native open/save for theme/content JSON (Electron); browser file input / download fallback
-- **Export resource packs**: top bar **导出完整资源包…**; each tab has its own partial export (theme / textures / content / lang / fonts only)
+- **Export resource packs**: top bar **导出完整资源包…**; Theme / Content / Lang / Fonts each expose partial export in-panel (theme JSON + textures live under the **Theme** tab)
 - **Import resource packs**: top bar **导入资源包…** (ZIP or pack folder) → theme / contents / lang / fonts / textures
 - **Workspace draft**: IndexedDB autosave of unexported edits (theme/content/lang/textures/fonts); survives reload; **清草稿** to reset
 - Custom TTF/OTF import (approx FontFace preview) + pack embed
@@ -62,13 +62,16 @@ Top bar **导出完整资源包…** → folder/zip `{ns}_pack/`:
 
 Each tab exports **only its section** (+ `pack.mcmeta` / `HOW_TO_USE.txt`). Same namespace packs stack in-game.
 
-| Entry | Includes | Typical folder suffix |
-|-------|----------|------------------------|
-| Theme → **导出主题资源包…** | `flexibook/themes/*.json` | `{ns}_theme_pack` |
-| Theme → **导出纹理资源包…** | `textures/gui/book.png` | `{ns}_tex_pack` |
-| Content → **导出内容资源包…** | `flexibook/contents` + `books` index | `{ns}_content_pack` |
-| Lang → **导出翻译资源包…** | `lang/*.json` | `{ns}_lang_pack` |
-| Fonts → **导出字体资源包…** | `font/*.json` + ttf/otf | `{ns}_fonts_pack` |
+| Entry (UI) | Includes | Typical folder suffix |
+|------------|----------|------------------------|
+| Theme → **纹理 / 背景** → **导出纹理资源包…** | `textures/gui/book.png` | `{ns}_tex_pack` |
+| Theme → **导出主题** → **导出主题资源包…** | `flexibook/themes/*.json` | `{ns}_theme_pack` |
+| Theme → **导出主题** → **导出主题 JSON** | single theme file (not a pack) | — |
+| Content → sticky → **导出内容资源包…** | `flexibook/contents` + `books` index | `{ns}_content_pack` |
+| Lang → **翻译表** → **导出翻译资源包…** | `lang/*.json` | `{ns}_lang_pack` |
+| Fonts → **自定义字体** → **导出字体资源包…** | `font/*.json` + ttf/otf | `{ns}_fonts_pack` |
+
+Theme sticky bar keeps open/save/reset only; texture vs theme pack buttons sit in their own Theme sections (aligned with Lang/Fonts).
 
 | Part | Path | Role |
 |------|------|------|

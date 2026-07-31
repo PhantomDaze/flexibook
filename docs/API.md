@@ -880,7 +880,7 @@ id：`<namespace>:<path>`（例：`assets/mymod/flexibook/themes/dark.json` → 
 | 字段 | 默认（约） | 含义 |
 |------|------------|------|
 | `book_tex_width` / `book_tex_height` | 192 / 216 | 书页绘制尺寸 |
-| `texture_sheet_size` | 256 | 贴图 sheet（7 参数 blit） |
+| `texture_sheet_size` | 2048 | 贴图 sheet 边长（书背景按整 sheet 映射进面板） |
 | `content_left` / `content_top` | 16 / 10 | 正文原点相对书左上 |
 | `title_offset_y` | 5 | 标题 Y（相对 topPos） |
 | `content_offset_y` | 4 | 正文相对 `content_top` 的额外下移 |
@@ -898,11 +898,15 @@ id：`<namespace>:<path>`（例：`assets/mymod/flexibook/themes/dark.json` → 
 
 | 路径 | 用途 |
 |------|------|
-| `assets/flexibook/textures/gui/book.png` | 默认书页背景（256 sheet，绘制 192×216） |
+| `assets/flexibook/textures/gui/book.png` | 默认书页背景（固定 **2048×2048** sheet，绘制到 `book_tex_width`×`book_tex_height`，默认 192×216） |
 | `assets/flexibook/textures/gui/icon.png` | 示例/默认图 |
 | `assets/flexibook/textures/item/flexi_book.png` | 物品图标 |
 
 自定义主题可把 `book_texture` 指到你自己的路径。翻页按钮使用原版 GUI，无需自定义 widgets 贴图。
+
+**半透明 / 软边**：`AdaptiveBookScreen` 绘制书背景与正文图片时会开启 GL 混合（`RenderSystem.enableBlend` + `defaultBlendFunc`）。1.21.1 的 `GuiGraphics.blit` 默认不启混合，否则只有全透明像素消失，半透明会画成不透明。资源包请使用带正确 alpha 通道的 PNG；无需把半透明“烘焙”成不透明。
+
+编辑器分项导出（Theme 页）：**纹理 / 背景 → 导出纹理资源包**；**导出主题 → 导出主题资源包 / 导出主题 JSON**。完整包仍用顶栏。
 
 ### 13.6 图片元素纹理与比例
 
@@ -921,7 +925,7 @@ FlexiBookAPI.builder("guide").theme(FlexiBookAPI.containThemeId())...
 // 或自己的主题 .imageFit(ImageFit.CONTAIN)
 ```
 
-`width`/`height` 仍表示「占位框」；`CONTAIN` 只改变框内像素，不改变翻页布局。
+`width`/`height` 仍表示「占位框」；`CONTAIN` 只改变框内像素，不改变翻页布局。正文图片同样经混合绘制，半透明边可正常合成。
 
 ---
 
@@ -1183,6 +1187,12 @@ A: 只要 elements 非空就走结构化路径。只用 raw 时不要混用 `h1/
 
 **Q: 图片不显示？**  
 A: 确认 `src` 命名空间与路径存在于资源包；尺寸是否过大导致翻页后才看见。
+
+**Q: 书背景 / 插图半透明变成实心黑边或不透？**  
+A: 旧版未在 blit 前开混合会如此；当前 `AdaptiveBookScreen` 已对书背景与图片 `enableBlend`。若仍不对：检查 PNG 是否真有 alpha（不要被导出成无 alpha 的 JPG/扁平等）、资源是否被别的包覆盖、F3+T 后是否仍是旧贴图。
+
+**Q: 编辑器里主题/纹理分项导出在哪？**  
+A: 左侧 **Theme** 页：纹理在「纹理 / 背景」；主题 JSON/主题资源包在「导出主题」。完整六段包仍用顶栏「导出完整资源包…」。游戏内用 `/flexibook give <ns:bookId>` 发放数据书（创造栏只有空白书 + 内置 demo）。
 
 **Q: 自定义字体不生效？**  
 A: 检查 id 是否与 `assets/.../font/*.json` 一致；书级用 `defaultFont`，行内用 `[font]` / `StyleFlags.withFont`。混排时确认局部 font 没有被空 `withFont(null)` 清掉。布局缓存含 **resolved** font key，改完组件后需重开书。省略 `font` 时走内置 `flexibook:default`，不是 `minecraft:default`。

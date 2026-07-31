@@ -61,6 +61,7 @@
 - 背景用主题 book 纹理（可资源包覆盖）。
 - 左右双页视觉 + 翻页动画基础。
 - 绘制 RenderedPage 元素（drawString + scale、blit 图片、记录点击区）；正文 style 已带解析字体。
+- **半透明 PNG**：`renderBackground` / `blitImage` 在 `GuiGraphics.blit` 前 `RenderSystem.enableBlend()`（与 `Screen.renderMenuBackgroundTexture` 相同）。默认 blit 走无色 `innerBlit` 且不启混合时，仅 alpha=0 透明，软边/半透明会变成实心。
 - 翻页按钮；**页码与书标题**使用 `resolvedFont()` 的 styled `Component` 居中（与编辑器 `PreviewCanvas` 对齐）。
 - 搜索框：输入触发重新 layout + 高亮。
 - Tooltip（link 描述或图片 tooltipKey 翻译）；搜索框等普通 UI 仍用 MC UI 字体。

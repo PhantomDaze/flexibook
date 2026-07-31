@@ -120,8 +120,19 @@ export function ThemePanel({
           整张映射到书页面板（bookTexWidth×bookTexHeight，默认 192×216）。
           请提供 2048×2048 的 book.png（或会被按整图取样）；布局尺寸改 bookTexWidth/Height。
           翻页使用预览区下方简单按钮（游戏内为原版 GUI 按钮）。
-          「导出主题资源包」只含 theme JSON；「导出纹理资源包」只含 book.png。完整包请用顶栏按钮。
         </p>
+        {onExportTexturesPack && (
+          <div className="toolbar" style={{ marginTop: 8 }}>
+            <button
+              type="button"
+              className="primary"
+              onClick={onExportTexturesPack}
+              title="仅 textures/gui PNG"
+            >
+              导出纹理资源包…
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="section">
@@ -184,6 +195,32 @@ export function ThemePanel({
         </div>
       </div>
 
+      <div className="section">
+        <div className="section-head">
+          <h4 className="section-title">导出主题</h4>
+          <span className="hint">分项资源包</span>
+        </div>
+        <p className="section-hint">
+          「导出主题资源包」只含 <span className="mono">flexibook/themes/*.json</span>；
+          纹理在上方「纹理 / 背景」单独导出。完整包（主题+书+翻译+字体+纹理）请用顶栏按钮。
+        </p>
+        <div className="toolbar" style={{ marginTop: 8 }}>
+          {onExportThemePack && (
+            <button
+              type="button"
+              className="primary"
+              onClick={onExportThemePack}
+              title="仅 themes/*.json"
+            >
+              导出主题资源包…
+            </button>
+          )}
+          <button type="button" onClick={onExport} title="单文件 theme JSON（非资源包）">
+            导出主题 JSON
+          </button>
+        </div>
+      </div>
+
       <div className="toolbar sticky-actions">
         {onLoad && (
           <button type="button" onClick={onLoad} title="从磁盘加载主题 JSON">
@@ -201,19 +238,6 @@ export function ThemePanel({
         <button type="button" onClick={onLoadContain}>
           Contain 示例
         </button>
-        <button type="button" onClick={onExport}>
-          导出主题 JSON
-        </button>
-        {onExportThemePack && (
-          <button type="button" className="primary" onClick={onExportThemePack} title="仅 themes/*.json">
-            导出主题资源包…
-          </button>
-        )}
-        {onExportTexturesPack && (
-          <button type="button" className="primary" onClick={onExportTexturesPack} title="仅 textures/gui PNG">
-            导出纹理资源包…
-          </button>
-        )}
       </div>
     </div>
   );

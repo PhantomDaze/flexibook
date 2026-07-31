@@ -12,6 +12,7 @@ import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
 import io.github.PhantomDaze.flexibook.layout.RenderedElement;
 import io.github.PhantomDaze.flexibook.layout.RenderedPage;
 import io.github.PhantomDaze.flexibook.registry.ModDataComponents;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -141,6 +142,10 @@ public class AdaptiveBookScreen extends Screen {
      * Dim without menu blur, then draw the book background.
      * Texture is a fixed {@link #BOOK_TEXTURE_SHEET}² atlas; the full sheet is mapped
      * into the panel ({@code bookTexWidth × bookTexHeight}). Same as the editor preview.
+     * <p>
+     * Blend must be on: {@link GuiGraphics#blit} uses the no-color {@code innerBlit},
+     * which does not enable blending. Without it, only fully transparent texels vanish;
+     * soft/partial alpha becomes solid (same pattern as {@link Screen#renderMenuBackgroundTexture}).
      */
     @Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
@@ -148,6 +153,8 @@ public class AdaptiveBookScreen extends Screen {
         int panelW = theme.bookTexWidth();
         int panelH = theme.bookTexHeight();
         // 11-arg: dest size ≠ sample size — map full 2048 sheet into the book panel
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
         graphics.blit(
                 theme.bookTexture(),
                 leftPos,
@@ -161,6 +168,7 @@ public class AdaptiveBookScreen extends Screen {
                 BOOK_TEXTURE_SHEET,
                 BOOK_TEXTURE_SHEET
         );
+        RenderSystem.disableBlend();
     }
 
     @Override
@@ -266,38 +274,45 @@ public class AdaptiveBookScreen extends Screen {
     /**
      * Draw a book image into the layout box according to {@link BookTheme#imageFit()}.
      * Layout still reserves {@code boxW×boxH}; only the pixels inside may letterbox.
+     * Enables blend so PNG soft edges / partial alpha composite correctly.
      */
     private void blitImage(GuiGraphics graphics, net.minecraft.resources.ResourceLocation texture,
                            int boxX, int boxY, int boxW, int boxH) {
         if (boxW <= 0 || boxH <= 0) {
             return;
         }
-        if (theme.imageFit() == ImageFit.CONTAIN) {
-            var size = TextureSizeCache.getSize(texture);
-            if (size.isPresent()) {
-                int texW = size.get()[0];
-                int texH = size.get()[1];
-                ImageFitMath.Fit fit = ImageFitMath.contain(boxW, boxH, texW, texH);
-                // Full UV of the real texture → fitted screen rect (aspect preserved).
-                graphics.blit(
-                        texture,
-                        boxX + fit.offsetX(),
-                        boxY + fit.offsetY(),
-                        fit.drawW(),
-                        fit.drawH(),
-                        0f,
-                        0f,
-                        texW,
-                        texH,
-                        texW,
-                        texH
-                );
-                return;
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        try {
+            if (theme.imageFit() == ImageFit.CONTAIN) {
+                var size = TextureSizeCache.getSize(texture);
+                if (size.isPresent()) {
+                    int texW = size.get()[0];
+                    int texH = size.get()[1];
+                    ImageFitMath.Fit fit = ImageFitMath.contain(boxW, boxH, texW, texH);
+                    // Full UV of the real texture → fitted screen rect (aspect preserved).
+                    graphics.blit(
+                            texture,
+                            boxX + fit.offsetX(),
+                            boxY + fit.offsetY(),
+                            fit.drawW(),
+                            fit.drawH(),
+                            0f,
+                            0f,
+                            texW,
+                            texH,
+                            texW,
+                            texH
+                    );
+                    return;
+                }
+                // missing texture size → fall through to stretch
             }
-            // missing texture size → fall through to stretch
+            // STRETCH (default): fill the whole logical box; PNG may distort if aspect differs
+            graphics.blit(texture, boxX, boxY, 0, 0, boxW, boxH, boxW, boxH);
+        } finally {
+            RenderSystem.disableBlend();
         }
-        // STRETCH (default): fill the whole logical box; PNG may distort if aspect differs
-        graphics.blit(texture, boxX, boxY, 0, 0, boxW, boxH, boxW, boxH);
     }
 
     /**
