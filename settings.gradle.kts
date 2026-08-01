@@ -22,18 +22,9 @@ stonecutter {
     kotlinController = true
     centralScript = "build.gradle"
     shared {
-        // Disk layout groups by JDK toolchain prefix under versions/:
-        //   java17-*  (JDK 17) | java21-*  (JDK 21) | java25-*  (JDK 25)
-        // Project name ≠ MC version (second arg drives //? if version checks).
-        vers("java17-1.20.1", "1.20.1")
-        vers("java17-1.20.1-fabric", "1.20.1")
-        vers("java21-1.21.1", "1.21.1")
-        vers("java21-1.21.1-fabric", "1.21.1")
-        vers("java21-1.21.4", "1.21.4")
-        vers("java21-1.21.4-fabric", "1.21.4")
-        vers("java21-1.21.11-fabric", "1.21.11")
-        vers("java25-26.1.2", "26.1.2")
-        vers("java25-26.2", "26.2")
+        // java17 toolchain branch — nodes under versions/
+        vers("1.20.1", "1.20.1")
+        vers("1.20.1-fabric", "1.20.1")
     }
     create(rootProject)
 }
