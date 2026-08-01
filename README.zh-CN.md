@@ -45,7 +45,7 @@
 
 | 分支 | 内容 |
 |------|------|
-| **`master`** | 完整多版本 monorepo（下列全部 JDK 线） |
+| **`main`** | JDK 25 主线（26.1.2 / 26.2 NeoForge）— 默认 active **26.1.2**（下列全部 JDK 线） |
 | **`java17`** | 仅 MC **1.20.1** Forge + Fabric（toolchain **17**） |
 | **`java21`** | MC **1.21.1 / 1.21.4** NeoForge + Fabric，以及 **1.21.11** Fabric（toolchain **21**） |
 | **`java25`** | 仅 MC **26.1.2 / 26.2** NeoForge（toolchain **25**） |

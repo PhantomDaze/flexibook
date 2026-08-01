@@ -45,7 +45,7 @@ Custom DataComponent (26.x / 1.21.x) / ItemStack NBT (1.20.1) + client layout en
 
 | Branch | Contents |
 |--------|----------|
-| **`master`** | Full multi-version monorepo (all JDK lines below) |
+| **`main`** | JDK **25** primary line (MC **26.1.2 / 26.2** NeoForge); default active **26.1.2** |
 | **`java17`** | MC **1.20.1** Forge + Fabric only (toolchain **17**) |
 | **`java21`** | MC **1.21.1 / 1.21.4** NeoForge + Fabric, **1.21.11** Fabric (toolchain **21**) |
 | **`java25`** | MC **26.1.2 / 26.2** NeoForge (toolchain **25**) |
