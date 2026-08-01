@@ -1,10 +1,14 @@
 package io.github.PhantomDaze.flexibook.content;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import io.github.PhantomDaze.flexibook.util.Compat;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+//? if >=1.21 {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+//?}
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -22,20 +26,60 @@ public sealed interface BookElement permits
 
     String typeId();
 
-    Codec<BookElement> CODEC = Codec.STRING.dispatch(
-            BookElement::typeId,
-            type -> switch (type.toLowerCase(Locale.ROOT)) {
-                case "heading" -> Heading.CODEC.fieldOf("data");
-                case "paragraph" -> Paragraph.CODEC.fieldOf("data");
-                case "br" -> LineBreak.CODEC.fieldOf("data");
-                case "divider" -> Divider.CODEC.fieldOf("data");
-                case "image" -> Image.CODEC.fieldOf("data");
-                case "bullet" -> Bullet.CODEC.fieldOf("data");
-                case "box" -> Box.CODEC.fieldOf("data");
-                default -> Paragraph.CODEC.fieldOf("data");
-            }
-    );
+    /**
+     * JSON shape {@code {"type":"...","data":{...}}} — implemented without
+     * {@code Codec#dispatch} so it works on both 1.20.1 and 1.21 DFU.
+     */
+    Codec<BookElement> CODEC = Compat.lazyCodec(BookElement::createElementCodec);
 
+    private static Codec<? extends BookElement> bodyCodec(String type) {
+        return switch (type.toLowerCase(Locale.ROOT)) {
+            case "heading" -> Heading.CODEC;
+            case "paragraph" -> Paragraph.CODEC;
+            case "br" -> LineBreak.CODEC;
+            case "divider" -> Divider.CODEC;
+            case "image" -> Image.CODEC;
+            case "bullet" -> Bullet.CODEC;
+            case "box" -> Box.CODEC;
+            default -> Paragraph.CODEC;
+        };
+    }
+
+    private static Codec<BookElement> createElementCodec() {
+        return new Codec<>() {
+            @Override
+            public <T> com.mojang.serialization.DataResult<T> encode(BookElement input, com.mojang.serialization.DynamicOps<T> ops, T prefix) {
+                String type = input.typeId();
+                @SuppressWarnings("unchecked")
+                Codec<BookElement> body = (Codec<BookElement>) bodyCodec(type);
+                return body.encodeStart(ops, input).flatMap(data ->
+                        ops.mapBuilder()
+                                .add("type", ops.createString(type))
+                                .add("data", data)
+                                .build(prefix));
+            }
+
+            @Override
+            public <T> com.mojang.serialization.DataResult<com.mojang.datafixers.util.Pair<BookElement, T>> decode(
+                    com.mojang.serialization.DynamicOps<T> ops, T input) {
+                return ops.getMap(input).flatMap(map -> {
+                    T typeEl = map.get("type");
+                    T dataEl = map.get("data");
+                    if (typeEl == null) {
+                        return com.mojang.serialization.DataResult.error(() -> "BookElement missing type");
+                    }
+                    return ops.getStringValue(typeEl).flatMap(type -> {
+                        @SuppressWarnings("unchecked")
+                        Codec<BookElement> body = (Codec<BookElement>) bodyCodec(type);
+                        T data = dataEl != null ? dataEl : ops.emptyMap();
+                        return body.decode(ops, data);
+                    });
+                });
+            }
+        };
+    }
+
+    //? if >=1.21 {
     StreamCodec<RegistryFriendlyByteBuf, BookElement> NETWORK_CODEC = new StreamCodec<>() {
         @Override
         public BookElement decode(RegistryFriendlyByteBuf buf) {
@@ -80,6 +124,7 @@ public sealed interface BookElement permits
             }
         }
     };
+    //?}
 
     record Heading(int level, TranslatableText text, Optional<ResourceLocation> font) implements BookElement {
         public Heading(int level, TranslatableText text) {
@@ -92,12 +137,14 @@ public sealed interface BookElement permits
                 ResourceLocation.CODEC.optionalFieldOf("font").forGetter(Heading::font)
         ).apply(i, Heading::new));
 
+        //? if >=1.21 {
         public static final StreamCodec<RegistryFriendlyByteBuf, Heading> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Heading::level,
                 TranslatableText.STREAM_CODEC, Heading::text,
                 ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), Heading::font,
                 Heading::new
         );
+        //?}
 
         @Override
         public String typeId() {
@@ -110,10 +157,12 @@ public sealed interface BookElement permits
                 InlineSpan.CODEC.listOf().fieldOf("spans").forGetter(Paragraph::spans)
         ).apply(i, Paragraph::new));
 
+        //? if >=1.21 {
         public static final StreamCodec<RegistryFriendlyByteBuf, Paragraph> STREAM_CODEC = StreamCodec.composite(
                 InlineSpan.STREAM_CODEC.apply(ByteBufCodecs.list()), Paragraph::spans,
                 Paragraph::new
         );
+        //?}
 
         @Override
         public String typeId() {
@@ -123,7 +172,7 @@ public sealed interface BookElement permits
 
     record LineBreak() implements BookElement {
         public static final LineBreak INSTANCE = new LineBreak();
-        public static final Codec<LineBreak> CODEC = Codec.unit(INSTANCE);
+        public static final Codec<LineBreak> CODEC = MapCodec.unit(INSTANCE).codec();
 
         @Override
         public String typeId() {
@@ -133,7 +182,7 @@ public sealed interface BookElement permits
 
     record Divider() implements BookElement {
         public static final Divider INSTANCE = new Divider();
-        public static final Codec<Divider> CODEC = Codec.unit(INSTANCE);
+        public static final Codec<Divider> CODEC = MapCodec.unit(INSTANCE).codec();
 
         @Override
         public String typeId() {
@@ -149,6 +198,7 @@ public sealed interface BookElement permits
                 Codec.STRING.optionalFieldOf("tooltip").forGetter(Image::tooltipKey)
         ).apply(i, Image::new));
 
+        //? if >=1.21 {
         public static final StreamCodec<RegistryFriendlyByteBuf, Image> STREAM_CODEC = StreamCodec.composite(
                 ResourceLocation.STREAM_CODEC, Image::src,
                 ByteBufCodecs.VAR_INT, Image::width,
@@ -156,6 +206,7 @@ public sealed interface BookElement permits
                 ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), Image::tooltipKey,
                 Image::new
         );
+        //?}
 
         @Override
         public String typeId() {
@@ -168,10 +219,12 @@ public sealed interface BookElement permits
                 InlineSpan.CODEC.listOf().fieldOf("spans").forGetter(Bullet::spans)
         ).apply(i, Bullet::new));
 
+        //? if >=1.21 {
         public static final StreamCodec<RegistryFriendlyByteBuf, Bullet> STREAM_CODEC = StreamCodec.composite(
                 InlineSpan.STREAM_CODEC.apply(ByteBufCodecs.list()), Bullet::spans,
                 Bullet::new
         );
+        //?}
 
         @Override
         public String typeId() {
@@ -180,11 +233,12 @@ public sealed interface BookElement permits
     }
 
     record Box(Optional<String> className, List<BookElement> children) implements BookElement {
-        public static final Codec<Box> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder.create(i -> i.group(
+        public static final Codec<Box> CODEC = Compat.lazyCodec(() -> RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.optionalFieldOf("class").forGetter(Box::className),
                 BookElement.CODEC.listOf().fieldOf("children").forGetter(Box::children)
         ).apply(i, Box::new)));
 
+        //? if >=1.21 {
         public static final StreamCodec<RegistryFriendlyByteBuf, Box> STREAM_CODEC = new StreamCodec<>() {
             @Override
             public Box decode(RegistryFriendlyByteBuf buf) {
@@ -199,6 +253,7 @@ public sealed interface BookElement permits
                 BookElement.NETWORK_CODEC.apply(ByteBufCodecs.list()).encode(buf, value.children());
             }
         };
+        //?}
 
         @Override
         public String typeId() {

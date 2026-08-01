@@ -1,6 +1,7 @@
 package io.github.PhantomDaze.flexibook.layout;
 
 import io.github.PhantomDaze.flexibook.content.StyleFlags;
+import io.github.PhantomDaze.flexibook.util.McFonts;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -34,7 +35,7 @@ public final class McTextMeasurer implements TextMeasurer {
         if (flags.underline()) s = s.withUnderlined(true);
         ResourceLocation f = overrideFont.orElseGet(() -> flags.font().orElse(null));
         if (f != null) {
-            s = s.withFont(f);
+            s = McFonts.withFont(s, f);
         }
         return s;
     }

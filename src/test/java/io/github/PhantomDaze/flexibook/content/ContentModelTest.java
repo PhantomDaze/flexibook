@@ -1,5 +1,9 @@
 package io.github.PhantomDaze.flexibook.content;
 
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
+
+import io.github.PhantomDaze.flexibook.util.Compat;
+
 import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
@@ -60,11 +64,11 @@ class ContentModelTest {
         );
 
         var encoded = AdaptiveBookContent.CODEC.encodeStart(JsonOps.INSTANCE, original);
-        assertTrue(encoded.isSuccess(), () -> "encode failed: " + encoded.error());
+        assertTrue(!Compat.isError(encoded), () -> "encode failed: " + encoded.error());
 
-        var decoded = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, encoded.getOrThrow());
-        assertTrue(decoded.isSuccess(), () -> "decode failed: " + decoded.error());
-        assertEquals(original, decoded.getOrThrow());
+        var decoded = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, Compat.getOrThrow(encoded));
+        assertTrue(!Compat.isError(decoded), () -> "decode failed: " + decoded.error());
+        assertEquals(original, Compat.getOrThrow(decoded));
     }
 
     @Test
@@ -73,8 +77,8 @@ class ContentModelTest {
                 new TranslatableText("demo.title"),
                 "[p]hello[/p]"
         );
-        var encoded = AdaptiveBookContent.CODEC.encodeStart(JsonOps.INSTANCE, original).getOrThrow();
-        AdaptiveBookContent back = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, encoded).getOrThrow();
+        var encoded =Compat.getOrThrow( AdaptiveBookContent.CODEC.encodeStart(JsonOps.INSTANCE, original));
+        AdaptiveBookContent back =Compat.getOrThrow( AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, encoded));
         assertEquals(original, back);
         assertTrue(back.rawMarkup().isPresent());
         assertTrue(back.elements().isEmpty());
@@ -82,7 +86,7 @@ class ContentModelTest {
 
     @Test
     void contentCodecRoundTripDefaultFont() {
-        ResourceLocation font = ResourceLocation.fromNamespaceAndPath("minecraft", "alt");
+        ResourceLocation font = FlexiBookIds.of("minecraft", "alt");
         AdaptiveBookContent original = AdaptiveBookContent.ofElements(
                 new TranslatableText("demo.title"),
                 List.of(new BookElement.Paragraph(List.of(
@@ -90,25 +94,25 @@ class ContentModelTest {
                 ))),
                 Optional.of(font)
         );
-        var encoded = AdaptiveBookContent.CODEC.encodeStart(JsonOps.INSTANCE, original).getOrThrow();
-        AdaptiveBookContent back = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, encoded).getOrThrow();
+        var encoded =Compat.getOrThrow( AdaptiveBookContent.CODEC.encodeStart(JsonOps.INSTANCE, original));
+        AdaptiveBookContent back =Compat.getOrThrow( AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, encoded));
         assertEquals(original, back);
         assertEquals(Optional.of(font), back.defaultFont());
-        BookElement.Paragraph p = (BookElement.Paragraph) back.resolveElements().getFirst();
-        assertEquals(Optional.of(font), p.spans().getFirst().style().font());
+        BookElement.Paragraph p = (BookElement.Paragraph) back.resolveElements().get(0);
+        assertEquals(Optional.of(font), p.spans().get(0).style().font());
     }
 
     @Test
     void contentCodecRoundTripThemeId() {
-        ResourceLocation theme = ResourceLocation.fromNamespaceAndPath("flexibook", "contain");
+        ResourceLocation theme = FlexiBookIds.of("flexibook", "contain");
         AdaptiveBookContent original = AdaptiveBookContent.ofMarkup(
                 new TranslatableText("demo.title"),
                 "[p]x[/p]",
                 Optional.empty(),
                 Optional.of(theme)
         );
-        var encoded = AdaptiveBookContent.CODEC.encodeStart(JsonOps.INSTANCE, original).getOrThrow();
-        AdaptiveBookContent back = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, encoded).getOrThrow();
+        var encoded =Compat.getOrThrow( AdaptiveBookContent.CODEC.encodeStart(JsonOps.INSTANCE, original));
+        AdaptiveBookContent back =Compat.getOrThrow( AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, encoded));
         assertEquals(original, back);
         assertEquals(Optional.of(theme), back.themeId());
         assertEquals(Optional.of(theme), original.withThemeId(theme).themeId());
@@ -130,8 +134,8 @@ class ContentModelTest {
 
     @Test
     void styleFlagsFontMergePrefersOther() {
-        ResourceLocation aFont = ResourceLocation.fromNamespaceAndPath("minecraft", "default");
-        ResourceLocation bFont = ResourceLocation.fromNamespaceAndPath("minecraft", "alt");
+        ResourceLocation aFont = FlexiBookIds.of("minecraft", "default");
+        ResourceLocation bFont = FlexiBookIds.of("minecraft", "alt");
         StyleFlags a = StyleFlags.EMPTY.withFont(aFont);
         StyleFlags b = StyleFlags.EMPTY.withFont(bFont);
         assertEquals(Optional.of(bFont), a.merge(b).font());
@@ -142,20 +146,20 @@ class ContentModelTest {
     @Test
     void linkActionSimpleCodec() {
         LinkAction cmd = LinkAction.commandId("flexibook:say_hi");
-        var json = LinkAction.SIMPLE_CODEC.encodeStart(JsonOps.INSTANCE, cmd).getOrThrow();
-        LinkAction back = LinkAction.SIMPLE_CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+        var json =Compat.getOrThrow( LinkAction.SIMPLE_CODEC.encodeStart(JsonOps.INSTANCE, cmd));
+        LinkAction back =Compat.getOrThrow( LinkAction.SIMPLE_CODEC.parse(JsonOps.INSTANCE, json));
         assertEquals(cmd, back);
 
         LinkAction url = LinkAction.url("https://example.com/path");
-        json = LinkAction.SIMPLE_CODEC.encodeStart(JsonOps.INSTANCE, url).getOrThrow();
-        back = LinkAction.SIMPLE_CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+        json =Compat.getOrThrow( LinkAction.SIMPLE_CODEC.encodeStart(JsonOps.INSTANCE, url));
+        back =Compat.getOrThrow( LinkAction.SIMPLE_CODEC.parse(JsonOps.INSTANCE, json));
         assertEquals(url, back);
     }
 
     @Test
     void linkActionUrlRejectsNonHttp() {
         var bad = LinkAction.Url.CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.createString("javascript:alert(1)"));
-        assertTrue(bad.isError());
+        assertTrue(Compat.isError(bad));
     }
 
     @Test

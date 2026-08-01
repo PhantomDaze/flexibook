@@ -3,9 +3,11 @@ package io.github.PhantomDaze.flexibook.content;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.PhantomDaze.flexibook.layout.TranslationProvider;
+//? if >=1.21 {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+//?}
 
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ public record InlineSpan(
             LinkAction.SIMPLE_CODEC.optionalFieldOf("link").forGetter(InlineSpan::link)
     ).apply(instance, InlineSpan::new));
 
+    //? if >=1.21 {
     public static final StreamCodec<RegistryFriendlyByteBuf, InlineSpan> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, InlineSpan::text,
             ByteBufCodecs.BOOL, InlineSpan::translate,
@@ -33,6 +36,7 @@ public record InlineSpan(
             ByteBufCodecs.optional(LinkAction.STREAM_CODEC), InlineSpan::link,
             InlineSpan::new
     );
+    //?}
 
     public static InlineSpan key(String translationKey) {
         return new InlineSpan(translationKey, true, StyleFlags.EMPTY, Optional.empty());

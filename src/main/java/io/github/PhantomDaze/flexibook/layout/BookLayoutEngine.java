@@ -1,5 +1,7 @@
 package io.github.PhantomDaze.flexibook.layout;
 
+import io.github.PhantomDaze.flexibook.util.Compat;
+
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.BookElement;
 import io.github.PhantomDaze.flexibook.content.FlexiBookFonts;
@@ -182,11 +184,11 @@ public final class BookLayoutEngine {
                     StyleFlags style = StyleFlags.EMPTY.withBold(true);
                     style = applyFontOverride(style, heading.font(), bookFont);
                     col = placeWrappedText(pages, page, colY, col, params, measurer, text, style, Optional.empty(), scale, 0, params.headingGap, hi);
-                    page = pages.getLast();
+                    page = Compat.last(pages);
                 }
                 case BookElement.Paragraph paragraph -> {
                     col = placeInlineSpans(pages, page, colY, col, params, measurer, translator, paragraph.spans(), 0, params.paragraphGap, searchLower, bookFont);
-                    page = pages.getLast();
+                    page = Compat.last(pages);
                 }
                 case BookElement.Bullet bullet -> {
                     float markerScale = params.scale;
@@ -194,7 +196,7 @@ public final class BookLayoutEngine {
                     if (colY[col] + params.lineHeight * markerScale > params.pageContentHeight) {
                         int next = advanceColumn(pages, colY, col, params);
                         col = next;
-                        page = pages.getLast();
+                        page = Compat.last(pages);
                         x = columnX(col, params);
                     }
                     StyleFlags markerStyle = applyBookFont(StyleFlags.EMPTY, bookFont);
@@ -204,7 +206,7 @@ public final class BookLayoutEngine {
                             markerW, params.lineHeight, false
                     ));
                     col = placeInlineSpans(pages, page, colY, col, params, measurer, translator, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
-                    page = pages.getLast();
+                    page = Compat.last(pages);
                 }
                 case BookElement.LineBreak ignored -> {
                     colY[col] += params.lineHeight * params.scale * 0.5f;
@@ -213,7 +215,7 @@ public final class BookLayoutEngine {
                     float h = params.dividerHeight * params.scale;
                     if (colY[col] + h > params.pageContentHeight) {
                         col = advanceColumn(pages, colY, col, params);
-                        page = pages.getLast();
+                        page = Compat.last(pages);
                     }
                     float x = columnX(col, params);
                     page.add(new RenderedElement.DividerLine(x, colY[col], params.scale, colW, h));
@@ -229,7 +231,7 @@ public final class BookLayoutEngine {
                     }
                     if (colY[col] + h > params.pageContentHeight) {
                         col = advanceColumn(pages, colY, col, params);
-                        page = pages.getLast();
+                        page = Compat.last(pages);
                     }
                     float x = columnX(col, params);
                     page.add(new RenderedElement.ImageBlock(x, colY[col], 1f, image.src(), Math.round(w), Math.round(h), image.tooltipKey()));
@@ -238,7 +240,7 @@ public final class BookLayoutEngine {
                 case BookElement.Box box -> {
                     for (BookElement child : box.children()) {
                         col = layoutOne(child, pages, page, colY, col, params, measurer, translator, searchLower, bookFont);
-                        page = pages.getLast();
+                        page = Compat.last(pages);
                     }
                 }
             }
@@ -263,16 +265,16 @@ public final class BookLayoutEngine {
                 float x = columnX(col, params);
                 if (colY[col] + params.lineHeight * params.scale > params.pageContentHeight) {
                     col = advanceColumn(pages, colY, col, params);
-                    page = pages.getLast();
+                    page = Compat.last(pages);
                     x = columnX(col, params);
                 }
                 StyleFlags markerStyle = applyBookFont(StyleFlags.EMPTY, bookFont);
                 int markerW = measureWidth(measurer, "•", markerStyle, Optional.empty());
-                pages.getLast().add(new RenderedElement.TextLine(
+                Compat.last(pages).add(new RenderedElement.TextLine(
                         x, colY[col], params.scale, "•", markerStyle, Optional.empty(),
                         markerW, params.lineHeight, false
                 ));
-                yield placeInlineSpans(pages, pages.getLast(), colY, col, params, measurer, translator, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
+                yield placeInlineSpans(pages, Compat.last(pages), colY, col, params, measurer, translator, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
             }
             case BookElement.LineBreak ignored -> {
                 colY[col] += params.lineHeight * params.scale * 0.5f;
@@ -284,7 +286,7 @@ public final class BookLayoutEngine {
                     col = advanceColumn(pages, colY, col, params);
                 }
                 float x = columnX(col, params);
-                pages.getLast().add(new RenderedElement.DividerLine(x, colY[col], params.scale, params.columnWidth(), h));
+                Compat.last(pages).add(new RenderedElement.DividerLine(x, colY[col], params.scale, params.columnWidth(), h));
                 colY[col] += h + params.paragraphGap * params.scale;
                 yield col;
             }
@@ -301,14 +303,14 @@ public final class BookLayoutEngine {
                     col = advanceColumn(pages, colY, col, params);
                 }
                 float x = columnX(col, params);
-                pages.getLast().add(new RenderedElement.ImageBlock(x, colY[col], 1f, image.src(), Math.round(w), Math.round(h), image.tooltipKey()));
+                Compat.last(pages).add(new RenderedElement.ImageBlock(x, colY[col], 1f, image.src(), Math.round(w), Math.round(h), image.tooltipKey()));
                 colY[col] += h + params.paragraphGap * params.scale;
                 yield col;
             }
             case BookElement.Box box -> {
                 int c = col;
                 for (BookElement child : box.children()) {
-                    c = layoutOne(child, pages, pages.getLast(), colY, c, params, measurer, translator, searchLower, bookFont);
+                    c = layoutOne(child, pages, Compat.last(pages), colY, c, params, measurer, translator, searchLower, bookFont);
                 }
                 yield c;
             }
@@ -331,7 +333,7 @@ public final class BookLayoutEngine {
                     colY[col] += params.lineHeight * params.scale;
                 }
                 boolean hi = matchesSearch(parts[pi], searchLower);
-                col = placeWrappedText(pages, pages.getLast(), colY, col, params, measurer,
+                col = placeWrappedText(pages, Compat.last(pages), colY, col, params, measurer,
                         parts[pi], style, span.link(), params.scale, indent, 0, hi);
             }
         }
@@ -374,11 +376,11 @@ public final class BookLayoutEngine {
         for (String line : lines) {
             if (colY[col] + lineH > params.pageContentHeight) {
                 col = advanceColumn(pages, colY, col, params);
-                page = pages.getLast();
+                page = Compat.last(pages);
             }
             float x = columnX(col, params) + indent;
             float w = measureWidth(measurer, line, measureStyle, Optional.empty());
-            pages.getLast().add(new RenderedElement.TextLine(
+            Compat.last(pages).add(new RenderedElement.TextLine(
                     x, colY[col], scale, line, style, link, w, params.lineHeight, highlight
             ));
             colY[col] += lineH;
@@ -461,11 +463,11 @@ public final class BookLayoutEngine {
         for (String line : lines) {
             if (colY[col] + lineH > params.pageContentHeight) {
                 col = advanceColumn(pages, colY, col, params);
-                page = pages.getLast();
+                page = Compat.last(pages);
             }
             float x = columnX(col, params) + indent;
             float w = measureWidth(font, line, mcStyle);
-            pages.getLast().add(new RenderedElement.TextLine(
+            Compat.last(pages).add(new RenderedElement.TextLine(
                     x, colY[col], scale, line, style, link, w, params.lineHeight, highlight
             ));
             colY[col] += lineH;
@@ -570,7 +572,7 @@ public final class BookLayoutEngine {
             style = style.withUnderlined(true);
         }
         if (flags.font().isPresent()) {
-            style = style.withFont(flags.font().get());
+            style = io.github.PhantomDaze.flexibook.util.McFonts.withFont(style, flags.font().get());
         }
         return style;
     }

@@ -4,7 +4,7 @@ import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.api.AdaptiveBookBuilder;
 import io.github.PhantomDaze.flexibook.api.FlexiBookAPI;
 import io.github.PhantomDaze.flexibook.content.FlexiBookFonts;
-import net.minecraft.resources.ResourceLocation;
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.minecraft.world.item.ItemStack;
 
 public final class ExampleBooks {
@@ -26,7 +26,7 @@ public final class ExampleBooks {
                 .p("flexibook.book.demo.body1")
                 .p("flexibook.book.demo.body2")
                 .image(
-                        ResourceLocation.fromNamespaceAndPath(FlexiBookMod.MOD_ID, "textures/gui/icon.png"),
+                        FlexiBookIds.of(FlexiBookMod.MOD_ID, "textures/gui/icon.png"),
                         48, 48,
                         "flexibook.book.demo.image_tip"
                 )

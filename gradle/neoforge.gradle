@@ -1,0 +1,76 @@
+// NeoForge / ModDevGradle configuration for neoforge version nodes.
+// Applied from build.gradle when mod_loader=neoforge.
+
+def neoVer = project.findProperty('neo_version') ?: project.ext.neo_version
+def parchMc = project.findProperty('parchment_minecraft_version')
+        ?: (project.ext.has('parchment_minecraft_version') ? project.ext.parchment_minecraft_version : null)
+def parchVer = project.findProperty('parchment_mappings_version')
+        ?: (project.ext.has('parchment_mappings_version') ? project.ext.parchment_mappings_version : null)
+def modId = project.findProperty('mod_id') ?: project.ext.mod_id
+
+neoForge {
+    version = neoVer
+
+    // Optional — MC 26.x may not have Parchment yet; omit props to use official mappings.
+    if (parchMc && parchVer) {
+        parchment {
+            mappingsVersion = parchVer
+            minecraftVersion = parchMc
+        }
+    }
+
+    addModdingDependenciesTo(sourceSets.test)
+
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', modId
+            systemProperty 'fml.earlyWindowControl', 'false'
+            systemProperty 'fml.earlyProgressWindow', 'false'
+            jvmArgument '-Dfml.earlyWindowControl=false'
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', modId
+        }
+
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', modId
+        }
+
+        data {
+            data()
+            programArguments.addAll '--mod', modId, '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources/').absolutePath
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${modId}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+try {
+    neoForge.ideSyncTask tasks.named('generateModMetadata')
+} catch (Throwable ignored) {
+}
+
+configurations {
+    if (findByName('localRuntime') != null) {
+        runtimeClasspath.extendsFrom localRuntime
+    } else {
+        create('localRuntime')
+        runtimeClasspath.extendsFrom localRuntime
+    }
+}

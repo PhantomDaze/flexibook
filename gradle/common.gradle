@@ -1,0 +1,116 @@
+// Shared helpers used by version-specific build scripts.
+// Loaded with: apply from: rootProject.file('gradle/common.gradle')
+
+import java.nio.charset.StandardCharsets
+
+// Load versions/<ver>/gradle.properties into project.ext
+def versionPropsFile = file('gradle.properties')
+if (versionPropsFile.isFile()) {
+    versionPropsFile.eachLine(StandardCharsets.UTF_8.name()) { raw ->
+        def line = raw.trim()
+        if (line.isEmpty() || line.startsWith('#') || !line.contains('=')) return
+        def idx = line.indexOf('=')
+        def key = line.substring(0, idx).trim()
+        def value = line.substring(idx + 1).trim()
+        if (!key.isEmpty()) {
+            project.ext.set(key, value)
+        }
+    }
+}
+
+ext.projProp = { String name ->
+    def v = project.findProperty(name)
+    if (v == null && project.ext.has(name)) v = project.ext.get(name)
+    if (v == null && rootProject.hasProperty(name)) v = rootProject.property(name)
+    if (v == null) {
+        throw new GradleException("$name missing (project=${project.path} dir=${project.projectDir})")
+    }
+    return v.toString()
+}
+
+// Ensure root-level mod props are visible on this project
+['mod_id', 'mod_name', 'mod_license', 'mod_version', 'mod_group_id', 'mod_authors', 'mod_description'].each { k ->
+    if (!project.ext.has(k) && rootProject.hasProperty(k)) {
+        project.ext.set(k, rootProject.property(k).toString())
+    }
+}
+
+def modLoader = projProp('mod_loader')
+def mcVersion = projProp('minecraft_version')
+def javaVer = Integer.parseInt(projProp('java_version'))
+
+// Publish for other scripts (forge.gradle / neoforge.gradle / stonecutter constants)
+project.ext.modLoader = modLoader
+project.ext.mcVersion = mcVersion
+project.ext.javaVer = javaVer
+
+group = projProp('mod_group_id')
+version = "${projProp('mod_version')}+${mcVersion}"
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.neoforged.net/releases' }
+    maven { url = 'https://maven.minecraftforge.net' }
+    maven { url = 'https://maven.parchmentmc.org' }
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(javaVer)
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// Expand loader-specific mod metadata from templates/
+def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    def replaceProperties = [
+            minecraft_version      : mcVersion,
+            minecraft_version_range: projProp('minecraft_version_range'),
+            neo_version            : project.ext.has('neo_version') ? project.ext.neo_version : '',
+            forge_version          : project.ext.has('forge_version') ? project.ext.forge_version : '',
+            loader_version_range   : projProp('loader_version_range'),
+            mod_id                 : projProp('mod_id'),
+            mod_name               : projProp('mod_name'),
+            mod_license            : projProp('mod_license'),
+            mod_version            : projProp('mod_version'),
+            mod_loader             : modLoader,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from 'src/main/templates'
+    into layout.buildDirectory.dir('generated/sources/modMetadata')
+    if (modLoader == 'forge') {
+        exclude '**/neoforge.mods.toml'
+    } else {
+        exclude '**/mods.toml'
+    }
+}
+
+sourceSets.main.resources {
+    srcDir('src/generated/resources')
+    srcDir(generateModMetadata)
+    exclude('**/*.bbmodel')
+    exclude('src/generated/**/.cache')
+}
+
+base {
+    archivesName = projProp('mod_id')
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

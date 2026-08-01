@@ -3,10 +3,14 @@ package io.github.PhantomDaze.flexibook.content;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.PhantomDaze.flexibook.layout.TranslationProvider;
+//? if >=1.21 {
 import net.minecraft.network.RegistryFriendlyByteBuf;
+//?}
 import net.minecraft.network.chat.Component;
+//? if >=1.21 {
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+//?}
 
 import java.util.List;
 
@@ -19,11 +23,13 @@ public record TranslatableText(String key, List<String> args) {
             Codec.STRING.listOf().optionalFieldOf("args", List.of()).forGetter(TranslatableText::args)
     ).apply(instance, TranslatableText::new));
 
+    //? if >=1.21 {
     public static final StreamCodec<RegistryFriendlyByteBuf, TranslatableText> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, TranslatableText::key,
             ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), TranslatableText::args,
             TranslatableText::new
     );
+    //?}
 
     public TranslatableText(String key) {
         this(key, List.of());

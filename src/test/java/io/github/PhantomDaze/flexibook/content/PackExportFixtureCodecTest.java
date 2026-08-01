@@ -1,5 +1,9 @@
 package io.github.PhantomDaze.flexibook.content;
 
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
+
+import io.github.PhantomDaze.flexibook.util.Compat;
+
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
@@ -26,9 +30,9 @@ class PackExportFixtureCodecTest {
     @Test
     void exportedThemeParses() throws Exception {
         var el = load("pack_export_fixture/theme.json");
-        BookTheme theme = BookTheme.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
+        BookTheme theme =Compat.getOrThrow( BookTheme.CODEC.parse(JsonOps.INSTANCE, el));
 
-        assertEquals(ResourceLocation.parse("myguide:textures/gui/book.png"), theme.bookTexture());
+        assertEquals(java.util.Objects.requireNonNull(FlexiBookIds.tryParse("myguide:textures/gui/book.png")), theme.bookTexture());
         assertEquals(192, theme.bookTexWidth());
         assertEquals(216, theme.bookTexHeight());
         assertEquals(160, theme.pageContentWidth());
@@ -39,9 +43,9 @@ class PackExportFixtureCodecTest {
     @Test
     void exportedBookIndexParses() throws Exception {
         var el = load("pack_export_fixture/book.json");
-        BookDefinition def = BookDefinition.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
+        BookDefinition def =Compat.getOrThrow( BookDefinition.CODEC.parse(JsonOps.INSTANCE, el));
 
-        assertEquals(ResourceLocation.parse("myguide:guide"), def.contentId());
+        assertEquals(java.util.Objects.requireNonNull(FlexiBookIds.tryParse("myguide:guide")), def.contentId());
         assertEquals(OptionalRL("myguide:main"), def.themeId());
         assertEquals(OptionalRL("myguide:title"), def.font());
     }
@@ -49,7 +53,7 @@ class PackExportFixtureCodecTest {
     @Test
     void exportedContentBodyParses() throws Exception {
         var el = load("pack_export_fixture/content.json");
-        AdaptiveBookContent body = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
+        AdaptiveBookContent body =Compat.getOrThrow( AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, el));
 
         assertEquals("myguide.book.guide.title", body.title().key());
         assertTrue(body.elements().isPresent());
@@ -60,7 +64,7 @@ class PackExportFixtureCodecTest {
         assertInstanceOf(BookElement.Image.class, body.elements().get().get(3));
 
         BookElement.Image img = (BookElement.Image) body.elements().get().get(3);
-        assertEquals(ResourceLocation.parse("flexibook:textures/gui/icon.png"), img.src());
+        assertEquals(java.util.Objects.requireNonNull(FlexiBookIds.tryParse("flexibook:textures/gui/icon.png")), img.src());
         assertEquals(32, img.width());
         assertEquals(32, img.height());
     }
@@ -77,15 +81,15 @@ class PackExportFixtureCodecTest {
     @Test
     void realDemoGuideIndexExportParses() throws Exception {
         var el = load("pack_export_fixture/demo_guide_export.json");
-        BookDefinition def = BookDefinition.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
-        assertEquals(ResourceLocation.parse("demopack:demo_guide"), def.contentId());
+        BookDefinition def =Compat.getOrThrow( BookDefinition.CODEC.parse(JsonOps.INSTANCE, el));
+        assertEquals(java.util.Objects.requireNonNull(FlexiBookIds.tryParse("demopack:demo_guide")), def.contentId());
         assertEquals(OptionalRL("demopack:default"), def.themeId());
     }
 
     @Test
     void realDemoGuideContentExportParses() throws Exception {
         var el = load("pack_export_fixture/demo_guide_content_export.json");
-        AdaptiveBookContent body = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
+        AdaptiveBookContent body =Compat.getOrThrow( AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, el));
         assertFalse(body.isEmpty());
         assertEquals(OptionalRL("flexibook:default"), body.defaultFont());
         assertTrue(body.elements().isPresent());
@@ -95,12 +99,12 @@ class PackExportFixtureCodecTest {
     @Test
     void realDefaultThemeExportParses() throws Exception {
         var el = load("pack_export_fixture/default_theme_export.json");
-        BookTheme theme = BookTheme.CODEC.parse(JsonOps.INSTANCE, el).getOrThrow();
-        assertEquals(ResourceLocation.parse("demopack:textures/gui/book.png"), theme.bookTexture());
+        BookTheme theme =Compat.getOrThrow( BookTheme.CODEC.parse(JsonOps.INSTANCE, el));
+        assertEquals(java.util.Objects.requireNonNull(FlexiBookIds.tryParse("demopack:textures/gui/book.png")), theme.bookTexture());
     }
 
     private static Optional<ResourceLocation> OptionalRL(String s) {
-        return Optional.of(ResourceLocation.parse(s));
+        return Optional.of(java.util.Objects.requireNonNull(FlexiBookIds.tryParse(s)));
     }
 
     private static com.google.gson.JsonElement load(String classpath) throws Exception {

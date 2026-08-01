@@ -1,5 +1,9 @@
 package io.github.PhantomDaze.flexibook.client.theme;
 
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
+
+import io.github.PhantomDaze.flexibook.util.Compat;
+
 import com.mojang.serialization.JsonOps;
 import io.github.PhantomDaze.flexibook.api.FlexiBookAPI;
 import net.minecraft.resources.ResourceLocation;
@@ -25,14 +29,14 @@ class BookThemeRegistryTest {
 
     @Test
     void unknownFallsBackToDefault() {
-        BookTheme t = BookThemeRegistry.resolve(ResourceLocation.fromNamespaceAndPath("nope", "missing"));
+        BookTheme t = BookThemeRegistry.resolve(FlexiBookIds.of("nope", "missing"));
         assertEquals(BookThemes.DEFAULT.imageFit(), t.imageFit());
         assertEquals(BookThemes.DEFAULT.pageContentWidth(), t.pageContentWidth());
     }
 
     @Test
     void registerAndResolveCustom() {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("testmod", "wide");
+        ResourceLocation id = FlexiBookIds.of("testmod", "wide");
         BookTheme custom = BookTheme.builder()
                 .pageContentWidth(200)
                 .imageFit(ImageFit.CONTAIN)
@@ -56,8 +60,8 @@ class BookThemeRegistryTest {
     void codecRoundTrip() {
         BookTheme original = BookThemes.DEFAULT.withImageFit(ImageFit.CONTAIN);
         var encoded = BookTheme.CODEC.encodeStart(JsonOps.INSTANCE, original);
-        assertTrue(encoded.isSuccess(), () -> String.valueOf(encoded.error()));
-        BookTheme back = BookTheme.CODEC.parse(JsonOps.INSTANCE, encoded.getOrThrow()).getOrThrow();
+        assertTrue(!Compat.isError(encoded), () -> String.valueOf(encoded.error()));
+        BookTheme back =Compat.getOrThrow( BookTheme.CODEC.parse(JsonOps.INSTANCE, Compat.getOrThrow(encoded)));
         assertEquals(original, back);
         assertEquals(ImageFit.CONTAIN, back.imageFit());
     }
@@ -67,7 +71,7 @@ class BookThemeRegistryTest {
         assertEquals(BookThemes.DEFAULT_ID, FlexiBookAPI.defaultThemeId());
         assertEquals(BookThemes.CONTAIN_ID, FlexiBookAPI.containThemeId());
         assertEquals(BookThemes.DEFAULT, FlexiBookAPI.resolveTheme(BookThemes.DEFAULT_ID));
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("testmod", "api_theme");
+        ResourceLocation id = FlexiBookIds.of("testmod", "api_theme");
         BookTheme t = BookTheme.builder().lineHeight(12).build();
         FlexiBookAPI.registerTheme(id, t);
         assertTrue(FlexiBookAPI.getTheme(id).isPresent());

@@ -1,5 +1,7 @@
 package io.github.PhantomDaze.flexibook.api;
 
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
+
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.BookElement;
 import io.github.PhantomDaze.flexibook.content.LinkAction;
@@ -65,7 +67,7 @@ class AdaptiveBookBuilderTest {
 
     @Test
     void defaultFontAndPerSpanFont() {
-        var font = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("minecraft", "alt");
+        var font = FlexiBookIds.of("minecraft", "alt");
         AdaptiveBookContent content = new AdaptiveBookBuilder("guide")
                 .titleKey("demo.title")
                 .defaultFont(font)
@@ -80,7 +82,7 @@ class AdaptiveBookBuilderTest {
 
     @Test
     void themeIdOnContent() {
-        var theme = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("flexibook", "contain");
+        var theme = FlexiBookIds.of("flexibook", "contain");
         AdaptiveBookContent content = new AdaptiveBookBuilder("guide")
                 .titleKey("demo.title")
                 .theme(theme)

@@ -1,11 +1,12 @@
 package io.github.PhantomDaze.flexibook.content;
 
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.minecraft.resources.ResourceLocation;
 
 public final class FlexiBookFonts {
     public static final ResourceLocation DEFAULT =
-            ResourceLocation.fromNamespaceAndPath(FlexiBookMod.MOD_ID, "default");
+            FlexiBookIds.of(FlexiBookMod.MOD_ID, "default");
 
     private FlexiBookFonts() {}
 

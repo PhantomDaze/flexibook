@@ -1,0 +1,52 @@
+// ForgeGradle 6 configuration for the 1.20.1 version node.
+// Applied from build.gradle.kts / build.forge.gradle when mod_loader=forge.
+// Version props are on project.ext from versions/1.20.1/gradle.properties.
+
+def mc = project.findProperty('minecraft_version') ?: project.ext.minecraft_version
+def fg = project.findProperty('forge_version') ?: project.ext.forge_version
+def modId = project.findProperty('mod_id') ?: project.ext.mod_id
+
+// Official mappings first — Parchment on FG6 needs the parchment plugin + specific channel setup.
+// Names may be slightly less readable on 1.20.1; functional compile is the goal.
+minecraft {
+    mappings channel: 'official', version: mc
+
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                "${modId}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {
+            property 'forge.enabledGameTestNamespaces', modId
+        }
+
+        server {
+            property 'forge.enabledGameTestNamespaces', modId
+            args '--nogui'
+        }
+
+        data {
+            workingDirectory project.file('run-data')
+            args '--mod', modId, '--all',
+                    '--output', file('src/generated/resources/'),
+                    '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${mc}-${fg}"
+}
+
+tasks.named('jar', Jar).configure {
+    finalizedBy 'reobfJar'
+}

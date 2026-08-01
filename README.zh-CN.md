@@ -1,8 +1,10 @@
 # FlexiBook
 
-NeoForge **1.21.1** 自适应排版成书模组。
+**Minecraft 26.2 / 26.1.2 / 1.21.4 / 1.21.1（NeoForge）**、**1.20.1（Forge）** 与 **Fabric 1.20.1 / 1.21.1 / 1.21.4 / 1.21.11** 自适应排版成书模组。
 
-用自定义 DataComponent + 客户端布局引擎 + `AdaptiveBookScreen`，在保留“书”交互的前提下支持：
+> 官方 NeoForge **没有** 1.20.1 线（从 1.20.2 起）。1.20.1 产物对应 **LexForge 47.x**。
+
+用自定义 DataComponent（26.x / 1.21.x）/ 物品 NBT（1.20.1）+ 客户端布局引擎 + `AdaptiveBookScreen`，在保留“书”交互的前提下支持：
 
 - HTML 子集标签（`[h1]` / `[p]` / `[b]` / `[color]` / `[img]` / `[link]` …）
 - 打开时按当前语言解析翻译键并重新测量分页
@@ -24,21 +26,63 @@ NeoForge **1.21.1** 自适应排版成书模组。
 
 ## 要求
 
-- **JDK 21** 运行 Gradle（JDK 25/26 会因 Gradle/Groovy 字节码版本报错）
-- Minecraft 1.21.1
-- NeoForge 21.1.x（见 `gradle.properties` 中 `neo_version`）
+| 目标 | 加载器 | JDK（toolchain） | 说明 |
+|------|--------|------------------|------|
+| **26.2** | NeoForge 26.2.x（beta） | **25** | DataComponent；`setScreenAndShow` |
+| **26.1.2** | NeoForge 26.1.2.x | **25** | DataComponent；`Identifier` + extract GUI |
+| **1.21.4** | NeoForge 21.4.x | **21** | DataComponent 存书 |
+| **1.21.1** | NeoForge 21.1.x | **21** | DataComponent 存书 |
+| **1.20.1** | Forge 47.4.x | **17** | NBT 键 `flexibook:content` |
+| **1.21.11-fabric** | Fabric Loader + API | **21** | DataComponent；`Identifier` + 混合 GUI |
+| **1.21.4-fabric** | Fabric Loader + API | **21** | DataComponent 存书 |
+| **1.21.1-fabric** | Fabric Loader + API | **21** | DataComponent 存书 |
+| **1.20.1-fabric** | Fabric Loader + API | **17** | NBT 键 `flexibook:content` |
+
+- **Gradle 8.14.x**（wrapper）+ **Fabric Loom 1.13.x**。Stonecutter 多版本；默认 active 为 **1.21.1**（可切换）。
+- Gradle 进程需 **JDK 21**（`org.gradle.java.home` 已固定；**26.x** 编译仍用 toolchain JDK 25）。系统默认 JDK 26 会弄坏 Stonecutter 的 Kotlin DSL。
+
+## Git 分支（按 JDK toolchain）
+
+| 分支 | 内容 |
+|------|------|
+| **`master`** | 完整多版本 monorepo（下列全部 JDK 线） |
+| **`java17`** | 仅 MC **1.20.1** Forge + Fabric（toolchain **17**） |
+| **`java21`** | MC **1.21.1 / 1.21.4** NeoForge + Fabric，以及 **1.21.11** Fabric（toolchain **21**） |
+| **`java25`** | 仅 MC **26.1.2 / 26.2** NeoForge（toolchain **25**） |
+
+开发时 checkout 与目标 JDK 对应的分支；精简分支的 `versions/` 与 Stonecutter 节点仅含该 JDK 线。
 
 ## 构建
 
 ```bash
-# 若默认 java 不是 21：
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
-# 或在 gradle.properties 设置 org.gradle.java.home=...
 
+# 仅当前 active（默认 1.21.1）
 ./gradlew build
-# jar: build/libs/flexibook-1.0.0.jar
+# jar: versions/<active>/build/libs/flexibook-1.0.0+<mc>.jar
 
-./gradlew runClient
+# 按 JDK toolchain 前缀分目录：
+#   versions/java17-{1.20.1,1.20.1-fabric}          (JDK 17)
+#   versions/java21-{1.21.1,1.21.1-fabric,1.21.4,
+#                    1.21.4-fabric,1.21.11-fabric}  (JDK 21)
+#   versions/java25-{26.1.2,26.2}                   (JDK 25)
+# 项目名 ≠ MC 版本：//? if 用的是 Stonecutter 第二参数（MC 版本）。
+
+# 全部版本节点
+./gradlew chiseledBuild
+# jars：versions/<node>/build/libs/flexibook-1.0.0+<mc>.jar
+
+# 切换共享源码
+./gradlew "Set active project to java17-1.20.1"
+./gradlew "Set active project to java21-1.21.1"
+./gradlew "Set active project to java25-26.2"
+./gradlew "Set active project to java21-1.21.11-fabric"
+
+./gradlew :java25-26.2:runClient
+./gradlew :java21-1.21.1:runClient
+./gradlew :java17-1.20.1:runClient
+./gradlew :java21-1.21.11-fabric:runClient
+./gradlew :java17-1.20.1-fabric:runClient
 ```
 
 ## 游戏内

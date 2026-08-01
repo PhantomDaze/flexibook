@@ -30,7 +30,7 @@ Related: [editor README](../editor/README.md) · [API §14 data books](./API.md#
 |-------|--------|
 | FlexiBook mod | Installed on the client (and server if multiplayer needs the item) |
 | Editor | `cd editor && npm install` then `npm run dev:electron` or `npm run dev` |
-| Minecraft | **1.21.1** · NeoForge **21.1.x** |
+| Minecraft | **26.2 / 26.1.2 / 1.21.4 / 1.21.1** · NeoForge（也支持 **1.20.1** Forge，见 `pack_format`） |
 | Permissions | `/flexibook` needs permission level **≥ 2** (cheats / OP) |
 
 The editor is **not** inside the mod JAR. It only produces resource packs (and optional single JSON files).
@@ -118,7 +118,7 @@ Top bar → **Export full pack…** (primary button).
 | `namespace` | yes | `[a-z0-9_.-]+` only |
 | `themeId` | yes (default `main`) | Theme file name / id path |
 | `bookId` | yes (default `guide`) | Book definition + content file name |
-| `pack_format` | default `34` | 1.21.1-era resource pack format |
+| `pack_format` | default `34` | **1.21.1** → **34**; **1.21.4** → **46**; **26.1.2** → **84**; **26.2** → **88** (resource major); **1.20.1** → **15**. 26.x also accepts `min_format`/`max_format` in `pack.mcmeta`. |
 
 ### 4.3 What gets written
 

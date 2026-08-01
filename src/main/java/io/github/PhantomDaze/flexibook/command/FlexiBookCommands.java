@@ -27,7 +27,11 @@ public final class FlexiBookCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("flexibook")
+                        //? if >=1.21.11 {
+                        /*.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        *///?} else {
                         .requires(src -> src.hasPermission(2))
+                        //?}
                         .then(Commands.literal("give")
                                 .then(Commands.argument("book", ResourceLocationArgument.id())
                                         .executes(ctx -> give(
@@ -79,7 +83,14 @@ public final class FlexiBookCommands {
             player.drop(stack, false);
         }
         source.sendSuccess(
-                () -> Component.literal("Gave " + bookId + " to " + player.getGameProfile().getName()),
+                () -> {
+                    //? if >=1.21.11 {
+                    /*String name = player.getGameProfile().name();
+                    *///?} else {
+                    String name = player.getGameProfile().getName();
+                    //?}
+                    return Component.literal("Gave " + bookId + " to " + name);
+                },
                 true
         );
         return 1;

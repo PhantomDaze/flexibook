@@ -1,5 +1,7 @@
 package io.github.PhantomDaze.flexibook.client.theme;
 
+import io.github.PhantomDaze.flexibook.util.Compat;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.logging.LogUtils;
@@ -8,6 +10,8 @@ import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.BookDefinition;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
+import io.github.PhantomDaze.flexibook.util.ResourceIo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -81,15 +85,15 @@ public final class BookContentReloadListener implements ResourceManagerReloadLis
             if (bodyPath.isEmpty() || bodyPath.contains("..")) {
                 continue;
             }
-            ResourceLocation contentId = ResourceLocation.fromNamespaceAndPath(fileId.getNamespace(), bodyPath);
-            try (BufferedReader reader = entry.getValue().openAsReader()) {
+            ResourceLocation contentId = FlexiBookIds.of(fileId.getNamespace(), bodyPath);
+            try (BufferedReader reader = ResourceIo.openAsReader(entry.getValue())) {
                 JsonElement json = JsonParser.parseReader(reader);
                 var parsed = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, json);
-                if (parsed.isError()) {
+                if (Compat.isError(parsed)) {
                     LOGGER.error("Failed to parse book content body {}: {}", contentId, parsed.error());
                     continue;
                 }
-                AdaptiveBookContent content = parsed.getOrThrow();
+                AdaptiveBookContent content = Compat.getOrThrow(parsed);
                 BookContentRegistry.register(contentId, content);
                 lastContentIds.add(contentId);
                 loaded++;
@@ -116,11 +120,11 @@ public final class BookContentReloadListener implements ResourceManagerReloadLis
             if (bookPath.isEmpty() || bookPath.contains("..")) {
                 continue;
             }
-            ResourceLocation bookId = ResourceLocation.fromNamespaceAndPath(fileId.getNamespace(), bookPath);
-            try (BufferedReader reader = entry.getValue().openAsReader()) {
+            ResourceLocation bookId = FlexiBookIds.of(fileId.getNamespace(), bookPath);
+            try (BufferedReader reader = ResourceIo.openAsReader(entry.getValue())) {
                 JsonElement json = JsonParser.parseReader(reader);
                 var parsed = BookDefinition.CODEC.parse(JsonOps.INSTANCE, json);
-                if (parsed.isError()) {
+                if (Compat.isError(parsed)) {
                     LOGGER.error(
                             "Failed to parse book index {} (expected {{\"content\",\"theme\"?,\"font\"?}}): {}",
                             bookId,
@@ -128,7 +132,7 @@ public final class BookContentReloadListener implements ResourceManagerReloadLis
                     );
                     continue;
                 }
-                BookDefinition def = parsed.getOrThrow();
+                BookDefinition def = Compat.getOrThrow(parsed);
                 BookDefinitionRegistry.register(bookId, def);
                 lastBookIds.add(bookId);
                 loaded++;

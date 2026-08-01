@@ -1,5 +1,7 @@
 package io.github.PhantomDaze.flexibook.layout;
 
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
+
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.BookElement;
 import io.github.PhantomDaze.flexibook.content.FlexiBookFonts;
@@ -110,7 +112,7 @@ class BookLayoutEngineTest {
 
     @Test
     void explicitBookDefaultFontIsApplied() {
-        ResourceLocation custom = ResourceLocation.fromNamespaceAndPath("mymod", "fancy");
+        ResourceLocation custom = FlexiBookIds.of("mymod", "fancy");
         AdaptiveBookContent content = AdaptiveBookContent.ofElements(
                 io.github.PhantomDaze.flexibook.content.TranslatableText.of("title"),
                 List.of(new BookElement.Paragraph(List.of(InlineSpan.literal("Hello")))),
@@ -130,7 +132,7 @@ class BookLayoutEngineTest {
     @Test
     void spanLevelFontOverridesBookFont() {
         ResourceLocation bookFont = FlexiBookFonts.DEFAULT;
-        ResourceLocation spanFont = ResourceLocation.fromNamespaceAndPath("mymod", "fancy");
+        ResourceLocation spanFont = FlexiBookIds.of("mymod", "fancy");
         AdaptiveBookContent content = AdaptiveBookContent.ofElements(
                 io.github.PhantomDaze.flexibook.content.TranslatableText.of("title"),
                 List.of(new BookElement.Paragraph(List.of(

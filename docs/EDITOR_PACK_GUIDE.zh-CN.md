@@ -30,7 +30,7 @@
 |----|------|
 | FlexiBook 模组 | 客户端已安装（联机若需物品则服务端也要） |
 | 编辑器 | `cd editor && npm install`，再 `npm run dev:electron` 或 `npm run dev` |
-| Minecraft | **1.21.1** · NeoForge **21.1.x** |
+| Minecraft | **26.2 / 26.1.2 / 1.21.4 / 1.21.1** · NeoForge（亦支持 **1.20.1** Forge，见 `pack_format`） |
 | 权限 | `/flexibook` 需要权限等级 **≥ 2**（作弊 / OP） |
 
 编辑器**不在**模组 JAR 内，只产出资源包（以及可选的单文件 JSON）。
@@ -118,7 +118,7 @@
 | `namespace` | 是 | 仅 `[a-z0-9_.-]+` |
 | `themeId` | 是（默认 `main`） | 主题文件名 / 路径段 |
 | `bookId` | 是（默认 `guide`） | 书索引 + 正文文件名 |
-| `pack_format` | 默认 `34` | 1.21.1 时期资源包格式 |
+| `pack_format` | 默认 `34` | **1.21.1** → **34**；**1.21.4** → **46**；**26.1.2** → **84**；**26.2** → **88**（resource major）；**1.20.1** → **15**。26.x 亦可用 `min_format`/`max_format`。 |
 
 ### 4.3 会写出什么
 

@@ -9,8 +9,8 @@ import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.BookDefinition;
 import io.github.PhantomDaze.flexibook.content.LinkAction;
 import io.github.PhantomDaze.flexibook.content.LinkActionRegistry;
-import io.github.PhantomDaze.flexibook.registry.ModDataComponents;
 import io.github.PhantomDaze.flexibook.registry.ModItems;
+import io.github.PhantomDaze.flexibook.content.BookContentAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -30,8 +30,8 @@ public final class FlexiBookAPI {
     }
 
     public static ItemStack createBook(AdaptiveBookContent content) {
-        ItemStack stack = new ItemStack(ModItems.FLEXI_BOOK.get());
-        stack.set(ModDataComponents.ADAPTIVE_BOOK_CONTENT.get(), content);
+        ItemStack stack = new ItemStack(ModItems.book());
+        BookContentAccess.set(stack, content);
         return stack;
     }
 

@@ -1,5 +1,7 @@
 package io.github.PhantomDaze.flexibook.data;
 
+import io.github.PhantomDaze.flexibook.util.Compat;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
@@ -10,6 +12,7 @@ import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemeRegistry;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.BookDefinition;
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.minecraft.resources.ResourceLocation;
 
 import java.io.InputStream;
@@ -37,12 +40,12 @@ public final class ClasspathPackBootstrap {
         JsonElement el = read(cp);
         if (el == null) return;
         var parsed = BookTheme.CODEC.parse(JsonOps.INSTANCE, el);
-        if (parsed.isError()) {
+        if (Compat.isError(parsed)) {
             FlexiBookMod.LOGGER.error("Classpath theme {}: {}", cp, parsed.error());
             return;
         }
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ns, path);
-        BookThemeRegistry.register(id, parsed.getOrThrow());
+        ResourceLocation id = FlexiBookIds.of(ns, path);
+        BookThemeRegistry.register(id, Compat.getOrThrow(parsed));
         FlexiBookMod.LOGGER.info("Classpath theme registered {}", id);
     }
 
@@ -51,12 +54,12 @@ public final class ClasspathPackBootstrap {
         JsonElement el = read(cp);
         if (el == null) return;
         var parsed = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, el);
-        if (parsed.isError()) {
+        if (Compat.isError(parsed)) {
             FlexiBookMod.LOGGER.error("Classpath content {}: {}", cp, parsed.error());
             return;
         }
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ns, path);
-        BookContentRegistry.register(id, parsed.getOrThrow());
+        ResourceLocation id = FlexiBookIds.of(ns, path);
+        BookContentRegistry.register(id, Compat.getOrThrow(parsed));
         FlexiBookMod.LOGGER.info("Classpath content registered {}", id);
     }
 
@@ -65,12 +68,12 @@ public final class ClasspathPackBootstrap {
         JsonElement el = read(cp);
         if (el == null) return;
         var parsed = BookDefinition.CODEC.parse(JsonOps.INSTANCE, el);
-        if (parsed.isError()) {
+        if (Compat.isError(parsed)) {
             FlexiBookMod.LOGGER.error("Classpath book index {}: {}", cp, parsed.error());
             return;
         }
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ns, path);
-        BookDefinitionRegistry.register(id, parsed.getOrThrow());
+        ResourceLocation id = FlexiBookIds.of(ns, path);
+        BookDefinitionRegistry.register(id, Compat.getOrThrow(parsed));
         FlexiBookMod.LOGGER.info("Classpath book registered {}", id);
     }
 

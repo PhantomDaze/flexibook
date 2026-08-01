@@ -1,7 +1,7 @@
 # FlexiBook API Reference
 
 API / data / markup guide for other mods and datapack authors.  
-Version: `flexibook` **1.0.0** · Minecraft **1.21.1** · NeoForge **21.1.x**.
+Version: `flexibook` **1.0.0** · Minecraft **26.2 / 26.1.2 / 1.21.4 / 1.21.1** (NeoForge) · **1.20.1** (Forge).
 
 **中文:** [`API.zh-CN.md`](./API.zh-CN.md).
 
@@ -595,15 +595,27 @@ AdaptiveBookScreen click ClickArea
 
 ---
 
-## 9. Item and DataComponent
+## 9. Item and book payload storage
 
 | Registry name | Notes |
 |---------------|--------|
 | Item `flexibook:flexi_book` | `ModItems.FLEXI_BOOK`, `stacksTo(1)` |
-| Component `flexibook:adaptive_book_content` | `ModDataComponents.ADAPTIVE_BOOK_CONTENT` |
+| **26.2 / 26.1.2 / 1.21.4 / 1.21.1** Component `flexibook:adaptive_book_content` | `ModDataComponents.ADAPTIVE_BOOK_CONTENT` |
+| **1.20.1** NBT key `flexibook:content` | Same DFU `AdaptiveBookContent.CODEC` via `NbtOps` |
 | Creative tab `flexibook` | Blank book + Demo Guide |
 
-### 9.1 Read/write component
+Prefer the version-agnostic helper (works on both lines):
+
+```java
+import io.github.PhantomDaze.flexibook.content.BookContentAccess;
+
+BookContentAccess.set(stack, content);
+AdaptiveBookContent c = BookContentAccess.get(stack);
+// or
+AdaptiveBookContent c = BookContentAccess.getOrEmpty(stack);
+```
+
+### 9.1 Direct component access (1.21.x only)
 
 ```java
 // Write
@@ -616,7 +628,7 @@ if (c == null || c.isEmpty()) {
 }
 ```
 
-API equivalent:
+API equivalent (both versions):
 
 ```java
 ItemStack stack = FlexiBookAPI.createBook(content);
@@ -624,7 +636,7 @@ ItemStack stack = FlexiBookAPI.createBook(content);
 
 ### 9.2 Display name and tooltip
 
-- `getName`: if component present, `content.title().resolve()`  
+- `getName`: if payload present, `content.title().resolve()`  
 - Tooltip: fixed blurb + empty-book line `flexibook.item.flexi_book.empty`
 
 ### 9.3 How to give books
@@ -910,7 +922,7 @@ Custom themes may point `book_texture` anywhere. Page buttons use vanilla GUI �
 `assets/flexibook/textures/item/flexi_book.png` (prefer 16×16). Editor Theme → item icon picker; texture pack export writes both  
 `assets/<ns>/textures/item/flexi_book.png` (round-trip) and `assets/flexibook/textures/item/flexi_book.png` (in-game override).
 
-**Partial alpha / soft edges:** `AdaptiveBookScreen` enables GL blend (`RenderSystem.enableBlend` + `defaultBlendFunc`) when drawing the book background and inline images. 1.21.1 `GuiGraphics.blit` does not enable blend by default — without it, only fully transparent texels vanish and soft alpha becomes solid. Use PNGs with a real alpha channel.
+**Partial alpha / soft edges:** On **1.21.1 / 1.20.1**, `AdaptiveBookScreen` enables GL blend (`RenderSystem.enableBlend` + `defaultBlendFunc`) around `GuiGraphics.blit` (those overloads do not enable blend by default). On **1.21.4+**, blits go through `RenderType::guiTextured`, which already composites alpha. Use PNGs with a real alpha channel.
 
 Editor partial export (Theme tab): **Textures → export textures pack** (book + item); **Export theme → theme pack / theme JSON**. Full pack still uses the top bar.
 
@@ -1235,7 +1247,7 @@ A: No. Screen is client-only. Server only gives stacks or mutates components.
 A: GPLv3. Comply when depending and redistributing.
 
 **Q: JDK?**  
-A: Prefer **JDK 21** for building FlexiBook and compatible mods (NeoForge 1.21.1 toolchain).
+A: Prefer **JDK 21** for building FlexiBook and compatible mods (NeoForge 1.21.x toolchain; Gradle itself is pinned to JDK 21).
 
 ---
 

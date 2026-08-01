@@ -1,6 +1,7 @@
 package io.github.PhantomDaze.flexibook.client.theme;
 
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -12,14 +13,14 @@ public final class BookThemes {
     }
 
     public static final ResourceLocation DEFAULT_ID =
-            ResourceLocation.fromNamespaceAndPath(FlexiBookMod.MOD_ID, "default");
+            FlexiBookIds.of(FlexiBookMod.MOD_ID, "default");
 
     /** Same layout/colors as {@link #DEFAULT}, but {@link ImageFit#CONTAIN} for images. */
     public static final ResourceLocation CONTAIN_ID =
-            ResourceLocation.fromNamespaceAndPath(FlexiBookMod.MOD_ID, "contain");
+            FlexiBookIds.of(FlexiBookMod.MOD_ID, "contain");
 
     private static final ResourceLocation BOOK_TEX =
-            ResourceLocation.fromNamespaceAndPath(FlexiBookMod.MOD_ID, "textures/gui/book.png");
+            FlexiBookIds.of(FlexiBookMod.MOD_ID, "textures/gui/book.png");
 
     /**
      * Example parchment theme used when a book has no {@code theme} id (or an unknown id).

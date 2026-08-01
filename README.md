@@ -1,8 +1,10 @@
 # FlexiBook
 
-Adaptive layout books for **NeoForge 1.21.1**.
+Adaptive layout books for **Minecraft 26.2 / 26.1.2 / 1.21.4 / 1.21.1 (NeoForge)**, **1.20.1 (Forge)**, and **Fabric 1.20.1 / 1.21.1 / 1.21.4 / 1.21.11**.
 
-Custom DataComponent + client layout engine + `AdaptiveBookScreen`, keeping a book-like interaction while supporting:
+> Official NeoForge does **not** ship a 1.20.1 line (it starts at 1.20.2). The 1.20.1 artifact targets **LexForge 47.x**.
+
+Custom DataComponent (26.x / 1.21.x) / ItemStack NBT (1.20.1) + client layout engine + `AdaptiveBookScreen`, keeping a book-like interaction while supporting:
 
 - HTML-subset markup (`[h1]` / `[p]` / `[b]` / `[color]` / `[img]` / `[link]` …)
 - Resolve translation keys and reflow pagination when the book opens (current client language)
@@ -24,21 +26,73 @@ Custom DataComponent + client layout engine + `AdaptiveBookScreen`, keeping a bo
 
 ## Requirements
 
-- **JDK 21** for Gradle (JDK 25/26 breaks on Gradle/Groovy bytecode)
-- Minecraft 1.21.1
-- NeoForge 21.1.x (see `neo_version` in `gradle.properties`)
+| Target | Loader | JDK (toolchain) | Notes |
+|--------|--------|-----------------|--------|
+| **26.2** | NeoForge 26.2.x (beta) | **25** | DataComponent; `setScreenAndShow` |
+| **26.1.2** | NeoForge 26.1.2.x | **25** | DataComponent; `Identifier` + extract GUI |
+| **1.21.4** | NeoForge 21.4.x | **21** | DataComponent payload |
+| **1.21.1** | NeoForge 21.1.x | **21** | DataComponent payload |
+| **1.20.1** | Forge 47.4.x | **17** | NBT payload (`flexibook:content`) |
+| **1.21.11-fabric** | Fabric Loader + API | **21** | DataComponent; `Identifier` + hybrid GUI |
+| **1.21.4-fabric** | Fabric Loader + API | **21** | DataComponent payload |
+| **1.21.1-fabric** | Fabric Loader + API | **21** | DataComponent payload |
+| **1.20.1-fabric** | Fabric Loader + API | **17** | NBT payload (`flexibook:content`) |
+
+- **Gradle 8.14.x** (wrapper) + **Fabric Loom 1.13.x**. Stonecutter multi-version; active defaults to **1.21.1** (switch freely).
+- Gradle itself should run on **JDK 21** (`org.gradle.java.home` is pinned). JDK 25/26 breaks the Kotlin DSL used by Stonecutter.
+
+## Git branches (by JDK toolchain)
+
+| Branch | Contents |
+|--------|----------|
+| **`master`** | Full multi-version monorepo (all JDK lines below) |
+| **`java17`** | MC **1.20.1** Forge + Fabric only (toolchain **17**) |
+| **`java21`** | MC **1.21.1 / 1.21.4** NeoForge + Fabric, **1.21.11** Fabric (toolchain **21**) |
+| **`java25`** | MC **26.1.2 / 26.2** NeoForge (toolchain **25**) |
+
+Checkout the branch that matches the JDK you develop against; each slim branch only registers its own Stonecutter version nodes under `versions/`.
 
 ## Build
 
 ```bash
-# If default java is not 21:
+# JDK for Gradle daemon (must be 21 — see gradle.properties org.gradle.java.home):
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
-# Or set org.gradle.java.home=... in gradle.properties
 
+# Active version only (default 1.21.1):
 ./gradlew build
-# jar: build/libs/flexibook-1.0.0.jar
+# jar: versions/<active>/build/libs/flexibook-1.0.0+<mc>.jar
 
-./gradlew runClient
+# Disk layout groups nodes by JDK toolchain prefix:
+#   versions/java17-{1.20.1,1.20.1-fabric}          (JDK 17)
+#   versions/java21-{1.21.1,1.21.1-fabric,1.21.4,
+#                    1.21.4-fabric,1.21.11-fabric}  (JDK 21)
+#   versions/java25-{26.1.2,26.2}                   (JDK 25)
+# Project name ≠ MC version: Stonecutter //? if uses the second arg (MC version).
+
+# All version nodes:
+./gradlew chiseledBuild
+# jars: versions/<node>/build/libs/flexibook-1.0.0+<mc>.jar
+
+# Switch shared sources (processes //? comments in src/):
+./gradlew "Set active project to java17-1.20.1"
+./gradlew "Set active project to java17-1.20.1-fabric"
+./gradlew "Set active project to java21-1.21.1"
+./gradlew "Set active project to java21-1.21.1-fabric"
+./gradlew "Set active project to java21-1.21.4"
+./gradlew "Set active project to java21-1.21.4-fabric"
+./gradlew "Set active project to java21-1.21.11-fabric"
+./gradlew "Set active project to java25-26.1.2"
+./gradlew "Set active project to java25-26.2"
+
+./gradlew :java25-26.2:runClient
+./gradlew :java25-26.1.2:runClient
+./gradlew :java21-1.21.4:runClient
+./gradlew :java21-1.21.1:runClient
+./gradlew :java17-1.20.1:runClient
+./gradlew :java21-1.21.11-fabric:runClient
+./gradlew :java21-1.21.4-fabric:runClient
+./gradlew :java21-1.21.1-fabric:runClient
+./gradlew :java17-1.20.1-fabric:runClient
 ```
 
 ## In-game

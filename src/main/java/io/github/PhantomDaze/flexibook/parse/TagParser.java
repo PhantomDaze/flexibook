@@ -6,6 +6,8 @@ import io.github.PhantomDaze.flexibook.content.InlineSpan;
 import io.github.PhantomDaze.flexibook.content.LinkAction;
 import io.github.PhantomDaze.flexibook.content.StyleFlags;
 import io.github.PhantomDaze.flexibook.content.TranslatableText;
+import io.github.PhantomDaze.flexibook.util.Compat;
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -293,7 +295,7 @@ public final class TagParser {
                 return new TranslatableText("");
             }
             // Prefer first span as key if it looks like a key; else join literals as a synthetic keyless literal via empty key + we store as key=joined for resolve
-            InlineSpan first = spans.getFirst();
+            InlineSpan first = Compat.first(spans);
             if (first.translate()) {
                 return new TranslatableText(first.text());
             }
@@ -311,11 +313,11 @@ public final class TagParser {
             String srcAttr = tag.attrs.getOrDefault("src", "flexibook:textures/gui/icon.png");
             ResourceLocation rl = ResourceLocation.tryParse(srcAttr.contains(":") ? srcAttr : "flexibook:" + srcAttr);
             if (rl == null) {
-                rl = ResourceLocation.fromNamespaceAndPath(FlexiBookMod.MOD_ID, "textures/gui/icon.png");
+                rl = FlexiBookIds.of(FlexiBookMod.MOD_ID, "textures/gui/icon.png");
             }
             // bare paths like textures/gui/x.png should become flexibook:textures/...
             if (!srcAttr.contains(":")) {
-                rl = ResourceLocation.fromNamespaceAndPath(FlexiBookMod.MOD_ID, srcAttr);
+                rl = FlexiBookIds.of(FlexiBookMod.MOD_ID, srcAttr);
             }
             int w = parseInt(tag.attrs.get("width"), 48);
             int h = parseInt(tag.attrs.get("height"), 48);

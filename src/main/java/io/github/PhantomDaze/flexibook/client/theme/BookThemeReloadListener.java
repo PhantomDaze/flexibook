@@ -1,11 +1,15 @@
 package io.github.PhantomDaze.flexibook.client.theme;
 
+import io.github.PhantomDaze.flexibook.util.Compat;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
+import io.github.PhantomDaze.flexibook.util.ResourceIo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -58,15 +62,15 @@ public final class BookThemeReloadListener implements ResourceManagerReloadListe
             if (themePath.isEmpty() || themePath.contains("..")) {
                 continue;
             }
-            ResourceLocation themeId = ResourceLocation.fromNamespaceAndPath(fileId.getNamespace(), themePath);
-            try (BufferedReader reader = entry.getValue().openAsReader()) {
+            ResourceLocation themeId = FlexiBookIds.of(fileId.getNamespace(), themePath);
+            try (BufferedReader reader = ResourceIo.openAsReader(entry.getValue())) {
                 JsonElement json = JsonParser.parseReader(reader);
                 var parsed = BookTheme.CODEC.parse(JsonOps.INSTANCE, json);
-                if (parsed.isError()) {
+                if (Compat.isError(parsed)) {
                     LOGGER.error("Failed to parse book theme {}: {}", themeId, parsed.error());
                     continue;
                 }
-                BookTheme theme = parsed.getOrThrow();
+                BookTheme theme = Compat.getOrThrow(parsed);
                 BookThemeRegistry.register(themeId, theme);
                 lastResourceIds.add(themeId);
                 loaded++;

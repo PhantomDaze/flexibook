@@ -7,7 +7,7 @@ import io.github.PhantomDaze.flexibook.content.LinkAction;
 import io.github.PhantomDaze.flexibook.content.StyleFlags;
 import io.github.PhantomDaze.flexibook.content.TranslatableText;
 import io.github.PhantomDaze.flexibook.parse.TagParser;
-import io.github.PhantomDaze.flexibook.registry.ModDataComponents;
+import io.github.PhantomDaze.flexibook.content.BookContentAccess;
 import io.github.PhantomDaze.flexibook.registry.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -207,8 +207,8 @@ public final class AdaptiveBookBuilder {
     }
 
     public ItemStack buildItem() {
-        ItemStack stack = new ItemStack(ModItems.FLEXI_BOOK.get());
-        stack.set(ModDataComponents.ADAPTIVE_BOOK_CONTENT.get(), buildContent());
+        ItemStack stack = new ItemStack(ModItems.book());
+        BookContentAccess.set(stack, buildContent());
         return stack;
     }
 }

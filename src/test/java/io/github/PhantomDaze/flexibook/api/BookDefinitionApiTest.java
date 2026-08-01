@@ -1,5 +1,7 @@
 package io.github.PhantomDaze.flexibook.api;
 
+import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
+
 import io.github.PhantomDaze.flexibook.client.theme.BookContentRegistry;
 import io.github.PhantomDaze.flexibook.client.theme.BookDefinitionRegistry;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
@@ -23,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookDefinitionApiTest {
 
     private static final ResourceLocation BOOK_ID =
-            ResourceLocation.fromNamespaceAndPath("testmod", "guide");
+            FlexiBookIds.of("testmod", "guide");
     private static final ResourceLocation CONTENT_ID =
-            ResourceLocation.fromNamespaceAndPath("testmod", "guide_body");
+            FlexiBookIds.of("testmod", "guide_body");
 
     @BeforeEach
     void seed() {
@@ -35,12 +37,12 @@ class BookDefinitionApiTest {
                 new TranslatableText("testmod.guide.title"),
                 List.of(new BookElement.Paragraph(List.of(InlineSpan.literal("hi")))),
                 Optional.empty(),
-                Optional.of(ResourceLocation.fromNamespaceAndPath("testmod", "old_theme"))
+                Optional.of(FlexiBookIds.of("testmod", "old_theme"))
         );
         BookContentRegistry.register(CONTENT_ID, body);
         BookDefinitionRegistry.register(
                 BOOK_ID,
-                BookDefinition.of(CONTENT_ID, ResourceLocation.fromNamespaceAndPath("testmod", "main"))
+                BookDefinition.of(CONTENT_ID, FlexiBookIds.of("testmod", "main"))
         );
     }
 
@@ -68,7 +70,7 @@ class BookDefinitionApiTest {
     @Test
     void unknownResolvesToEmpty() {
         AdaptiveBookContent c = FlexiBookAPI.resolveBook(
-                ResourceLocation.fromNamespaceAndPath("nope", "missing"));
+                FlexiBookIds.of("nope", "missing"));
         assertTrue(c.isEmpty() || c == AdaptiveBookContent.EMPTY
                 || c.title().key().contains("empty"));
     }
@@ -76,7 +78,7 @@ class BookDefinitionApiTest {
     @Test
     void bodyOnlyIdIsNotABook() {
         // Content body registered without a book index must not resolve via resolveBook
-        ResourceLocation bodyOnly = ResourceLocation.fromNamespaceAndPath("testmod", "orphan_body");
+        ResourceLocation bodyOnly = FlexiBookIds.of("testmod", "orphan_body");
         BookContentRegistry.register(
                 bodyOnly,
                 AdaptiveBookContent.ofElements(
@@ -91,7 +93,7 @@ class BookDefinitionApiTest {
     @Test
     void functionOverrideReturnsNewInstance() {
         AdaptiveBookContent base = FlexiBookAPI.resolveBook(BOOK_ID);
-        ResourceLocation newTheme = ResourceLocation.fromNamespaceAndPath("testmod", "dark");
+        ResourceLocation newTheme = FlexiBookIds.of("testmod", "dark");
         AdaptiveBookContent tweaked = base.withThemeId(newTheme);
         assertNotSame(base, tweaked);
         assertEquals(Optional.of(newTheme), tweaked.themeId());
@@ -103,6 +105,6 @@ class BookDefinitionApiTest {
         assertTrue(FlexiBookAPI.getBookDefinition(BOOK_ID).isPresent());
         assertTrue(FlexiBookAPI.getBookContent(CONTENT_ID).isPresent());
         assertTrue(FlexiBookAPI.getBookDefinition(
-                ResourceLocation.fromNamespaceAndPath("x", "y")).isEmpty());
+                FlexiBookIds.of("x", "y")).isEmpty());
     }
 }

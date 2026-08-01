@@ -1,0 +1,68 @@
+// Fabric Loom configuration for fabric version nodes.
+// Applied from build.gradle when mod_loader=fabric.
+
+def mc = project.findProperty('minecraft_version') ?: project.ext.minecraft_version
+def loaderVer = project.findProperty('loader_version') ?: project.ext.loader_version
+def fabricApi = project.findProperty('fabric_api_version') ?: project.ext.fabric_api_version
+def modId = project.findProperty('mod_id') ?: project.ext.mod_id
+def javaVer = project.ext.javaVer as Integer
+
+repositories {
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${mc}"
+    // Mojmap so shared sources match Forge/NeoForge official mappings.
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${loaderVer}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
+    // Tooltip @Nullable on 1.20.1 (no JSR-305 on Fabric classpath by default).
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+}
+
+loom {
+    // Single main sourceset (no split client) — server-safe via reflective screen open.
+    mods {
+        "${modId}" {
+            sourceSet sourceSets.main
+        }
+    }
+
+    // Fabric API jars often ship named javadoc; Loom requires intermediary → break mojmap setups.
+    enableModProvidedJavadoc = false
+    enableTransitiveAccessWideners = true
+
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated true
+            runDir 'run'
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated true
+            runDir 'run'
+        }
+    }
+}
+
+processResources {
+    // fabric.mod.json is produced by generateModMetadata into generated resources.
+    exclude 'META-INF/mods.toml'
+    exclude 'META-INF/neoforge.mods.toml'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    if (javaVer < 21) {
+        options.compilerArgs += ['--enable-preview']
+    }
+}
+
+// Loom remapJar is the distribution artifact.
+tasks.named('build').configure {
+    dependsOn 'remapJar'
+}

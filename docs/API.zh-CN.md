@@ -1,7 +1,7 @@
 # FlexiBook 调用文档
 
 面向其他模组与数据包作者的 **API / 数据 / 标签** 说明。  
-实现版本：`flexibook` **1.0.0** · Minecraft **1.21.1** · NeoForge **21.1.x**。
+实现版本：`flexibook` **1.0.0** · Minecraft **26.2 / 26.1.2 / 1.21.4 / 1.21.1**（NeoForge）· **1.20.1**（Forge）。
 
 **English:** [`API.md`](./API.md)（默认）。
 
@@ -595,15 +595,27 @@ AdaptiveBookScreen 点击 ClickArea
 
 ---
 
-## 9. 物品与 DataComponent
+## 9. 物品与书内容存储
 
 | 注册名 | 说明 |
 |--------|------|
 | 物品 `flexibook:flexi_book` | `ModItems.FLEXI_BOOK`，`stacksTo(1)` |
-| 组件 `flexibook:adaptive_book_content` | `ModDataComponents.ADAPTIVE_BOOK_CONTENT` |
+| **26.2 / 26.1.2 / 1.21.4 / 1.21.1** 组件 `flexibook:adaptive_book_content` | `ModDataComponents.ADAPTIVE_BOOK_CONTENT` |
+| **1.20.1** NBT 键 `flexibook:content` | 同一套 DFU `AdaptiveBookContent.CODEC` + `NbtOps` |
 | 创造栏 `flexibook` | 空白书 + Demo Guide |
 
-### 9.1 读写组件
+推荐跨版本 API（两边都能用）：
+
+```java
+import io.github.PhantomDaze.flexibook.content.BookContentAccess;
+
+BookContentAccess.set(stack, content);
+AdaptiveBookContent c = BookContentAccess.get(stack);
+// 或
+AdaptiveBookContent c = BookContentAccess.getOrEmpty(stack);
+```
+
+### 9.1 直接读写组件（仅 1.21.x）
 
 ```java
 // 写
@@ -616,7 +628,7 @@ if (c == null || c.isEmpty()) {
 }
 ```
 
-等价于 API：
+等价于 API（两版本）：
 
 ```java
 ItemStack stack = FlexiBookAPI.createBook(content);
@@ -624,7 +636,7 @@ ItemStack stack = FlexiBookAPI.createBook(content);
 
 ### 9.2 物品展示名与 Tooltip
 
-- `getName`：若有组件，用 `content.title().resolve()`  
+- `getName`：若有内容，用 `content.title().resolve()`  
 - Tooltip：固定说明 + 空书时额外 `flexibook.item.flexi_book.empty`
 
 ### 9.3 发放方式建议
@@ -910,7 +922,7 @@ id：`<namespace>:<path>`（例：`assets/mymod/flexibook/themes/dark.json` → 
 `assets/flexibook/textures/item/flexi_book.png`（建议 16×16）。编辑器 Theme →「物品图标 item」可选本地图；导出纹理包时会同时写入  
 `assets/<ns>/textures/item/flexi_book.png`（便于回导）与 `assets/flexibook/textures/item/flexi_book.png`（游戏内生效）。
 
-**半透明 / 软边**：`AdaptiveBookScreen` 绘制书背景与正文图片时会开启 GL 混合（`RenderSystem.enableBlend` + `defaultBlendFunc`）。1.21.1 的 `GuiGraphics.blit` 默认不启混合，否则只有全透明像素消失，半透明会画成不透明。资源包请使用带正确 alpha 通道的 PNG；无需把半透明“烘焙”成不透明。
+**半透明 / 软边**：**1.21.1 / 1.20.1** 上 `AdaptiveBookScreen` 会在 `GuiGraphics.blit` 前后开启 GL 混合（`RenderSystem.enableBlend` + `defaultBlendFunc`，旧 overload 默认不启混合）。**1.21.4+** 走 `RenderType::guiTextured`，本身会正确合成 alpha。资源包请使用带正确 alpha 通道的 PNG。
 
 编辑器分项导出（Theme 页）：**纹理 / 背景 → 导出纹理资源包**（书背景 + 物品图标）；**导出主题 → 导出主题资源包 / 导出主题 JSON**。完整包仍用顶栏。
 
@@ -1216,7 +1228,7 @@ A: 不能。Screen 仅客户端。服务端只负责给 `ItemStack` 或改组件
 A: GPLv3。依赖并分发时请遵守 GPL 义务。
 
 **Q: JDK？**  
-A: 构建 FlexiBook 与兼容模组时建议 **JDK 21**（与 NeoForge 1.21.1 工具链一致）。
+A: 构建 FlexiBook 与兼容模组时建议 **JDK 21**（与 NeoForge 1.21.x 工具链一致；Gradle 进程也固定为 JDK 21）。
 
 ---
 
