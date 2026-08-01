@@ -9,7 +9,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 //?}
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 import java.util.Locale;
@@ -126,7 +126,7 @@ public sealed interface BookElement permits
     };
     //?}
 
-    record Heading(int level, TranslatableText text, Optional<ResourceLocation> font) implements BookElement {
+    record Heading(int level, TranslatableText text, Optional<Identifier> font) implements BookElement {
         public Heading(int level, TranslatableText text) {
             this(level, text, Optional.empty());
         }
@@ -134,14 +134,14 @@ public sealed interface BookElement permits
         public static final Codec<Heading> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.INT.optionalFieldOf("level", 1).forGetter(Heading::level),
                 TranslatableText.CODEC.fieldOf("text").forGetter(Heading::text),
-                ResourceLocation.CODEC.optionalFieldOf("font").forGetter(Heading::font)
+                Identifier.CODEC.optionalFieldOf("font").forGetter(Heading::font)
         ).apply(i, Heading::new));
 
         //? if >=1.21 {
         public static final StreamCodec<RegistryFriendlyByteBuf, Heading> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Heading::level,
                 TranslatableText.STREAM_CODEC, Heading::text,
-                ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), Heading::font,
+                ByteBufCodecs.optional(Identifier.STREAM_CODEC), Heading::font,
                 Heading::new
         );
         //?}
@@ -190,9 +190,9 @@ public sealed interface BookElement permits
         }
     }
 
-    record Image(ResourceLocation src, int width, int height, Optional<String> tooltipKey) implements BookElement {
+    record Image(Identifier src, int width, int height, Optional<String> tooltipKey) implements BookElement {
         public static final Codec<Image> CODEC = RecordCodecBuilder.create(i -> i.group(
-                ResourceLocation.CODEC.fieldOf("src").forGetter(Image::src),
+                Identifier.CODEC.fieldOf("src").forGetter(Image::src),
                 Codec.INT.optionalFieldOf("width", 16).forGetter(Image::width),
                 Codec.INT.optionalFieldOf("height", 16).forGetter(Image::height),
                 Codec.STRING.optionalFieldOf("tooltip").forGetter(Image::tooltipKey)
@@ -200,7 +200,7 @@ public sealed interface BookElement permits
 
         //? if >=1.21 {
         public static final StreamCodec<RegistryFriendlyByteBuf, Image> STREAM_CODEC = StreamCodec.composite(
-                ResourceLocation.STREAM_CODEC, Image::src,
+                Identifier.STREAM_CODEC, Image::src,
                 ByteBufCodecs.VAR_INT, Image::width,
                 ByteBufCodecs.VAR_INT, Image::height,
                 ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), Image::tooltipKey,

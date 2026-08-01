@@ -1,23 +1,23 @@
 package io.github.PhantomDaze.flexibook.util;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * ResourceLocation factory that works on both 1.20.1 ({@code new ResourceLocation})
+ * Identifier factory that works on both 1.20.1 ({@code new Identifier})
  * and 1.21.1 ({@code fromNamespaceAndPath}).
  */
 public final class FlexiBookIds {
     private FlexiBookIds() {}
 
-    public static ResourceLocation of(String namespace, String path) {
+    public static Identifier of(String namespace, String path) {
         //? if >=1.21 {
-        return ResourceLocation.fromNamespaceAndPath(namespace, path);
+        return Identifier.fromNamespaceAndPath(namespace, path);
         //?} else
-        /*return new ResourceLocation(namespace, path);*/
+        /*return new Identifier(namespace, path);*/
     }
 
-    public static @Nullable ResourceLocation tryParse(String id) {
-        return ResourceLocation.tryParse(id);
+    public static @Nullable Identifier tryParse(String id) {
+        return Identifier.tryParse(id);
     }
 }

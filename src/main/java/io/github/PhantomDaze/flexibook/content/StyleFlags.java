@@ -7,7 +7,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 //?}
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public record StyleFlags(
         boolean italic,
         boolean underline,
         Optional<Integer> color,
-        Optional<ResourceLocation> font
+        Optional<Identifier> font
 ) {
     public static final StyleFlags EMPTY = new StyleFlags(false, false, false, Optional.empty(), Optional.empty());
 
@@ -25,7 +25,7 @@ public record StyleFlags(
             Codec.BOOL.optionalFieldOf("italic", false).forGetter(StyleFlags::italic),
             Codec.BOOL.optionalFieldOf("underline", false).forGetter(StyleFlags::underline),
             Codec.INT.optionalFieldOf("color").forGetter(StyleFlags::color),
-            ResourceLocation.CODEC.optionalFieldOf("font").forGetter(StyleFlags::font)
+            Identifier.CODEC.optionalFieldOf("font").forGetter(StyleFlags::font)
     ).apply(instance, StyleFlags::new));
 
     //? if >=1.21 {
@@ -34,7 +34,7 @@ public record StyleFlags(
             ByteBufCodecs.BOOL, StyleFlags::italic,
             ByteBufCodecs.BOOL, StyleFlags::underline,
             ByteBufCodecs.optional(ByteBufCodecs.INT), StyleFlags::color,
-            ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), StyleFlags::font,
+            ByteBufCodecs.optional(Identifier.STREAM_CODEC), StyleFlags::font,
             StyleFlags::new
     );
     //?}
@@ -55,7 +55,7 @@ public record StyleFlags(
         return new StyleFlags(bold, italic, underline, Optional.ofNullable(value), font);
     }
 
-    public StyleFlags withFont(ResourceLocation value) {
+    public StyleFlags withFont(Identifier value) {
         return new StyleFlags(bold, italic, underline, color, Optional.ofNullable(value));
     }
 

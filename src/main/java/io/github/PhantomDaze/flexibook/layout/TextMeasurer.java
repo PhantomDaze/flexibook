@@ -1,7 +1,7 @@
 package io.github.PhantomDaze.flexibook.layout;
 
 import io.github.PhantomDaze.flexibook.content.StyleFlags;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 
@@ -21,5 +21,5 @@ public interface TextMeasurer {
      * @param fontId  explicit font id for this run (from StyleFlags or Heading), or empty to use current context default
      * @return width in the font's native units (what MC's Font.width returns for the equivalent Style)
      */
-    int width(String text, StyleFlags style, Optional<ResourceLocation> fontId);
+    int width(String text, StyleFlags style, Optional<Identifier> fontId);
 }

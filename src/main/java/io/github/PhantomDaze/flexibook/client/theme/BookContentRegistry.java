@@ -3,7 +3,7 @@ package io.github.PhantomDaze.flexibook.client.theme;
 import com.mojang.logging.LogUtils;
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Runtime registry of book <em>content bodies</em> ({@link AdaptiveBookContent}),
- * keyed by {@link ResourceLocation}.
+ * keyed by {@link Identifier}.
  * <p>
  * Resource packs place bodies under {@code assets/<ns>/flexibook/contents/<path>.json}
  * (loaded on client reload via {@link BookContentReloadListener}).
@@ -24,12 +24,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class BookContentRegistry {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Map<ResourceLocation, AdaptiveBookContent> CONTENTS = new ConcurrentHashMap<>();
+    private static final Map<Identifier, AdaptiveBookContent> CONTENTS = new ConcurrentHashMap<>();
 
     private BookContentRegistry() {}
 
     /** Registers or replaces a book content definition. */
-    public static void register(ResourceLocation id, AdaptiveBookContent content) {
+    public static void register(Identifier id, AdaptiveBookContent content) {
         if (id == null || content == null) {
             throw new IllegalArgumentException("book id and content must be non-null");
         }
@@ -38,20 +38,20 @@ public final class BookContentRegistry {
     }
 
     public static void register(String id, AdaptiveBookContent content) {
-        ResourceLocation rl = ResourceLocation.tryParse(id);
+        Identifier rl = Identifier.tryParse(id);
         if (rl == null) {
             throw new IllegalArgumentException("Invalid book id: " + id);
         }
         register(rl, content);
     }
 
-    public static Optional<AdaptiveBookContent> getOptional(ResourceLocation id) {
+    public static Optional<AdaptiveBookContent> getOptional(Identifier id) {
         if (id == null) return Optional.empty();
         return Optional.ofNullable(CONTENTS.get(id));
     }
 
     /** Resolves id or returns {@link AdaptiveBookContent#EMPTY} if unknown. */
-    public static AdaptiveBookContent resolve(ResourceLocation id) {
+    public static AdaptiveBookContent resolve(Identifier id) {
         if (id == null) return AdaptiveBookContent.EMPTY;
         AdaptiveBookContent c = CONTENTS.get(id);
         if (c != null) return c;
@@ -59,24 +59,24 @@ public final class BookContentRegistry {
         return AdaptiveBookContent.EMPTY;
     }
 
-    public static AdaptiveBookContent resolve(Optional<ResourceLocation> id) {
+    public static AdaptiveBookContent resolve(Optional<Identifier> id) {
         return id.map(BookContentRegistry::resolve).orElse(AdaptiveBookContent.EMPTY);
     }
 
-    public static boolean isRegistered(ResourceLocation id) {
+    public static boolean isRegistered(Identifier id) {
         return id != null && CONTENTS.containsKey(id);
     }
 
-    public static Collection<ResourceLocation> ids() {
+    public static Collection<Identifier> ids() {
         return Collections.unmodifiableSet(CONTENTS.keySet());
     }
 
-    public static Map<ResourceLocation, AdaptiveBookContent> snapshot() {
+    public static Map<Identifier, AdaptiveBookContent> snapshot() {
         return Map.copyOf(CONTENTS);
     }
 
     /** Removes a book definition (built-ins may be re-added by bootstrap). */
-    public static boolean unregister(ResourceLocation id) {
+    public static boolean unregister(Identifier id) {
         return CONTENTS.remove(id) != null;
     }
 

@@ -2,7 +2,7 @@ package io.github.PhantomDaze.flexibook.content;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 
@@ -14,29 +14,29 @@ import java.util.Optional;
  * Optional {@link #font()} overrides the content body's book-level font when creating an item.
  */
 public record BookDefinition(
-        ResourceLocation contentId,
-        Optional<ResourceLocation> themeId,
-        Optional<ResourceLocation> font
+        Identifier contentId,
+        Optional<Identifier> themeId,
+        Optional<Identifier> font
 ) {
     public static final Codec<BookDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("content").forGetter(BookDefinition::contentId),
-            ResourceLocation.CODEC.optionalFieldOf("theme").forGetter(BookDefinition::themeId),
-            ResourceLocation.CODEC.optionalFieldOf("font").forGetter(BookDefinition::font)
+            Identifier.CODEC.fieldOf("content").forGetter(BookDefinition::contentId),
+            Identifier.CODEC.optionalFieldOf("theme").forGetter(BookDefinition::themeId),
+            Identifier.CODEC.optionalFieldOf("font").forGetter(BookDefinition::font)
     ).apply(instance, BookDefinition::new));
 
-    public static BookDefinition of(ResourceLocation contentId) {
+    public static BookDefinition of(Identifier contentId) {
         return new BookDefinition(contentId, Optional.empty(), Optional.empty());
     }
 
-    public static BookDefinition of(ResourceLocation contentId, ResourceLocation themeId) {
+    public static BookDefinition of(Identifier contentId, Identifier themeId) {
         return new BookDefinition(contentId, Optional.ofNullable(themeId), Optional.empty());
     }
 
-    public BookDefinition withTheme(ResourceLocation theme) {
+    public BookDefinition withTheme(Identifier theme) {
         return new BookDefinition(contentId, Optional.ofNullable(theme), font);
     }
 
-    public BookDefinition withFont(ResourceLocation fontId) {
+    public BookDefinition withFont(Identifier fontId) {
         return new BookDefinition(contentId, themeId, Optional.ofNullable(fontId));
     }
 

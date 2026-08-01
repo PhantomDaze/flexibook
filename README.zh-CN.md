@@ -45,7 +45,7 @@
 
 | 分支 | 内容 |
 |------|------|
-| **`main`** | JDK 25 主线（26.1.2 / 26.2 NeoForge）— 默认 active **26.1.2**（下列全部 JDK 线） |
+| **`main`** | JDK 25 主线（MC **26.1.2 / 26.2** NeoForge）；默认 active **26.1.2** |
 | **`java17`** | 仅 MC **1.20.1** Forge + Fabric（toolchain **17**） |
 | **`java21`** | MC **1.21.1 / 1.21.4** NeoForge + Fabric，以及 **1.21.11** Fabric（toolchain **21**） |
 | **`java25`** | 仅 MC **26.1.2 / 26.2** NeoForge（toolchain **25**） |
@@ -55,35 +55,34 @@
 ## 构建
 
 ```bash
+# Gradle 守护进程用 JDK 21（见 gradle.properties 的 org.gradle.java.home）。
+# 各版本节点仍用各自 toolchain 编译（17 / 21 / 25）。
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 
-# 仅当前 active（默认 1.21.1）
-./gradlew build
-# jar: versions/<active>/build/libs/flexibook-1.0.0+<mc>.jar
+# --- 无需切换 active ---
+# 任意 :version:compileJava / :version:runClient / :version:build
+# 都会先跑 setupChiseledBuild，把根 src/ 预处理到
+# versions/<v>/build/chiseledSrc（仅针对该版本）。
 
-# 按 JDK toolchain 前缀分目录：
-#   versions/java17-{1.20.1,1.20.1-fabric}          (JDK 17)
-#   versions/java21-{1.21.1,1.21.1-fabric,1.21.4,
-#                    1.21.4-fabric,1.21.11-fabric}  (JDK 21)
-#   versions/java25-{26.1.2,26.2}                   (JDK 25)
-# 项目名 ≠ MC 版本：//? if 用的是 Stonecutter 第二参数（MC 版本）。
-
-# 全部版本节点
+# 本分支全部版本（jar + 测试）：
 ./gradlew chiseledBuild
-# jars：versions/<node>/build/libs/flexibook-1.0.0+<mc>.jar
+# versions/26.1.2/build/libs/flexibook-1.0.0+26.1.2.jar
+# versions/26.2/build/libs/flexibook-1.0.0+26.2.jar
 
-# 切换共享源码
-./gradlew "Set active project to java17-1.20.1"
-./gradlew "Set active project to java21-1.21.1"
-./gradlew "Set active project to java25-26.2"
-./gradlew "Set active project to java21-1.21.11-fabric"
+# 单版本（与 stonecutter.active 无关）：
+./gradlew :26.1.2:build
+./gradlew :26.2:build
+./gradlew :26.1.2:runClient
+./gradlew :26.2:runClient
 
-./gradlew :java25-26.2:runClient
-./gradlew :java21-1.21.1:runClient
-./gradlew :java17-1.20.1:runClient
-./gradlew :java21-1.21.11-fabric:runClient
-./gradlew :java17-1.20.1-fabric:runClient
+# 可选：只改 IDE/根 src/ 的注释状态（构建不需要）
+./gradlew "Set active project to 26.1.2"
+./gradlew "Set active project to 26.2"
+./gradlew "Reset active project"   # 提交前恢复 VCS 默认
 ```
+
+`main` 分支节点：`26.1.2`、`26.2`（NeoForge，JDK 25 toolchain）。
+其它 JDK 线在 `java17` / `java21` 分支，同样始终走 chiseled 源码。
 
 ## 游戏内
 

@@ -9,7 +9,7 @@ import io.github.PhantomDaze.flexibook.content.BookDefinition;
 import io.github.PhantomDaze.flexibook.content.BookElement;
 import io.github.PhantomDaze.flexibook.content.InlineSpan;
 import io.github.PhantomDaze.flexibook.content.TranslatableText;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class BookDefinitionApiTest {
 
-    private static final ResourceLocation BOOK_ID =
+    private static final Identifier BOOK_ID =
             FlexiBookIds.of("testmod", "guide");
-    private static final ResourceLocation CONTENT_ID =
+    private static final Identifier CONTENT_ID =
             FlexiBookIds.of("testmod", "guide_body");
 
     @BeforeEach
@@ -78,7 +78,7 @@ class BookDefinitionApiTest {
     @Test
     void bodyOnlyIdIsNotABook() {
         // Content body registered without a book index must not resolve via resolveBook
-        ResourceLocation bodyOnly = FlexiBookIds.of("testmod", "orphan_body");
+        Identifier bodyOnly = FlexiBookIds.of("testmod", "orphan_body");
         BookContentRegistry.register(
                 bodyOnly,
                 AdaptiveBookContent.ofElements(
@@ -93,7 +93,7 @@ class BookDefinitionApiTest {
     @Test
     void functionOverrideReturnsNewInstance() {
         AdaptiveBookContent base = FlexiBookAPI.resolveBook(BOOK_ID);
-        ResourceLocation newTheme = FlexiBookIds.of("testmod", "dark");
+        Identifier newTheme = FlexiBookIds.of("testmod", "dark");
         AdaptiveBookContent tweaked = base.withThemeId(newTheme);
         assertNotSame(base, tweaked);
         assertEquals(Optional.of(newTheme), tweaked.themeId());

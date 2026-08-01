@@ -8,7 +8,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 //?}
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +30,8 @@ public record AdaptiveBookContent(
         TranslatableText title,
         Optional<String> rawMarkup,
         Optional<List<BookElement>> elements,
-        Optional<ResourceLocation> defaultFont,
-        Optional<ResourceLocation> themeId
+        Optional<Identifier> defaultFont,
+        Optional<Identifier> themeId
 ) {
     public static final AdaptiveBookContent EMPTY = new AdaptiveBookContent(
             new TranslatableText("flexibook.book.empty.title"),
@@ -45,8 +45,8 @@ public record AdaptiveBookContent(
             TranslatableText.CODEC.fieldOf("title").forGetter(AdaptiveBookContent::title),
             Codec.STRING.optionalFieldOf("raw").forGetter(AdaptiveBookContent::rawMarkup),
             BookElement.CODEC.listOf().optionalFieldOf("elements").forGetter(AdaptiveBookContent::elements),
-            ResourceLocation.CODEC.optionalFieldOf("font").forGetter(AdaptiveBookContent::defaultFont),
-            ResourceLocation.CODEC.optionalFieldOf("theme").forGetter(AdaptiveBookContent::themeId)
+            Identifier.CODEC.optionalFieldOf("font").forGetter(AdaptiveBookContent::defaultFont),
+            Identifier.CODEC.optionalFieldOf("theme").forGetter(AdaptiveBookContent::themeId)
     ).apply(instance, AdaptiveBookContent::new));
 
     //? if >=1.21 {
@@ -54,8 +54,8 @@ public record AdaptiveBookContent(
             TranslatableText.STREAM_CODEC, AdaptiveBookContent::title,
             ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), AdaptiveBookContent::rawMarkup,
             ByteBufCodecs.optional(BookElement.NETWORK_CODEC.apply(ByteBufCodecs.list())), AdaptiveBookContent::elements,
-            ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), AdaptiveBookContent::defaultFont,
-            ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), AdaptiveBookContent::themeId,
+            ByteBufCodecs.optional(Identifier.STREAM_CODEC), AdaptiveBookContent::defaultFont,
+            ByteBufCodecs.optional(Identifier.STREAM_CODEC), AdaptiveBookContent::themeId,
             AdaptiveBookContent::new
     );
     //?}
@@ -64,15 +64,15 @@ public record AdaptiveBookContent(
         return ofElements(title, elements, Optional.empty(), Optional.empty());
     }
 
-    public static AdaptiveBookContent ofElements(TranslatableText title, List<BookElement> elements, Optional<ResourceLocation> defaultFont) {
+    public static AdaptiveBookContent ofElements(TranslatableText title, List<BookElement> elements, Optional<Identifier> defaultFont) {
         return ofElements(title, elements, defaultFont, Optional.empty());
     }
 
     public static AdaptiveBookContent ofElements(
             TranslatableText title,
             List<BookElement> elements,
-            Optional<ResourceLocation> defaultFont,
-            Optional<ResourceLocation> themeId
+            Optional<Identifier> defaultFont,
+            Optional<Identifier> themeId
     ) {
         return new AdaptiveBookContent(title, Optional.empty(), Optional.of(List.copyOf(elements)), defaultFont, themeId);
     }
@@ -81,29 +81,29 @@ public record AdaptiveBookContent(
         return ofMarkup(title, markup, Optional.empty(), Optional.empty());
     }
 
-    public static AdaptiveBookContent ofMarkup(TranslatableText title, String markup, Optional<ResourceLocation> defaultFont) {
+    public static AdaptiveBookContent ofMarkup(TranslatableText title, String markup, Optional<Identifier> defaultFont) {
         return ofMarkup(title, markup, defaultFont, Optional.empty());
     }
 
     public static AdaptiveBookContent ofMarkup(
             TranslatableText title,
             String markup,
-            Optional<ResourceLocation> defaultFont,
-            Optional<ResourceLocation> themeId
+            Optional<Identifier> defaultFont,
+            Optional<Identifier> themeId
     ) {
         return new AdaptiveBookContent(title, Optional.of(markup), Optional.empty(), defaultFont, themeId);
     }
 
-    public AdaptiveBookContent withDefaultFont(ResourceLocation font) {
+    public AdaptiveBookContent withDefaultFont(Identifier font) {
         return new AdaptiveBookContent(title, rawMarkup, elements, Optional.ofNullable(font), themeId);
     }
 
-    public AdaptiveBookContent withThemeId(ResourceLocation theme) {
+    public AdaptiveBookContent withThemeId(Identifier theme) {
         return new AdaptiveBookContent(title, rawMarkup, elements, defaultFont, Optional.ofNullable(theme));
     }
 
     /** Returns explicit defaultFont if present, otherwise flexibook:default. Never minecraft:default. */
-    public ResourceLocation resolvedFont() {
+    public Identifier resolvedFont() {
         return FlexiBookFonts.resolve(defaultFont);
     }
 

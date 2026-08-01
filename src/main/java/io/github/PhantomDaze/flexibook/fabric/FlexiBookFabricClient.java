@@ -11,7 +11,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -30,11 +30,11 @@ public final class FlexiBookFabricClient implements ClientModInitializer {
     }
 
     private static void register(String path, net.minecraft.server.packs.resources.ResourceManagerReloadListener listener) {
-        ResourceLocation id = FlexiBookIds.of(FlexiBookMod.MOD_ID, path);
+        Identifier id = FlexiBookIds.of(FlexiBookMod.MOD_ID, path);
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
                 new SimpleSynchronousResourceReloadListener() {
                     @Override
-                    public ResourceLocation getFabricId() {
+                    public Identifier getFabricId() {
                         return id;
                     }
 

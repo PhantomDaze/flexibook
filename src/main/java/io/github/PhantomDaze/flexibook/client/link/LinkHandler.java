@@ -4,10 +4,10 @@ import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.content.LinkAction;
 import io.github.PhantomDaze.flexibook.content.LinkActionRegistry;
 //? if >=1.21.11 {
-/*import net.minecraft.util.Util;
-*///?} else {
-import net.minecraft.Util;
-//?}
+import net.minecraft.util.Util;
+//?} else {
+/*import net.minecraft.Util;
+*///?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -33,10 +33,10 @@ public final class LinkHandler {
                 if (handler == null) {
                     if (mc.player != null) {
                         //? if >=26.1.2 {
-                        /*mc.player.sendOverlayMessage(Component.translatable("flexibook.link.unknown_action", cmd.id()));
-                        *///?} else {
-                        mc.player.displayClientMessage(Component.translatable("flexibook.link.unknown_action", cmd.id()), true);
-                        //?}
+                        mc.player.sendOverlayMessage(Component.translatable("flexibook.link.unknown_action", cmd.id()));
+                        //?} else {
+                        /*mc.player.displayClientMessage(Component.translatable("flexibook.link.unknown_action", cmd.id()), true);
+                        *///?}
                     }
                     FlexiBookMod.LOGGER.warn("Blocked unregistered FlexiBook command action: {}", cmd.id());
                     return;
@@ -44,10 +44,10 @@ public final class LinkHandler {
                 handler.accept((key, args) -> {
                     if (mc.player != null) {
                         //? if >=26.1.2 {
-                        /*mc.player.sendSystemMessage(Component.translatable(key, args));
-                        *///?} else {
-                        mc.player.displayClientMessage(Component.translatable(key, args), false);
-                        //?}
+                        mc.player.sendSystemMessage(Component.translatable(key, args));
+                        //?} else {
+                        /*mc.player.displayClientMessage(Component.translatable(key, args), false);
+                        *///?}
                     }
                 });
             }
@@ -60,10 +60,10 @@ public final class LinkHandler {
         if (!(lower.startsWith("http://") || lower.startsWith("https://"))) {
             if (mc.player != null) {
                 //? if >=26.1.2 {
-                /*mc.player.sendOverlayMessage(Component.translatable("flexibook.link.bad_url"));
-                *///?} else {
-                mc.player.displayClientMessage(Component.translatable("flexibook.link.bad_url"), true);
-                //?}
+                mc.player.sendOverlayMessage(Component.translatable("flexibook.link.bad_url"));
+                //?} else {
+                /*mc.player.displayClientMessage(Component.translatable("flexibook.link.bad_url"), true);
+                *///?}
             }
             return;
         }

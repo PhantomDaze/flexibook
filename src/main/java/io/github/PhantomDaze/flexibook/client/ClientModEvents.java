@@ -17,10 +17,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 //? if >=1.21.4 {
-/*import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
-*///?} else {
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-//?}
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+//?} else {
+/*import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+*///?}
 //?} else {
 /*//? if forge {
 /^import net.minecraftforge.api.distmarker.Dist;
@@ -49,7 +49,7 @@ public final class ClientModEvents {
     }
 
     //? if >=1.21.4 {
-    /*@SubscribeEvent
+    @SubscribeEvent
     public static void onRegisterReloadListeners(AddClientReloadListenersEvent event) {
         event.addListener(
                 FlexiBookIds.of(FlexiBookMod.MOD_ID, "texture_size_cache"),
@@ -57,14 +57,14 @@ public final class ClientModEvents {
         event.addListener(FlexiBookIds.of(FlexiBookMod.MOD_ID, "book_themes"), new BookThemeReloadListener());
         event.addListener(FlexiBookIds.of(FlexiBookMod.MOD_ID, "book_contents"), new BookContentReloadListener());
     }
-    *///?} else {
-    @SubscribeEvent
+    //?} else {
+    /*@SubscribeEvent
     public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((ResourceManagerReloadListener) (ResourceManager manager) -> TextureSizeCache.clear());
         event.registerReloadListener(new BookThemeReloadListener());
         event.registerReloadListener(new BookContentReloadListener());
     }
-    //?}
+    *///?}
     //?} else {
     /*//? if forge {
     /^@SubscribeEvent

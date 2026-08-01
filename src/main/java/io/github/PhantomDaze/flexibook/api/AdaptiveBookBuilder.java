@@ -9,7 +9,7 @@ import io.github.PhantomDaze.flexibook.content.TranslatableText;
 import io.github.PhantomDaze.flexibook.parse.TagParser;
 import io.github.PhantomDaze.flexibook.content.BookContentAccess;
 import io.github.PhantomDaze.flexibook.registry.ModItems;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -20,20 +20,20 @@ import java.util.Optional;
  * Fluent builder for adaptive books. Prefers structured elements; use {@link #fromMarkup}
  * when you already have tag source text.
  * <p>
- * Fonts: {@link #defaultFont(ResourceLocation)} sets an explicit book-wide font override;
+ * Fonts: {@link #defaultFont(Identifier)} sets an explicit book-wide font override;
  * when unset, layout/render time resolves to {@code flexibook:default} (not minecraft:default).
- * Per-run fonts via {@link #font(String, ResourceLocation)} / markup {@code [font font="ns:id"]} or
+ * Per-run fonts via {@link #font(String, Identifier)} / markup {@code [font font="ns:id"]} or
  * heading font override the book default.
  * <p>
- * Theme: {@link #theme(ResourceLocation)} selects a registered book chrome/layout theme
+ * Theme: {@link #theme(Identifier)} selects a registered book chrome/layout theme
  * ({@code flexibook:default} when omitted).
  */
 public final class AdaptiveBookBuilder {
     private TranslatableText title = new TranslatableText("flexibook.book.untitled");
     private final List<BookElement> elements = new ArrayList<>();
     private String rawMarkup;
-    private ResourceLocation defaultFont;
-    private ResourceLocation themeId;
+    private Identifier defaultFont;
+    private Identifier themeId;
 
     public AdaptiveBookBuilder(String guideId) {
         // guideId reserved for future TOC / identity; unused in v1 storage
@@ -54,13 +54,13 @@ public final class AdaptiveBookBuilder {
      * When not set, the book uses {@code flexibook:default} at layout/render time.
      * Overridden by per-span / heading fonts.
      */
-    public AdaptiveBookBuilder defaultFont(ResourceLocation font) {
+    public AdaptiveBookBuilder defaultFont(Identifier font) {
         this.defaultFont = font;
         return this;
     }
 
     public AdaptiveBookBuilder defaultFont(String fontId) {
-        ResourceLocation rl = ResourceLocation.tryParse(fontId);
+        Identifier rl = Identifier.tryParse(fontId);
         if (rl != null) {
             this.defaultFont = rl;
         }
@@ -71,13 +71,13 @@ public final class AdaptiveBookBuilder {
      * Theme id registered via {@link FlexiBookAPI#registerTheme} or
      * {@code assets/<ns>/flexibook/themes/<path>.json}. Example: {@code flexibook:default}.
      */
-    public AdaptiveBookBuilder theme(ResourceLocation themeId) {
+    public AdaptiveBookBuilder theme(Identifier themeId) {
         this.themeId = themeId;
         return this;
     }
 
     public AdaptiveBookBuilder theme(String themeId) {
-        ResourceLocation rl = ResourceLocation.tryParse(themeId);
+        Identifier rl = Identifier.tryParse(themeId);
         if (rl != null) {
             this.themeId = rl;
         }
@@ -89,7 +89,7 @@ public final class AdaptiveBookBuilder {
         return this;
     }
 
-    public AdaptiveBookBuilder h1(String key, ResourceLocation font) {
+    public AdaptiveBookBuilder h1(String key, Identifier font) {
         elements.add(new BookElement.Heading(1, new TranslatableText(key), Optional.ofNullable(font)));
         return this;
     }
@@ -99,7 +99,7 @@ public final class AdaptiveBookBuilder {
         return this;
     }
 
-    public AdaptiveBookBuilder h2(String key, ResourceLocation font) {
+    public AdaptiveBookBuilder h2(String key, Identifier font) {
         elements.add(new BookElement.Heading(2, new TranslatableText(key), Optional.ofNullable(font)));
         return this;
     }
@@ -110,7 +110,7 @@ public final class AdaptiveBookBuilder {
     }
 
     /** Paragraph using a specific font for the whole run. */
-    public AdaptiveBookBuilder p(String key, ResourceLocation font) {
+    public AdaptiveBookBuilder p(String key, Identifier font) {
         StyleFlags style = font == null ? StyleFlags.EMPTY : StyleFlags.EMPTY.withFont(font);
         elements.add(new BookElement.Paragraph(List.of(InlineSpan.key(key, style))));
         return this;
@@ -121,7 +121,7 @@ public final class AdaptiveBookBuilder {
         return this;
     }
 
-    public AdaptiveBookBuilder pLiteral(String text, ResourceLocation font) {
+    public AdaptiveBookBuilder pLiteral(String text, Identifier font) {
         StyleFlags style = font == null ? StyleFlags.EMPTY : StyleFlags.EMPTY.withFont(font);
         elements.add(new BookElement.Paragraph(List.of(InlineSpan.literal(text, style))));
         return this;
@@ -131,7 +131,7 @@ public final class AdaptiveBookBuilder {
      * Inline-styled paragraph: translation key drawn in {@code font}.
      * Prefer this over nesting when the whole line shares one face.
      */
-    public AdaptiveBookBuilder font(String key, ResourceLocation font) {
+    public AdaptiveBookBuilder font(String key, Identifier font) {
         return p(key, font);
     }
 
@@ -146,18 +146,18 @@ public final class AdaptiveBookBuilder {
         return this;
     }
 
-    public AdaptiveBookBuilder bullet(String key, ResourceLocation font) {
+    public AdaptiveBookBuilder bullet(String key, Identifier font) {
         StyleFlags style = font == null ? StyleFlags.EMPTY : StyleFlags.EMPTY.withFont(font);
         elements.add(new BookElement.Bullet(List.of(InlineSpan.key(key, style))));
         return this;
     }
 
-    public AdaptiveBookBuilder image(ResourceLocation texture, int w, int h) {
+    public AdaptiveBookBuilder image(Identifier texture, int w, int h) {
         elements.add(new BookElement.Image(texture, w, h, Optional.empty()));
         return this;
     }
 
-    public AdaptiveBookBuilder image(ResourceLocation texture, int w, int h, String tooltipKey) {
+    public AdaptiveBookBuilder image(Identifier texture, int w, int h, String tooltipKey) {
         elements.add(new BookElement.Image(texture, w, h, Optional.ofNullable(tooltipKey)));
         return this;
     }
@@ -168,7 +168,7 @@ public final class AdaptiveBookBuilder {
         return this;
     }
 
-    public AdaptiveBookBuilder link(String textKey, LinkAction action, ResourceLocation font) {
+    public AdaptiveBookBuilder link(String textKey, LinkAction action, Identifier font) {
         StyleFlags style = StyleFlags.EMPTY.withColor(0x0000EE).withUnderline(true);
         if (font != null) {
             style = style.withFont(font);
@@ -198,8 +198,8 @@ public final class AdaptiveBookBuilder {
     }
 
     public AdaptiveBookContent buildContent() {
-        Optional<ResourceLocation> font = Optional.ofNullable(defaultFont);
-        Optional<ResourceLocation> theme = Optional.ofNullable(themeId);
+        Optional<Identifier> font = Optional.ofNullable(defaultFont);
+        Optional<Identifier> theme = Optional.ofNullable(themeId);
         if (rawMarkup != null && elements.isEmpty()) {
             return AdaptiveBookContent.ofMarkup(title, rawMarkup, font, theme);
         }

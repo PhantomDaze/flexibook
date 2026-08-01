@@ -13,7 +13,7 @@ import io.github.PhantomDaze.flexibook.client.theme.BookThemeRegistry;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.BookDefinition;
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -44,7 +44,7 @@ public final class ClasspathPackBootstrap {
             FlexiBookMod.LOGGER.error("Classpath theme {}: {}", cp, parsed.error());
             return;
         }
-        ResourceLocation id = FlexiBookIds.of(ns, path);
+        Identifier id = FlexiBookIds.of(ns, path);
         BookThemeRegistry.register(id, Compat.getOrThrow(parsed));
         FlexiBookMod.LOGGER.info("Classpath theme registered {}", id);
     }
@@ -58,7 +58,7 @@ public final class ClasspathPackBootstrap {
             FlexiBookMod.LOGGER.error("Classpath content {}: {}", cp, parsed.error());
             return;
         }
-        ResourceLocation id = FlexiBookIds.of(ns, path);
+        Identifier id = FlexiBookIds.of(ns, path);
         BookContentRegistry.register(id, Compat.getOrThrow(parsed));
         FlexiBookMod.LOGGER.info("Classpath content registered {}", id);
     }
@@ -72,7 +72,7 @@ public final class ClasspathPackBootstrap {
             FlexiBookMod.LOGGER.error("Classpath book index {}: {}", cp, parsed.error());
             return;
         }
-        ResourceLocation id = FlexiBookIds.of(ns, path);
+        Identifier id = FlexiBookIds.of(ns, path);
         BookDefinitionRegistry.register(id, Compat.getOrThrow(parsed));
         FlexiBookMod.LOGGER.info("Classpath book registered {}", id);
     }

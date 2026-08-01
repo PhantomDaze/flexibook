@@ -11,7 +11,7 @@ import io.github.PhantomDaze.flexibook.content.LinkAction;
 import io.github.PhantomDaze.flexibook.content.LinkActionRegistry;
 import io.github.PhantomDaze.flexibook.registry.ModItems;
 import io.github.PhantomDaze.flexibook.content.BookContentAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
@@ -55,12 +55,12 @@ public final class FlexiBookAPI {
     // ── Themes ──────────────────────────────────────────────────────────────
 
     /** Built-in parchment sample id: {@code flexibook:default}. */
-    public static ResourceLocation defaultThemeId() {
+    public static Identifier defaultThemeId() {
         return BookThemes.DEFAULT_ID;
     }
 
     /** Built-in keep-aspect image sample id: {@code flexibook:contain}. */
-    public static ResourceLocation containThemeId() {
+    public static Identifier containThemeId() {
         return BookThemes.CONTAIN_ID;
     }
 
@@ -69,7 +69,7 @@ public final class FlexiBookAPI {
      * Resource-pack JSON under {@code assets/<ns>/flexibook/themes/<path>.json}
      * can override the same id on client reload.
      */
-    public static void registerTheme(ResourceLocation id, BookTheme theme) {
+    public static void registerTheme(Identifier id, BookTheme theme) {
         BookThemeRegistry.register(id, theme);
     }
 
@@ -77,20 +77,20 @@ public final class FlexiBookAPI {
         BookThemeRegistry.register(id, theme);
     }
 
-    public static Optional<BookTheme> getTheme(ResourceLocation id) {
+    public static Optional<BookTheme> getTheme(Identifier id) {
         return BookThemeRegistry.getOptional(id);
     }
 
     /** Resolves id or falls back to the built-in default sample. */
-    public static BookTheme resolveTheme(ResourceLocation id) {
+    public static BookTheme resolveTheme(Identifier id) {
         return BookThemeRegistry.resolve(id);
     }
 
-    public static BookTheme resolveTheme(Optional<ResourceLocation> id) {
+    public static BookTheme resolveTheme(Optional<Identifier> id) {
         return BookThemeRegistry.resolve(id);
     }
 
-    public static Collection<ResourceLocation> themeIds() {
+    public static Collection<Identifier> themeIds() {
         return BookThemeRegistry.ids();
     }
 
@@ -100,7 +100,7 @@ public final class FlexiBookAPI {
      * Registers or replaces a content <em>body</em>.
      * Resource-pack JSON: {@code assets/<ns>/flexibook/contents/<path>.json}.
      */
-    public static void registerBookContent(ResourceLocation id, AdaptiveBookContent content) {
+    public static void registerBookContent(Identifier id, AdaptiveBookContent content) {
         BookContentRegistry.register(id, content);
     }
 
@@ -108,20 +108,20 @@ public final class FlexiBookAPI {
         BookContentRegistry.register(id, content);
     }
 
-    public static Optional<AdaptiveBookContent> getBookContent(ResourceLocation id) {
+    public static Optional<AdaptiveBookContent> getBookContent(Identifier id) {
         return BookContentRegistry.getOptional(id);
     }
 
     /** Resolves a content body id or returns {@link AdaptiveBookContent#EMPTY}. */
-    public static AdaptiveBookContent resolveBookContent(ResourceLocation id) {
+    public static AdaptiveBookContent resolveBookContent(Identifier id) {
         return BookContentRegistry.resolve(id);
     }
 
-    public static AdaptiveBookContent resolveBookContent(Optional<ResourceLocation> id) {
+    public static AdaptiveBookContent resolveBookContent(Optional<Identifier> id) {
         return BookContentRegistry.resolve(id);
     }
 
-    public static Collection<ResourceLocation> bookContentIds() {
+    public static Collection<Identifier> bookContentIds() {
         return BookContentRegistry.ids();
     }
 
@@ -131,7 +131,7 @@ public final class FlexiBookAPI {
      * Registers a book <em>index</em> (content id + theme id).
      * Resource-pack JSON: {@code assets/<ns>/flexibook/books/<path>.json}.
      */
-    public static void registerBookDefinition(ResourceLocation id, BookDefinition def) {
+    public static void registerBookDefinition(Identifier id, BookDefinition def) {
         BookDefinitionRegistry.register(id, def);
     }
 
@@ -139,11 +139,11 @@ public final class FlexiBookAPI {
         BookDefinitionRegistry.register(id, def);
     }
 
-    public static Optional<BookDefinition> getBookDefinition(ResourceLocation id) {
+    public static Optional<BookDefinition> getBookDefinition(Identifier id) {
         return BookDefinitionRegistry.getOptional(id);
     }
 
-    public static Collection<ResourceLocation> bookDefinitionIds() {
+    public static Collection<Identifier> bookDefinitionIds() {
         return BookDefinitionRegistry.ids();
     }
 
@@ -151,7 +151,7 @@ public final class FlexiBookAPI {
      * Resolves a book id to full content for item use:
      * {@code flexibook/books/} index → content body + theme/font merge.
      */
-    public static AdaptiveBookContent resolveBook(ResourceLocation bookId) {
+    public static AdaptiveBookContent resolveBook(Identifier bookId) {
         return BookDefinitionRegistry.resolveContent(bookId);
     }
 
@@ -159,7 +159,7 @@ public final class FlexiBookAPI {
      * Creates a FlexiBook ItemStack from a registered book index id
      * ({@code assets/<ns>/flexibook/books/<path>.json}).
      */
-    public static ItemStack createBookFromDefinition(ResourceLocation bookId) {
+    public static ItemStack createBookFromDefinition(Identifier bookId) {
         AdaptiveBookContent content = BookDefinitionRegistry.resolveContent(bookId);
         return createBook(content);
     }
@@ -170,7 +170,7 @@ public final class FlexiBookAPI {
      * (e.g. {@code c -> c.withThemeId(myTheme)}). {@code null} override or return keeps the base.
      */
     public static ItemStack createBookFromDefinition(
-            ResourceLocation bookId,
+            Identifier bookId,
             Function<AdaptiveBookContent, AdaptiveBookContent> override
     ) {
         AdaptiveBookContent base = BookDefinitionRegistry.resolveContent(bookId);

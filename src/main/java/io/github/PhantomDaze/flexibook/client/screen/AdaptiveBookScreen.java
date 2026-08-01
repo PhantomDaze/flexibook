@@ -14,18 +14,18 @@ import io.github.PhantomDaze.flexibook.layout.RenderedElement;
 import io.github.PhantomDaze.flexibook.layout.RenderedPage;
 import io.github.PhantomDaze.flexibook.util.McFonts;
 //? if <1.21.4 {
-import com.mojang.blaze3d.systems.RenderSystem;
-//?}
+/*import com.mojang.blaze3d.systems.RenderSystem;
+*///?}
 //? if >=26.1.2 {
-/*import net.minecraft.client.gui.GuiGraphicsExtractor;
-*///?} else {
-import net.minecraft.client.gui.GuiGraphics;
-//?}
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+//?} else {
+/*import net.minecraft.client.gui.GuiGraphics;
+*///?}
 //? if >=1.21.11 {
-/*import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-*///?}
+//?}
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -34,7 +34,7 @@ import net.minecraft.client.gui.screens.Screen;
 *///?}
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
@@ -146,7 +146,7 @@ public class AdaptiveBookScreen extends Screen {
     // --- background / content draw -----------------------------------------------------------
 
     //? if >=26.1.2 {
-    /*@Override
+    @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         this.extractTransparentBackground(graphics);
         blitBookPanel(graphics);
@@ -157,30 +157,30 @@ public class AdaptiveBookScreen extends Screen {
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         drawPageContent(graphics, mouseX, mouseY);
     }
-    *///?} else {
-    //? if >=1.21 {
+    //?} else {
+    /*//? if >=1.21 {
     @Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         this.renderTransparentBackground(graphics);
         blitBookPanel(graphics);
     }
     //?} else {
-    /*@Override
+    /^@Override
     public void renderBackground(GuiGraphics graphics) {
         graphics.fillGradient(0, 0, this.width, this.height, 0xC0101010, 0xD0101010);
         blitBookPanel(graphics);
     }
-    *///?}
+    ^///?}
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         drawPageContent(graphics, mouseX, mouseY);
     }
-    //?}
+    *///?}
 
     //? if >=26.1.2 {
-    /*private void blitBookPanel(GuiGraphicsExtractor graphics) {
+    private void blitBookPanel(GuiGraphicsExtractor graphics) {
         int panelW = theme.bookTexWidth();
         int panelH = theme.bookTexHeight();
         graphics.blit(
@@ -200,11 +200,12 @@ public class AdaptiveBookScreen extends Screen {
     }
 
     private void drawPageContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        ResourceLocation bookFont = content.resolvedFont();
+        Identifier bookFont = content.resolvedFont();
         Component title = content.title().resolve();
         title = title.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int titleX = leftPos + (theme.bookTexWidth() - font.width(title)) / 2;
-        graphics.text(font, title, titleX, topPos + theme.titleOffsetY(), theme.pageTextColor(), false);
+        int titleColor = 0xFF000000 | (theme.pageTextColor() & 0xFFFFFF);
+        graphics.text(font, title, titleX, topPos + theme.titleOffsetY(), titleColor, false);
 
         int contentX = leftPos + theme.contentLeft();
         int contentY = topPos + theme.contentTop() + theme.contentOffsetY();
@@ -221,8 +222,9 @@ public class AdaptiveBookScreen extends Screen {
         Component pageComp = Component.translatable("flexibook.screen.page", pageIndex + 1, Math.max(1, pages.size()));
         pageComp = pageComp.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int pageLabelX = leftPos + (theme.bookTexWidth() - font.width(pageComp)) / 2;
+        int pageLabelColor = 0xFF000000 | (theme.pageTextColor() & 0xFFFFFF);
         graphics.text(font, pageComp, pageLabelX,
-                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), theme.pageTextColor(), false);
+                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), pageLabelColor, false);
     }
 
     private void renderElement(GuiGraphicsExtractor graphics, RenderedElement el, int originX, int originY) {
@@ -234,11 +236,11 @@ public class AdaptiveBookScreen extends Screen {
                 pose.scale(line.scale(), line.scale());
 
                 StyleFlags flags = line.style();
-                int baseColor = theme.pageTextColor();
+                int baseColor = 0xFF000000 | (theme.pageTextColor() & 0xFFFFFF);
                 if (flags.color().isPresent()) {
-                    baseColor = flags.color().get() & 0xFFFFFF;
+                    baseColor = 0xFF000000 | (flags.color().get() & 0xFFFFFF);
                 } else if (line.link().isPresent()) {
-                    baseColor = theme.linkColor();
+                    baseColor = 0xFF000000 | (theme.linkColor() & 0xFFFFFF);
                 }
                 Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor);
                 Component text = Component.literal(line.text()).withStyle(mcStyle);
@@ -263,7 +265,7 @@ public class AdaptiveBookScreen extends Screen {
         }
     }
 
-    private void blitImage(GuiGraphicsExtractor graphics, ResourceLocation texture,
+    private void blitImage(GuiGraphicsExtractor graphics, Identifier texture,
                            int boxX, int boxY, int boxW, int boxH) {
         if (boxW <= 0 || boxH <= 0) {
             return;
@@ -304,12 +306,12 @@ public class AdaptiveBookScreen extends Screen {
                 boxH
         );
     }
-    *///?} else {
-    private void blitBookPanel(GuiGraphics graphics) {
+    //?} else {
+    /*private void blitBookPanel(GuiGraphics graphics) {
         int panelW = theme.bookTexWidth();
         int panelH = theme.bookTexHeight();
         //? if >=1.21.11 {
-        /*graphics.blit(
+        graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 theme.bookTexture(),
                 leftPos,
@@ -323,9 +325,9 @@ public class AdaptiveBookScreen extends Screen {
                 BOOK_TEXTURE_SHEET,
                 BOOK_TEXTURE_SHEET
         );
-        *///?} else {
-        //? if >=1.21.4 {
-        /*graphics.blit(
+        //?} else {
+        /^//? if >=1.21.4 {
+        graphics.blit(
                 RenderType::guiTextured,
                 theme.bookTexture(),
                 leftPos,
@@ -339,8 +341,8 @@ public class AdaptiveBookScreen extends Screen {
                 BOOK_TEXTURE_SHEET,
                 BOOK_TEXTURE_SHEET
         );
-        *///?} else {
-        RenderSystem.enableBlend();
+        //?} else {
+        /^¹RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         graphics.blit(
                 theme.bookTexture(),
@@ -356,12 +358,12 @@ public class AdaptiveBookScreen extends Screen {
                 BOOK_TEXTURE_SHEET
         );
         RenderSystem.disableBlend();
-        //?}
-        //?}
+        ¹^///?}
+        ^///?}
     }
 
     private void drawPageContent(GuiGraphics graphics, int mouseX, int mouseY) {
-        ResourceLocation bookFont = content.resolvedFont();
+        Identifier bookFont = content.resolvedFont();
         Component title = content.title().resolve();
         title = title.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int titleX = leftPos + (theme.bookTexWidth() - font.width(title)) / 2;
@@ -377,10 +379,10 @@ public class AdaptiveBookScreen extends Screen {
             }
             Optional<Component> tip = hoverTip(mouseX, mouseY, contentX, contentY, page);
             //? if >=1.21.11 {
-            /*tip.ifPresent(t -> graphics.setTooltipForNextFrame(font, t, mouseX, mouseY));
-            *///?} else {
-            tip.ifPresent(t -> graphics.renderTooltip(font, t, mouseX, mouseY));
-            //?}
+            tip.ifPresent(t -> graphics.setTooltipForNextFrame(font, t, mouseX, mouseY));
+            //?} else {
+            /^tip.ifPresent(t -> graphics.renderTooltip(font, t, mouseX, mouseY));
+            ^///?}
         }
 
         Component pageComp = Component.translatable("flexibook.screen.page", pageIndex + 1, Math.max(1, pages.size()));
@@ -395,21 +397,21 @@ public class AdaptiveBookScreen extends Screen {
             case RenderedElement.TextLine line -> {
                 var pose = graphics.pose();
                 //? if >=1.21.11 {
-                /*pose.pushMatrix();
+                pose.pushMatrix();
                 pose.translate(originX + line.x(), originY + line.y());
                 pose.scale(line.scale(), line.scale());
-                *///?} else {
-                pose.pushPose();
+                //?} else {
+                /^pose.pushPose();
                 pose.translate(originX + line.x(), originY + line.y(), 0);
                 pose.scale(line.scale(), line.scale(), 1f);
-                //?}
+                ^///?}
 
                 StyleFlags flags = line.style();
-                int baseColor = theme.pageTextColor();
+                int baseColor = 0xFF000000 | (theme.pageTextColor() & 0xFFFFFF);
                 if (flags.color().isPresent()) {
-                    baseColor = flags.color().get() & 0xFFFFFF;
+                    baseColor = 0xFF000000 | (flags.color().get() & 0xFFFFFF);
                 } else if (line.link().isPresent()) {
-                    baseColor = theme.linkColor();
+                    baseColor = 0xFF000000 | (theme.linkColor() & 0xFFFFFF);
                 }
                 Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor);
                 Component text = Component.literal(line.text()).withStyle(mcStyle);
@@ -419,10 +421,10 @@ public class AdaptiveBookScreen extends Screen {
                 }
                 graphics.drawString(font, text, 0, 0, baseColor, false);
                 //? if >=1.21.11 {
-                /*pose.popMatrix();
-                *///?} else {
-                pose.popPose();
-                //?}
+                pose.popMatrix();
+                //?} else {
+                /^pose.popPose();
+                ^///?}
             }
             case RenderedElement.ImageBlock image -> {
                 int boxX = originX + Math.round(image.x());
@@ -438,13 +440,13 @@ public class AdaptiveBookScreen extends Screen {
         }
     }
 
-    private void blitImage(GuiGraphics graphics, ResourceLocation texture,
+    private void blitImage(GuiGraphics graphics, Identifier texture,
                            int boxX, int boxY, int boxW, int boxH) {
         if (boxW <= 0 || boxH <= 0) {
             return;
         }
         //? if >=1.21.11 {
-        /*if (theme.imageFit() == ImageFit.CONTAIN) {
+        if (theme.imageFit() == ImageFit.CONTAIN) {
             var size = TextureSizeCache.getSize(texture);
             if (size.isPresent()) {
                 int texW = size.get()[0];
@@ -479,9 +481,9 @@ public class AdaptiveBookScreen extends Screen {
                 boxW,
                 boxH
         );
-        *///?} else {
-        //? if >=1.21.4 {
-        /*if (theme.imageFit() == ImageFit.CONTAIN) {
+        //?} else {
+        /^//? if >=1.21.4 {
+        if (theme.imageFit() == ImageFit.CONTAIN) {
             var size = TextureSizeCache.getSize(texture);
             if (size.isPresent()) {
                 int texW = size.get()[0];
@@ -516,8 +518,8 @@ public class AdaptiveBookScreen extends Screen {
                 boxW,
                 boxH
         );
-        *///?} else {
-        RenderSystem.enableBlend();
+        //?} else {
+        /^¹RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         try {
             if (theme.imageFit() == ImageFit.CONTAIN) {
@@ -546,10 +548,10 @@ public class AdaptiveBookScreen extends Screen {
         } finally {
             RenderSystem.disableBlend();
         }
-        //?}
-        //?}
+        ¹^///?}
+        ^///?}
     }
-    //?}
+    *///?}
 
     private Optional<Component> hoverTip(int mouseX, int mouseY, int contentX, int contentY, RenderedPage page) {
         double localX = mouseX - contentX;
@@ -593,7 +595,7 @@ public class AdaptiveBookScreen extends Screen {
     // --- input -------------------------------------------------------------------------------
 
     //? if >=1.21.11 {
-    /*@Override
+    @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (event.button() == 0 && !pages.isEmpty()) {
             int contentX = leftPos + theme.contentLeft();
@@ -627,8 +629,8 @@ public class AdaptiveBookScreen extends Screen {
         }
         return super.keyPressed(event);
     }
-    *///?} else {
-    @Override
+    //?} else {
+    /*@Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && !pages.isEmpty()) {
             int contentX = leftPos + theme.contentLeft();
@@ -661,7 +663,7 @@ public class AdaptiveBookScreen extends Screen {
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
-    //?}
+    *///?}
 
     @Override
     public boolean isPauseScreen() {

@@ -6,7 +6,7 @@ import io.github.PhantomDaze.flexibook.util.Compat;
 
 import com.mojang.serialization.JsonOps;
 import io.github.PhantomDaze.flexibook.api.FlexiBookAPI;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ class BookThemeRegistryTest {
 
     @Test
     void registerAndResolveCustom() {
-        ResourceLocation id = FlexiBookIds.of("testmod", "wide");
+        Identifier id = FlexiBookIds.of("testmod", "wide");
         BookTheme custom = BookTheme.builder()
                 .pageContentWidth(200)
                 .imageFit(ImageFit.CONTAIN)
@@ -71,7 +71,7 @@ class BookThemeRegistryTest {
         assertEquals(BookThemes.DEFAULT_ID, FlexiBookAPI.defaultThemeId());
         assertEquals(BookThemes.CONTAIN_ID, FlexiBookAPI.containThemeId());
         assertEquals(BookThemes.DEFAULT, FlexiBookAPI.resolveTheme(BookThemes.DEFAULT_ID));
-        ResourceLocation id = FlexiBookIds.of("testmod", "api_theme");
+        Identifier id = FlexiBookIds.of("testmod", "api_theme");
         BookTheme t = BookTheme.builder().lineHeight(12).build();
         FlexiBookAPI.registerTheme(id, t);
         assertTrue(FlexiBookAPI.getTheme(id).isPresent());

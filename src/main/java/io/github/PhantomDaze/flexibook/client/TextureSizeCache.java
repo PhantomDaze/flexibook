@@ -2,7 +2,7 @@ package io.github.PhantomDaze.flexibook.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Cleared when the client reloads resources.
  */
 public final class TextureSizeCache {
-    private static final Map<ResourceLocation, int[]> CACHE = new ConcurrentHashMap<>();
+    private static final Map<Identifier, int[]> CACHE = new ConcurrentHashMap<>();
 
     private TextureSizeCache() {
     }
@@ -28,7 +28,7 @@ public final class TextureSizeCache {
     /**
      * @return {@code [width, height]} or empty if missing / unreadable
      */
-    public static Optional<int[]> getSize(ResourceLocation location) {
+    public static Optional<int[]> getSize(Identifier location) {
         if (location == null) {
             return Optional.empty();
         }

@@ -2,7 +2,7 @@ package io.github.PhantomDaze.flexibook.client.theme;
 
 import com.mojang.logging.LogUtils;
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -12,9 +12,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Runtime registry of {@link BookTheme} instances, keyed by {@link ResourceLocation}.
+ * Runtime registry of {@link BookTheme} instances, keyed by {@link Identifier}.
  * <p>
- * Code mods call {@link #register(ResourceLocation, BookTheme)} during common/client setup.
+ * Code mods call {@link #register(Identifier, BookTheme)} during common/client setup.
  * Resource packs may add/override themes under {@code assets/<ns>/flexibook/themes/<path>.json}
  * (loaded client-side on resource reload).
  * <p>
@@ -22,13 +22,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class BookThemeRegistry {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Map<ResourceLocation, BookTheme> THEMES = new ConcurrentHashMap<>();
+    private static final Map<Identifier, BookTheme> THEMES = new ConcurrentHashMap<>();
 
     private BookThemeRegistry() {
     }
 
     /** Registers or replaces a theme. Safe to call from any side (themes are pure data). */
-    public static void register(ResourceLocation id, BookTheme theme) {
+    public static void register(Identifier id, BookTheme theme) {
         if (id == null || theme == null) {
             throw new IllegalArgumentException("theme id and theme must be non-null");
         }
@@ -37,14 +37,14 @@ public final class BookThemeRegistry {
     }
 
     public static void register(String id, BookTheme theme) {
-        ResourceLocation rl = ResourceLocation.tryParse(id);
+        Identifier rl = Identifier.tryParse(id);
         if (rl == null) {
             throw new IllegalArgumentException("Invalid theme id: " + id);
         }
         register(rl, theme);
     }
 
-    public static Optional<BookTheme> getOptional(ResourceLocation id) {
+    public static Optional<BookTheme> getOptional(Identifier id) {
         if (id == null) {
             return Optional.empty();
         }
@@ -52,7 +52,7 @@ public final class BookThemeRegistry {
     }
 
     /** Resolves {@code id}, or {@link BookThemes#DEFAULT} if null/unknown. */
-    public static BookTheme resolve(ResourceLocation id) {
+    public static BookTheme resolve(Identifier id) {
         if (id == null) {
             return fallback();
         }
@@ -64,7 +64,7 @@ public final class BookThemeRegistry {
         return fallback();
     }
 
-    public static BookTheme resolve(Optional<ResourceLocation> id) {
+    public static BookTheme resolve(Optional<Identifier> id) {
         return id.map(BookThemeRegistry::resolve).orElseGet(BookThemeRegistry::fallback);
     }
 
@@ -73,15 +73,15 @@ public final class BookThemeRegistry {
         return t != null ? t : BookThemes.DEFAULT;
     }
 
-    public static boolean isRegistered(ResourceLocation id) {
+    public static boolean isRegistered(Identifier id) {
         return id != null && THEMES.containsKey(id);
     }
 
-    public static Collection<ResourceLocation> ids() {
+    public static Collection<Identifier> ids() {
         return Collections.unmodifiableSet(THEMES.keySet());
     }
 
-    public static Map<ResourceLocation, BookTheme> snapshot() {
+    public static Map<Identifier, BookTheme> snapshot() {
         return Map.copyOf(THEMES);
     }
 
@@ -89,7 +89,7 @@ public final class BookThemeRegistry {
      * Removes a theme. Built-in {@link BookThemes#DEFAULT_ID} cannot be removed
      * (re-register to override values instead).
      */
-    public static boolean unregister(ResourceLocation id) {
+    public static boolean unregister(Identifier id) {
         if (BookThemes.DEFAULT_ID.equals(id)) {
             return false;
         }

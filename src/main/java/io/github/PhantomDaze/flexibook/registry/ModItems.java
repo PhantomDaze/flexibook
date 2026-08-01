@@ -23,8 +23,11 @@ public final class ModItems {
     //? if neoforge {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FlexiBookMod.MOD_ID);
 
-    public static final DeferredItem<FlexiBookItem> FLEXI_BOOK = ITEMS.register("flexi_book",
-            () -> new FlexiBookItem(new Item.Properties().stacksTo(1)));
+    // MC 26+ requires Item.Properties#setId before construction; registerItem does that.
+    public static final DeferredItem<FlexiBookItem> FLEXI_BOOK = ITEMS.registerItem(
+            "flexi_book",
+            FlexiBookItem::new,
+            props -> props.stacksTo(1));
 
     /** Resolved item instance (loader-agnostic). */
     public static FlexiBookItem book() {

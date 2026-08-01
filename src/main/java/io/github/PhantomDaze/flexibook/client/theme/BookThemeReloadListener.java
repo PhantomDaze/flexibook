@@ -10,7 +10,7 @@ import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import io.github.PhantomDaze.flexibook.util.ResourceIo;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -32,12 +32,12 @@ public final class BookThemeReloadListener implements ResourceManagerReloadListe
     private static final String SUFFIX = ".json";
 
     /** Theme ids last applied from resource packs (so we can drop stale ones). */
-    private final Set<ResourceLocation> lastResourceIds = new HashSet<>();
+    private final Set<Identifier> lastResourceIds = new HashSet<>();
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
         // Drop previous resource-only themes (not built-ins), then re-seed code samples.
-        for (ResourceLocation id : lastResourceIds) {
+        for (Identifier id : lastResourceIds) {
             if (!BookThemes.DEFAULT_ID.equals(id) && !BookThemes.CONTAIN_ID.equals(id)) {
                 BookThemeRegistry.unregister(id);
             }
@@ -45,14 +45,14 @@ public final class BookThemeReloadListener implements ResourceManagerReloadListe
         lastResourceIds.clear();
         BookThemeRegistry.bootstrap();
 
-        Map<ResourceLocation, Resource> found = resourceManager.listResources(
+        Map<Identifier, Resource> found = resourceManager.listResources(
                 "flexibook/themes",
                 rl -> rl.getPath().endsWith(SUFFIX)
         );
 
         int loaded = 0;
-        for (Map.Entry<ResourceLocation, Resource> entry : found.entrySet()) {
-            ResourceLocation fileId = entry.getKey();
+        for (Map.Entry<Identifier, Resource> entry : found.entrySet()) {
+            Identifier fileId = entry.getKey();
             // assets/ns/flexibook/themes/foo.json → ns:foo
             String path = fileId.getPath();
             if (!path.startsWith(PREFIX) || !path.endsWith(SUFFIX)) {
@@ -62,7 +62,7 @@ public final class BookThemeReloadListener implements ResourceManagerReloadListe
             if (themePath.isEmpty() || themePath.contains("..")) {
                 continue;
             }
-            ResourceLocation themeId = FlexiBookIds.of(fileId.getNamespace(), themePath);
+            Identifier themeId = FlexiBookIds.of(fileId.getNamespace(), themePath);
             try (BufferedReader reader = ResourceIo.openAsReader(entry.getValue())) {
                 JsonElement json = JsonParser.parseReader(reader);
                 var parsed = BookTheme.CODEC.parse(JsonOps.INSTANCE, json);

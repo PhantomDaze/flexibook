@@ -7,8 +7,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 //? if <1.21.4 {
-import net.minecraft.world.InteractionResultHolder;
-//?}
+/*import net.minecraft.world.InteractionResultHolder;
+*///?}
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,20 +30,20 @@ public class FlexiBookItem extends Item {
     }
 
     //? if >=1.21.4 {
-    /*@Override
+    @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         //? if >=1.21.11 {
-        /^if (level.isClientSide()) {
-        ^///?} else {
-        if (level.isClientSide) {
-        //?}
+        if (level.isClientSide()) {
+        //?} else {
+        /*if (level.isClientSide) {
+        *///?}
             openClientScreen(stack);
         }
         return InteractionResult.SUCCESS;
     }
-    *///?} else {
-    @Override
+    //?} else {
+    /*@Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
@@ -51,7 +51,7 @@ public class FlexiBookItem extends Item {
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
-    //?}
+    *///?}
 
     /**
      * Reflective open keeps dedicated-server classpath free of Screen types.
@@ -79,7 +79,7 @@ public class FlexiBookItem extends Item {
     }
 
     //? if >=1.21.11 {
-    /*@Override
+    @Override
     public void appendHoverText(ItemStack stack, TooltipContext context,
                                 net.minecraft.world.item.component.TooltipDisplay display,
                                 java.util.function.Consumer<Component> tooltipComponents,
@@ -94,18 +94,18 @@ public class FlexiBookItem extends Item {
             tooltipComponents.accept(Component.translatable("flexibook.item.flexi_book.empty"));
         }
     }
-    *///?} else {
-    //? if >=1.21 {
+    //?} else {
+    /*//? if >=1.21 {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         appendHover(stack, tooltipComponents);
     }
     //?} else {
-    /*@Override
+    /^@Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         appendHover(stack, tooltipComponents);
     }
-    *///?}
+    ^///?}
 
     private static void appendHover(ItemStack stack, List<Component> tooltipComponents) {
         tooltipComponents.add(Component.translatable("flexibook.item.flexi_book.tooltip"));
@@ -114,5 +114,5 @@ public class FlexiBookItem extends Item {
             tooltipComponents.add(Component.translatable("flexibook.item.flexi_book.empty"));
         }
     }
-    //?}
+    *///?}
 }

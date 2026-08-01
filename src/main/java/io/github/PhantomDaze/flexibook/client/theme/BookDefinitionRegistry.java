@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.content.BookDefinition;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -19,11 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class BookDefinitionRegistry {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Map<ResourceLocation, BookDefinition> DEFS = new ConcurrentHashMap<>();
+    private static final Map<Identifier, BookDefinition> DEFS = new ConcurrentHashMap<>();
 
     private BookDefinitionRegistry() {}
 
-    public static void register(ResourceLocation id, BookDefinition def) {
+    public static void register(Identifier id, BookDefinition def) {
         if (id == null || def == null) {
             throw new IllegalArgumentException("book id and definition must be non-null");
         }
@@ -32,31 +32,31 @@ public final class BookDefinitionRegistry {
     }
 
     public static void register(String id, BookDefinition def) {
-        ResourceLocation rl = ResourceLocation.tryParse(id);
+        Identifier rl = Identifier.tryParse(id);
         if (rl == null) {
             throw new IllegalArgumentException("Invalid book id: " + id);
         }
         register(rl, def);
     }
 
-    public static Optional<BookDefinition> getOptional(ResourceLocation id) {
+    public static Optional<BookDefinition> getOptional(Identifier id) {
         if (id == null) return Optional.empty();
         return Optional.ofNullable(DEFS.get(id));
     }
 
-    public static boolean isRegistered(ResourceLocation id) {
+    public static boolean isRegistered(Identifier id) {
         return id != null && DEFS.containsKey(id);
     }
 
-    public static Collection<ResourceLocation> ids() {
+    public static Collection<Identifier> ids() {
         return Collections.unmodifiableSet(DEFS.keySet());
     }
 
-    public static Map<ResourceLocation, BookDefinition> snapshot() {
+    public static Map<Identifier, BookDefinition> snapshot() {
         return Map.copyOf(DEFS);
     }
 
-    public static boolean unregister(ResourceLocation id) {
+    public static boolean unregister(Identifier id) {
         return DEFS.remove(id) != null;
     }
 
@@ -73,7 +73,7 @@ public final class BookDefinitionRegistry {
      * load definition → load content body by {@link BookDefinition#contentId()} → apply theme/font.
      * Unknown book id → {@link AdaptiveBookContent#EMPTY}.
      */
-    public static AdaptiveBookContent resolveContent(ResourceLocation bookId) {
+    public static AdaptiveBookContent resolveContent(Identifier bookId) {
         if (bookId == null) {
             return AdaptiveBookContent.EMPTY;
         }
@@ -86,7 +86,7 @@ public final class BookDefinitionRegistry {
         return def.applyTo(body);
     }
 
-    public static AdaptiveBookContent resolveContent(Optional<ResourceLocation> bookId) {
+    public static AdaptiveBookContent resolveContent(Optional<Identifier> bookId) {
         return bookId.map(BookDefinitionRegistry::resolveContent).orElse(AdaptiveBookContent.EMPTY);
     }
 }

@@ -5,7 +5,7 @@ import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import io.github.PhantomDaze.flexibook.util.Compat;
 
 import com.mojang.serialization.JsonOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -86,7 +86,7 @@ class ContentModelTest {
 
     @Test
     void contentCodecRoundTripDefaultFont() {
-        ResourceLocation font = FlexiBookIds.of("minecraft", "alt");
+        Identifier font = FlexiBookIds.of("minecraft", "alt");
         AdaptiveBookContent original = AdaptiveBookContent.ofElements(
                 new TranslatableText("demo.title"),
                 List.of(new BookElement.Paragraph(List.of(
@@ -104,7 +104,7 @@ class ContentModelTest {
 
     @Test
     void contentCodecRoundTripThemeId() {
-        ResourceLocation theme = FlexiBookIds.of("flexibook", "contain");
+        Identifier theme = FlexiBookIds.of("flexibook", "contain");
         AdaptiveBookContent original = AdaptiveBookContent.ofMarkup(
                 new TranslatableText("demo.title"),
                 "[p]x[/p]",
@@ -134,8 +134,8 @@ class ContentModelTest {
 
     @Test
     void styleFlagsFontMergePrefersOther() {
-        ResourceLocation aFont = FlexiBookIds.of("minecraft", "default");
-        ResourceLocation bFont = FlexiBookIds.of("minecraft", "alt");
+        Identifier aFont = FlexiBookIds.of("minecraft", "default");
+        Identifier bFont = FlexiBookIds.of("minecraft", "alt");
         StyleFlags a = StyleFlags.EMPTY.withFont(aFont);
         StyleFlags b = StyleFlags.EMPTY.withFont(bFont);
         assertEquals(Optional.of(bFont), a.merge(b).font());

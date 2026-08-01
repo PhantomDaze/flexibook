@@ -8,7 +8,7 @@ import io.github.PhantomDaze.flexibook.content.StyleFlags;
 import io.github.PhantomDaze.flexibook.content.TranslatableText;
 import io.github.PhantomDaze.flexibook.util.Compat;
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,7 +79,7 @@ public final class TagParser {
                             // bare block-level link → paragraph with single linked span
                             List<InlineSpan> spans = parseInlines("link");
                             StyleFlags style = StyleFlags.EMPTY.withColor(parseColor(tag.attrs.get("color")).orElse(0x00AAFF));
-                            Optional<ResourceLocation> font = parseFontAttr(tag);
+                            Optional<Identifier> font = parseFontAttr(tag);
                             if (font.isPresent()) {
                                 style = style.withFont(font.get());
                             }
@@ -228,7 +228,7 @@ public final class TagParser {
                             style = style.withColor(c.orElse(null));
                         }
                         case "font" -> {
-                            Optional<ResourceLocation> f = parseFontAttr(tag);
+                            Optional<Identifier> f = parseFontAttr(tag);
                             if (f.isEmpty()) {
                                 // [font=namespace:path] as first token
                                 f = parseFontId(firstAttrValue(tag));
@@ -237,7 +237,7 @@ public final class TagParser {
                         }
                         case "link" -> {
                             pendingLink = linkActionFrom(tag.attrs);
-                            Optional<ResourceLocation> f = parseFontAttr(tag);
+                            Optional<Identifier> f = parseFontAttr(tag);
                             if (f.isPresent()) {
                                 style = style.withFont(f.get());
                             }
@@ -311,7 +311,7 @@ public final class TagParser {
 
         private BookElement.Image parseImage(Tag tag) {
             String srcAttr = tag.attrs.getOrDefault("src", "flexibook:textures/gui/icon.png");
-            ResourceLocation rl = ResourceLocation.tryParse(srcAttr.contains(":") ? srcAttr : "flexibook:" + srcAttr);
+            Identifier rl = Identifier.tryParse(srcAttr.contains(":") ? srcAttr : "flexibook:" + srcAttr);
             if (rl == null) {
                 rl = FlexiBookIds.of(FlexiBookMod.MOD_ID, "textures/gui/icon.png");
             }
@@ -511,7 +511,7 @@ public final class TagParser {
             return LinkAction.none();
         }
 
-        private static Optional<ResourceLocation> parseFontAttr(Tag tag) {
+        private static Optional<Identifier> parseFontAttr(Tag tag) {
             if (tag.attrs.containsKey("font")) {
                 return parseFontId(tag.attrs.get("font"));
             }
@@ -521,12 +521,12 @@ public final class TagParser {
             return Optional.empty();
         }
 
-        private static Optional<ResourceLocation> parseFontId(String raw) {
+        private static Optional<Identifier> parseFontId(String raw) {
             if (raw == null || raw.isBlank()) {
                 return Optional.empty();
             }
             String s = raw.trim().replace("\"", "").replace("'", "");
-            ResourceLocation rl = ResourceLocation.tryParse(s);
+            Identifier rl = Identifier.tryParse(s);
             return Optional.ofNullable(rl);
         }
     }

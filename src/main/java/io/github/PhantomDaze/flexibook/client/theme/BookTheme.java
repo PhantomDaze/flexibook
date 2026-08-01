@@ -3,7 +3,7 @@ package io.github.PhantomDaze.flexibook.client.theme;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.PhantomDaze.flexibook.layout.LayoutParams;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 
 /**
@@ -14,7 +14,7 @@ import net.minecraft.util.StringRepresentable;
  * The built-in example is {@link BookThemes#DEFAULT_ID} ({@code flexibook:default}).
  */
 public record BookTheme(
-        ResourceLocation bookTexture,
+        Identifier bookTexture,
         int bookTexWidth,
         int bookTexHeight,
         int textureSheetSize,
@@ -45,7 +45,7 @@ public record BookTheme(
      * under the 16-field {@code group} limit while keys remain top-level in the JSON.
      */
     public static final Codec<BookTheme> CODEC = RecordCodecBuilder.create(i -> i.group(
-            ResourceLocation.CODEC.fieldOf("book_texture").forGetter(BookTheme::bookTexture),
+            Identifier.CODEC.fieldOf("book_texture").forGetter(BookTheme::bookTexture),
             Metrics.MAP_CODEC.forGetter(Metrics::from),
             Colors.MAP_CODEC.forGetter(Colors::from),
             IMAGE_FIT_CODEC.optionalFieldOf("image_fit", ImageFit.STRETCH).forGetter(BookTheme::imageFit),
@@ -180,7 +180,7 @@ public record BookTheme(
     }
 
     public static final class Builder {
-        private ResourceLocation bookTexture;
+        private Identifier bookTexture;
         private int bookTexWidth;
         private int bookTexHeight;
         private int textureSheetSize;
@@ -232,7 +232,7 @@ public record BookTheme(
             return b;
         }
 
-        public Builder bookTexture(ResourceLocation v) { this.bookTexture = v; return this; }
+        public Builder bookTexture(Identifier v) { this.bookTexture = v; return this; }
         public Builder bookTexWidth(int v) { this.bookTexWidth = v; return this; }
         public Builder bookTexHeight(int v) { this.bookTexHeight = v; return this; }
         public Builder textureSheetSize(int v) { this.textureSheetSize = v; return this; }

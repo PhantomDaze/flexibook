@@ -2,7 +2,7 @@ package io.github.PhantomDaze.flexibook.client.theme;
 
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Built-in example themes shipped with FlexiBook.
@@ -12,14 +12,14 @@ public final class BookThemes {
     private BookThemes() {
     }
 
-    public static final ResourceLocation DEFAULT_ID =
+    public static final Identifier DEFAULT_ID =
             FlexiBookIds.of(FlexiBookMod.MOD_ID, "default");
 
     /** Same layout/colors as {@link #DEFAULT}, but {@link ImageFit#CONTAIN} for images. */
-    public static final ResourceLocation CONTAIN_ID =
+    public static final Identifier CONTAIN_ID =
             FlexiBookIds.of(FlexiBookMod.MOD_ID, "contain");
 
-    private static final ResourceLocation BOOK_TEX =
+    private static final Identifier BOOK_TEX =
             FlexiBookIds.of(FlexiBookMod.MOD_ID, "textures/gui/book.png");
 
     /**

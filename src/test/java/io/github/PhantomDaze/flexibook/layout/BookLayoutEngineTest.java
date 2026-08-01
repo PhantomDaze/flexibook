@@ -9,7 +9,7 @@ import io.github.PhantomDaze.flexibook.content.InlineSpan;
 import io.github.PhantomDaze.flexibook.content.StyleFlags;
 import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -101,7 +101,7 @@ class BookLayoutEngineTest {
                 .toList();
         assertFalse(lines.isEmpty(), "should have text lines");
 
-        ResourceLocation expected = FlexiBookFonts.DEFAULT;
+        Identifier expected = FlexiBookFonts.DEFAULT;
         for (RenderedElement el : lines) {
             if (el instanceof RenderedElement.TextLine tl) {
                 assertEquals(Optional.of(expected), tl.style().font(),
@@ -112,7 +112,7 @@ class BookLayoutEngineTest {
 
     @Test
     void explicitBookDefaultFontIsApplied() {
-        ResourceLocation custom = FlexiBookIds.of("mymod", "fancy");
+        Identifier custom = FlexiBookIds.of("mymod", "fancy");
         AdaptiveBookContent content = AdaptiveBookContent.ofElements(
                 io.github.PhantomDaze.flexibook.content.TranslatableText.of("title"),
                 List.of(new BookElement.Paragraph(List.of(InlineSpan.literal("Hello")))),
@@ -131,8 +131,8 @@ class BookLayoutEngineTest {
 
     @Test
     void spanLevelFontOverridesBookFont() {
-        ResourceLocation bookFont = FlexiBookFonts.DEFAULT;
-        ResourceLocation spanFont = FlexiBookIds.of("mymod", "fancy");
+        Identifier bookFont = FlexiBookFonts.DEFAULT;
+        Identifier spanFont = FlexiBookIds.of("mymod", "fancy");
         AdaptiveBookContent content = AdaptiveBookContent.ofElements(
                 io.github.PhantomDaze.flexibook.content.TranslatableText.of("title"),
                 List.of(new BookElement.Paragraph(List.of(

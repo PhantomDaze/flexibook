@@ -179,6 +179,59 @@ if (modLoader == 'neoforge') {
     apply from: rootProject.file('gradle/fabric.gradle')
 }
 
+// ---------------------------------------------------------------------------
+// Always-on multi-version sources (no Set active required for compile/run/build)
+//
+// Stonecutter 0.6 only wires ../../src for the *active* node; non-active nodes
+// get an empty source set unless a registered chiseled task is on the CLI
+// (which points them at build/chiseledSrc). That makes `:26.2:runClient` load
+// resources-only / empty entrypoints when 26.1.2 is active.
+//
+// Force every version node to:
+//   1. run setupChiseledBuild (preprocess root src → build/chiseledSrc for THIS version)
+//   2. compile from build/chiseledSrc only
+// ---------------------------------------------------------------------------
+afterEvaluate {
+    def setupChiseled = tasks.named('setupChiseledBuild')
+
+    // Compilation / packaging / runs always wait for preprocessed sources.
+    tasks.withType(JavaCompile).configureEach { dependsOn(setupChiseled) }
+    tasks.withType(ProcessResources).configureEach { t ->
+        // generateModMetadata does not need chiseled sources
+        if (t.name != 'generateModMetadata') {
+            t.dependsOn(setupChiseled)
+        }
+    }
+    tasks.matching { t ->
+        def n = t.name
+        n.startsWith('run') || n.startsWith('prepare') || n.contains('Client') || n.contains('Server')
+    }.configureEach { t ->
+        try {
+            t.dependsOn(setupChiseled)
+        } catch (Throwable ignored) {
+            // some synthetic MDG tasks reject dependsOn; ignore
+        }
+    }
+
+    // Replace SC's active-only / empty roots with always-chiseled roots.
+    def chiseledMainJava = file("${buildDir}/chiseledSrc/main/java")
+    def chiseledMainRes = file("${buildDir}/chiseledSrc/main/resources")
+    def chiseledTestJava = file("${buildDir}/chiseledSrc/test/java")
+    def chiseledTestRes = file("${buildDir}/chiseledSrc/test/resources")
+
+    sourceSets.main.java.setSrcDirs([chiseledMainJava])
+    sourceSets.main.resources.setSrcDirs([chiseledMainRes])
+    // Generated mod metadata (mods.toml / fabric.mod.json) still required.
+    sourceSets.main.resources.srcDir(tasks.named('generateModMetadata'))
+    def genRes = file('src/generated/resources')
+    if (genRes.directory) {
+        sourceSets.main.resources.srcDir(genRes)
+    }
+
+    sourceSets.test.java.setSrcDirs([chiseledTestJava])
+    sourceSets.test.resources.setSrcDirs([chiseledTestRes])
+}
+
 publishing {
     publications {
         register('mavenJava', MavenPublication) {

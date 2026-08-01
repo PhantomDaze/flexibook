@@ -55,45 +55,34 @@ Checkout the branch that matches the JDK you develop against; each slim branch o
 ## Build
 
 ```bash
-# JDK for Gradle daemon (must be 21 — see gradle.properties org.gradle.java.home):
+# JDK for Gradle daemon (must be 21 — see gradle.properties org.gradle.java.home).
+# Version nodes still compile with their own toolchain (17 / 21 / 25).
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 
-# Active version only (default 1.21.1):
-./gradlew build
-# jar: versions/<active>/build/libs/flexibook-1.0.0+<mc>.jar
+# --- No version switching required ---
+# Every :version:compileJava / :version:runClient / :version:build runs
+# setupChiseledBuild first, which preprocesses root src/ into
+# versions/<v>/build/chiseledSrc for THAT version only.
 
-# Disk layout groups nodes by JDK toolchain prefix:
-#   versions/java17-{1.20.1,1.20.1-fabric}          (JDK 17)
-#   versions/java21-{1.21.1,1.21.1-fabric,1.21.4,
-#                    1.21.4-fabric,1.21.11-fabric}  (JDK 21)
-#   versions/java25-{26.1.2,26.2}                   (JDK 25)
-# Project name ≠ MC version: Stonecutter //? if uses the second arg (MC version).
-
-# All version nodes:
+# All version nodes on this branch (jars + tests):
 ./gradlew chiseledBuild
-# jars: versions/<node>/build/libs/flexibook-1.0.0+<mc>.jar
+# versions/26.1.2/build/libs/flexibook-1.0.0+26.1.2.jar
+# versions/26.2/build/libs/flexibook-1.0.0+26.2.jar
 
-# Switch shared sources (processes //? comments in src/):
-./gradlew "Set active project to java17-1.20.1"
-./gradlew "Set active project to java17-1.20.1-fabric"
-./gradlew "Set active project to java21-1.21.1"
-./gradlew "Set active project to java21-1.21.1-fabric"
-./gradlew "Set active project to java21-1.21.4"
-./gradlew "Set active project to java21-1.21.4-fabric"
-./gradlew "Set active project to java21-1.21.11-fabric"
-./gradlew "Set active project to java25-26.1.2"
-./gradlew "Set active project to java25-26.2"
+# Single node (works regardless of stonecutter.active):
+./gradlew :26.1.2:build
+./gradlew :26.2:build
+./gradlew :26.1.2:runClient
+./gradlew :26.2:runClient
 
-./gradlew :java25-26.2:runClient
-./gradlew :java25-26.1.2:runClient
-./gradlew :java21-1.21.4:runClient
-./gradlew :java21-1.21.1:runClient
-./gradlew :java17-1.20.1:runClient
-./gradlew :java21-1.21.11-fabric:runClient
-./gradlew :java21-1.21.4-fabric:runClient
-./gradlew :java21-1.21.1-fabric:runClient
-./gradlew :java17-1.20.1-fabric:runClient
+# Optional: change IDE/default comment state in root src/ (not needed for builds)
+./gradlew "Set active project to 26.1.2"
+./gradlew "Set active project to 26.2"
+./gradlew "Reset active project"   # back to VCS default before commit
 ```
+
+`main` branch nodes: `26.1.2`, `26.2` (NeoForge, JDK 25 toolchain).
+Other JDK lines live on `java17` / `java21` branches with the same always-chiseled workflow.
 
 ## In-game
 

@@ -9,9 +9,9 @@ import io.github.PhantomDaze.flexibook.client.theme.BookDefinitionRegistry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,21 +28,21 @@ public final class FlexiBookCommands {
         dispatcher.register(
                 Commands.literal("flexibook")
                         //? if >=1.21.11 {
-                        /*.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-                        *///?} else {
-                        .requires(src -> src.hasPermission(2))
-                        //?}
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        //?} else {
+                        /*.requires(src -> src.hasPermission(2))
+                        *///?}
                         .then(Commands.literal("give")
-                                .then(Commands.argument("book", ResourceLocationArgument.id())
+                                .then(Commands.argument("book", IdentifierArgument.id())
                                         .executes(ctx -> give(
                                                 ctx.getSource(),
-                                                ResourceLocationArgument.getId(ctx, "book"),
+                                                IdentifierArgument.getId(ctx, "book"),
                                                 ctx.getSource().getPlayerOrException()
                                         ))
                                         .then(Commands.argument("player", EntityArgument.player())
                                                 .executes(ctx -> give(
                                                         ctx.getSource(),
-                                                        ResourceLocationArgument.getId(ctx, "book"),
+                                                        IdentifierArgument.getId(ctx, "book"),
                                                         EntityArgument.getPlayer(ctx, "player")
                                                 ))
                                         )
@@ -50,7 +50,7 @@ public final class FlexiBookCommands {
                                 .then(Commands.argument("bookStr", StringArgumentType.string())
                                         .executes(ctx -> {
                                             String raw = StringArgumentType.getString(ctx, "bookStr");
-                                            ResourceLocation id = ResourceLocation.tryParse(raw);
+                                            Identifier id = Identifier.tryParse(raw);
                                             if (id == null) {
                                                 throw new SimpleCommandExceptionType(
                                                         Component.literal("Invalid id: " + raw)
@@ -73,7 +73,7 @@ public final class FlexiBookCommands {
         );
     }
 
-    private static int give(CommandSourceStack source, ResourceLocation bookId, ServerPlayer player)
+    private static int give(CommandSourceStack source, Identifier bookId, ServerPlayer player)
             throws CommandSyntaxException {
         if (!BookDefinitionRegistry.isRegistered(bookId)) {
             throw UNKNOWN_BOOK.create();
@@ -85,10 +85,10 @@ public final class FlexiBookCommands {
         source.sendSuccess(
                 () -> {
                     //? if >=1.21.11 {
-                    /*String name = player.getGameProfile().name();
-                    *///?} else {
-                    String name = player.getGameProfile().getName();
-                    //?}
+                    String name = player.getGameProfile().name();
+                    //?} else {
+                    /*String name = player.getGameProfile().getName();
+                    *///?}
                     return Component.literal("Gave " + bookId + " to " + name);
                 },
                 true

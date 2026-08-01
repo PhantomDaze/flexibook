@@ -8,7 +8,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
 import io.github.PhantomDaze.flexibook.client.theme.ImageFit;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStreamReader;
@@ -103,7 +103,7 @@ class PackExportFixtureCodecTest {
         assertEquals(java.util.Objects.requireNonNull(FlexiBookIds.tryParse("demopack:textures/gui/book.png")), theme.bookTexture());
     }
 
-    private static Optional<ResourceLocation> OptionalRL(String s) {
+    private static Optional<Identifier> OptionalRL(String s) {
         return Optional.of(java.util.Objects.requireNonNull(FlexiBookIds.tryParse(s)));
     }
 

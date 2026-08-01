@@ -13,7 +13,7 @@ import io.github.PhantomDaze.flexibook.client.theme.BookTheme;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public final class BookLayoutEngine {
                                             int guiScale,
                                             String searchQuery) {
         String q = searchQuery == null ? "" : searchQuery.trim().toLowerCase(Locale.ROOT);
-        ResourceLocation resolvedFont = content.resolvedFont();
+        Identifier resolvedFont = content.resolvedFont();
         String fontKey = resolvedFont.toString();
         String key = content.hashCode() + "|" + languageCode + "|" + guiScale + "|" + theme.revision() + "|" + fontKey + "|" + q;
         List<RenderedPage> cached = CACHE.get(key);
@@ -63,7 +63,7 @@ public final class BookLayoutEngine {
         params.scale = startScale;
         params.columns = 1;
 
-        Optional<ResourceLocation> bookFont = Optional.of(resolvedFont);
+        Optional<Identifier> bookFont = Optional.of(resolvedFont);
         List<RenderedPage> pages = tryLayout(elements, measurer, translator, params, q, bookFont);
 
         int guard = 0;
@@ -165,7 +165,7 @@ public final class BookLayoutEngine {
                                                 TranslationProvider translator,
                                                 LayoutParams params,
                                                 String searchLower,
-                                                Optional<ResourceLocation> bookFont) {
+                                                Optional<Identifier> bookFont) {
         List<RenderedPage> pages = new ArrayList<>();
         RenderedPage page = new RenderedPage();
         pages.add(page);
@@ -250,7 +250,7 @@ public final class BookLayoutEngine {
 
     private static int layoutOne(BookElement element, List<RenderedPage> pages, RenderedPage page, float[] colY, int col,
                                  LayoutParams params, TextMeasurer measurer, TranslationProvider translator,
-                                 String searchLower, Optional<ResourceLocation> bookFont) {
+                                 String searchLower, Optional<Identifier> bookFont) {
         return switch (element) {
             case BookElement.Heading heading -> {
                 float sizeMul = heading.level() <= 1 ? 1.35f : 1.15f;
@@ -320,7 +320,7 @@ public final class BookLayoutEngine {
     private static int placeInlineSpans(List<RenderedPage> pages, RenderedPage page, float[] colY, int col,
                                         LayoutParams params, TextMeasurer measurer, TranslationProvider translator,
                                         List<InlineSpan> spans,
-                                        int indent, int gapAfter, String searchLower, Optional<ResourceLocation> bookFont) {
+                                        int indent, int gapAfter, String searchLower, Optional<Identifier> bookFont) {
         for (InlineSpan span : spans) {
             String text = resolveSpanPlain(span, translator);
             if (text.isEmpty()) {
@@ -342,14 +342,14 @@ public final class BookLayoutEngine {
     }
 
     /** Span/heading font wins; otherwise fall back to the book default. */
-    private static StyleFlags applyFontOverride(StyleFlags base, Optional<ResourceLocation> local, Optional<ResourceLocation> bookFont) {
+    private static StyleFlags applyFontOverride(StyleFlags base, Optional<Identifier> local, Optional<Identifier> bookFont) {
         if (local != null && local.isPresent()) {
             return base.withFont(local.get());
         }
         return applyBookFont(base, bookFont);
     }
 
-    private static StyleFlags applyBookFont(StyleFlags style, Optional<ResourceLocation> bookFont) {
+    private static StyleFlags applyBookFont(StyleFlags style, Optional<Identifier> bookFont) {
         if (style.font().isPresent() || bookFont == null || bookFont.isEmpty()) {
             return style;
         }
@@ -389,7 +389,7 @@ public final class BookLayoutEngine {
         return col;
     }
 
-    private static int measureWidth(TextMeasurer measurer, String text, StyleFlags style, Optional<ResourceLocation> fontId) {
+    private static int measureWidth(TextMeasurer measurer, String text, StyleFlags style, Optional<Identifier> fontId) {
         if (text == null || text.isEmpty()) {
             return 0;
         }

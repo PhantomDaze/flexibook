@@ -12,7 +12,7 @@ import io.github.PhantomDaze.flexibook.content.BookDefinition;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import io.github.PhantomDaze.flexibook.util.ResourceIo;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -37,15 +37,15 @@ public final class BookContentReloadListener implements ResourceManagerReloadLis
     private static final String BOOKS_PREFIX = "flexibook/books/";
     private static final String SUFFIX = ".json";
 
-    private final Set<ResourceLocation> lastContentIds = new HashSet<>();
-    private final Set<ResourceLocation> lastBookIds = new HashSet<>();
+    private final Set<Identifier> lastContentIds = new HashSet<>();
+    private final Set<Identifier> lastBookIds = new HashSet<>();
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
-        for (ResourceLocation id : lastContentIds) {
+        for (Identifier id : lastContentIds) {
             BookContentRegistry.unregister(id);
         }
-        for (ResourceLocation id : lastBookIds) {
+        for (Identifier id : lastBookIds) {
             BookDefinitionRegistry.unregister(id);
         }
         lastContentIds.clear();
@@ -70,13 +70,13 @@ public final class BookContentReloadListener implements ResourceManagerReloadLis
     }
 
     private int loadContents(ResourceManager resourceManager) {
-        Map<ResourceLocation, Resource> found = resourceManager.listResources(
+        Map<Identifier, Resource> found = resourceManager.listResources(
                 "flexibook/contents",
                 rl -> rl.getPath().endsWith(SUFFIX)
         );
         int loaded = 0;
-        for (Map.Entry<ResourceLocation, Resource> entry : found.entrySet()) {
-            ResourceLocation fileId = entry.getKey();
+        for (Map.Entry<Identifier, Resource> entry : found.entrySet()) {
+            Identifier fileId = entry.getKey();
             String path = fileId.getPath();
             if (!path.startsWith(CONTENTS_PREFIX) || !path.endsWith(SUFFIX)) {
                 continue;
@@ -85,7 +85,7 @@ public final class BookContentReloadListener implements ResourceManagerReloadLis
             if (bodyPath.isEmpty() || bodyPath.contains("..")) {
                 continue;
             }
-            ResourceLocation contentId = FlexiBookIds.of(fileId.getNamespace(), bodyPath);
+            Identifier contentId = FlexiBookIds.of(fileId.getNamespace(), bodyPath);
             try (BufferedReader reader = ResourceIo.openAsReader(entry.getValue())) {
                 JsonElement json = JsonParser.parseReader(reader);
                 var parsed = AdaptiveBookContent.CODEC.parse(JsonOps.INSTANCE, json);
@@ -105,13 +105,13 @@ public final class BookContentReloadListener implements ResourceManagerReloadLis
     }
 
     private int loadBooks(ResourceManager resourceManager) {
-        Map<ResourceLocation, Resource> found = resourceManager.listResources(
+        Map<Identifier, Resource> found = resourceManager.listResources(
                 "flexibook/books",
                 rl -> rl.getPath().endsWith(SUFFIX)
         );
         int loaded = 0;
-        for (Map.Entry<ResourceLocation, Resource> entry : found.entrySet()) {
-            ResourceLocation fileId = entry.getKey();
+        for (Map.Entry<Identifier, Resource> entry : found.entrySet()) {
+            Identifier fileId = entry.getKey();
             String path = fileId.getPath();
             if (!path.startsWith(BOOKS_PREFIX) || !path.endsWith(SUFFIX)) {
                 continue;
@@ -120,7 +120,7 @@ public final class BookContentReloadListener implements ResourceManagerReloadLis
             if (bookPath.isEmpty() || bookPath.contains("..")) {
                 continue;
             }
-            ResourceLocation bookId = FlexiBookIds.of(fileId.getNamespace(), bookPath);
+            Identifier bookId = FlexiBookIds.of(fileId.getNamespace(), bookPath);
             try (BufferedReader reader = ResourceIo.openAsReader(entry.getValue())) {
                 JsonElement json = JsonParser.parseReader(reader);
                 var parsed = BookDefinition.CODEC.parse(JsonOps.INSTANCE, json);

@@ -5,7 +5,7 @@ import io.github.PhantomDaze.flexibook.util.McFonts;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ public final class McTextMeasurer implements TextMeasurer {
     }
 
     @Override
-    public int width(String text, StyleFlags style, Optional<ResourceLocation> fontId) {
+    public int width(String text, StyleFlags style, Optional<Identifier> fontId) {
         if (text == null || text.isEmpty()) {
             return 0;
         }
@@ -28,12 +28,12 @@ public final class McTextMeasurer implements TextMeasurer {
         return font.width(Component.literal(text).withStyle(mcStyle));
     }
 
-    private static Style toStyle(StyleFlags flags, Optional<ResourceLocation> overrideFont) {
+    private static Style toStyle(StyleFlags flags, Optional<Identifier> overrideFont) {
         Style s = Style.EMPTY;
         if (flags.bold()) s = s.withBold(true);
         if (flags.italic()) s = s.withItalic(true);
         if (flags.underline()) s = s.withUnderlined(true);
-        ResourceLocation f = overrideFont.orElseGet(() -> flags.font().orElse(null));
+        Identifier f = overrideFont.orElseGet(() -> flags.font().orElse(null));
         if (f != null) {
             s = McFonts.withFont(s, f);
         }
