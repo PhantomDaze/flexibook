@@ -30,7 +30,7 @@ neoForge {
             jvmArgument '-Dfml.earlyWindowControl=false'
         }
 
-        // Auto smoke: create world → open demo book → read → quit (see AutoSmokeClient).
+        // Auto smoke: enable dev/smoke/resourcepacks → world → book → read → quit.
         clientAutoSmoke {
             client()
             systemProperty 'neoforge.enabledGameTestNamespaces', modId
@@ -39,6 +39,8 @@ neoForge {
             systemProperty 'flexibook.autoSmoke', 'true'
             systemProperty 'flexibook.autoSmoke.readSeconds', '10'
             systemProperty 'flexibook.autoSmoke.timeoutSeconds', '180'
+            systemProperty 'flexibook.autoSmoke.dir', rootProject.file('dev/smoke').absolutePath
+            systemProperty 'flexibook.autoSmoke.resourcePacksDir', rootProject.file('dev/smoke/resourcepacks').absolutePath
             jvmArgument '-Dfml.earlyWindowControl=false'
         }
 
