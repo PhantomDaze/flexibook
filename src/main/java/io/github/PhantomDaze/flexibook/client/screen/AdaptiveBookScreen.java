@@ -159,21 +159,26 @@ public class AdaptiveBookScreen extends Screen {
     }
     *///?} else {
     //? if >=1.21 {
-    @Override
+    /*@Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         this.renderTransparentBackground(graphics);
         blitBookPanel(graphics);
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     public void renderBackground(GuiGraphics graphics) {
         graphics.fillGradient(0, 0, this.width, this.height, 0xC0101010, 0xD0101010);
         blitBookPanel(graphics);
     }
-    *///?}
+    //?}
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        //? if >=1.21 {
+        /*this.renderBackground(graphics, mouseX, mouseY, partialTick);
+        *///?} else {
+        this.renderBackground(graphics);
+        //?}
         super.render(graphics, mouseX, mouseY, partialTick);
         drawPageContent(graphics, mouseX, mouseY);
     }
@@ -226,40 +231,36 @@ public class AdaptiveBookScreen extends Screen {
     }
 
     private void renderElement(GuiGraphicsExtractor graphics, RenderedElement el, int originX, int originY) {
-        switch (el) {
-            case RenderedElement.TextLine line -> {
-                var pose = graphics.pose();
-                pose.pushMatrix();
-                pose.translate(originX + line.x(), originY + line.y());
-                pose.scale(line.scale(), line.scale());
+        if (el instanceof RenderedElement.TextLine line) {
+            var pose = graphics.pose();
+            pose.pushMatrix();
+            pose.translate(originX + line.x(), originY + line.y());
+            pose.scale(line.scale(), line.scale());
 
-                StyleFlags flags = line.style();
-                int baseColor = theme.pageTextColor();
-                if (flags.color().isPresent()) {
-                    baseColor = flags.color().get() & 0xFFFFFF;
-                } else if (line.link().isPresent()) {
-                    baseColor = theme.linkColor();
-                }
-                Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor);
-                Component text = Component.literal(line.text()).withStyle(mcStyle);
-                if (line.highlight()) {
-                    int w = Math.max(1, font.width(text));
-                    graphics.fill(-1, -1, w + 1, Math.round(line.height()) + 1, 0x66FFD54F);
-                }
-                graphics.text(font, text, 0, 0, baseColor, false);
-                pose.popMatrix();
+            StyleFlags flags = line.style();
+            int baseColor = theme.pageTextColor();
+            if (flags.color().isPresent()) {
+                baseColor = flags.color().get() & 0xFFFFFF;
+            } else if (line.link().isPresent()) {
+                baseColor = theme.linkColor();
             }
-            case RenderedElement.ImageBlock image -> {
-                int boxX = originX + Math.round(image.x());
-                int boxY = originY + Math.round(image.y());
-                blitImage(graphics, image.texture(), boxX, boxY, image.width(), image.height());
+            Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor);
+            Component text = Component.literal(line.text()).withStyle(mcStyle);
+            if (line.highlight()) {
+                int w = Math.max(1, font.width(text));
+                graphics.fill(-1, -1, w + 1, Math.round(line.height()) + 1, 0x66FFD54F);
             }
-            case RenderedElement.DividerLine divider -> {
-                int x = originX + Math.round(divider.x());
-                int y = originY + Math.round(divider.y() + divider.height() / 2f);
-                int w = Math.round(divider.width());
-                graphics.fill(x, y, x + w, y + 1, 0xFF000000 | theme.dividerColor());
-            }
+            graphics.text(font, text, 0, 0, baseColor, false);
+            pose.popMatrix();
+        } else if (el instanceof RenderedElement.ImageBlock image) {
+            int boxX = originX + Math.round(image.x());
+            int boxY = originY + Math.round(image.y());
+            blitImage(graphics, image.texture(), boxX, boxY, image.width(), image.height());
+        } else if (el instanceof RenderedElement.DividerLine divider) {
+            int x = originX + Math.round(divider.x());
+            int y = originY + Math.round(divider.y() + divider.height() / 2f);
+            int w = Math.round(divider.width());
+            graphics.fill(x, y, x + w, y + 1, 0xFF000000 | theme.dividerColor());
         }
     }
 
@@ -308,56 +309,25 @@ public class AdaptiveBookScreen extends Screen {
     private void blitBookPanel(GuiGraphics graphics) {
         int panelW = theme.bookTexWidth();
         int panelH = theme.bookTexHeight();
-        //? if >=1.21.11 {
-        /*graphics.blit(
-                RenderPipelines.GUI_TEXTURED,
-                theme.bookTexture(),
-                leftPos,
-                topPos,
-                0f,
-                0f,
-                panelW,
-                panelH,
-                BOOK_TEXTURE_SHEET,
-                BOOK_TEXTURE_SHEET,
-                BOOK_TEXTURE_SHEET,
-                BOOK_TEXTURE_SHEET
-        );
-        *///?} else {
-        //? if >=1.21.4 {
-        /*graphics.blit(
-                RenderType::guiTextured,
-                theme.bookTexture(),
-                leftPos,
-                topPos,
-                0f,
-                0f,
-                panelW,
-                panelH,
-                BOOK_TEXTURE_SHEET,
-                BOOK_TEXTURE_SHEET,
-                BOOK_TEXTURE_SHEET,
-                BOOK_TEXTURE_SHEET
-        );
-        *///?} else {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        graphics.blit(
-                theme.bookTexture(),
-                leftPos,
-                topPos,
-                panelW,
-                panelH,
-                0f,
-                0f,
-                BOOK_TEXTURE_SHEET,
-                BOOK_TEXTURE_SHEET,
-                BOOK_TEXTURE_SHEET,
-                BOOK_TEXTURE_SHEET
-        );
-        RenderSystem.disableBlend();
-        //?}
-        //?}
+        try {
+            graphics.blit(
+                    theme.bookTexture(),
+                    leftPos,
+                    topPos,
+                    panelW,
+                    panelH,
+                    0f,
+                    0f,
+                    BOOK_TEXTURE_SHEET,
+                    BOOK_TEXTURE_SHEET,
+                    BOOK_TEXTURE_SHEET,
+                    BOOK_TEXTURE_SHEET
+            );
+        } finally {
+            RenderSystem.disableBlend();
+        }
     }
 
     private void drawPageContent(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -365,7 +335,8 @@ public class AdaptiveBookScreen extends Screen {
         Component title = content.title().resolve();
         title = title.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int titleX = leftPos + (theme.bookTexWidth() - font.width(title)) / 2;
-        graphics.drawString(font, title, titleX, topPos + theme.titleOffsetY(), theme.pageTextColor(), false);
+        graphics.drawString(font, title, titleX, topPos + theme.titleOffsetY(),
+                0xFF000000 | (theme.pageTextColor() & 0xFFFFFF), false);
 
         int contentX = leftPos + theme.contentLeft();
         int contentY = topPos + theme.contentTop() + theme.contentOffsetY();
@@ -387,54 +358,52 @@ public class AdaptiveBookScreen extends Screen {
         pageComp = pageComp.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int pageLabelX = leftPos + (theme.bookTexWidth() - font.width(pageComp)) / 2;
         graphics.drawString(font, pageComp, pageLabelX,
-                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), theme.pageTextColor(), false);
+                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(),
+                0xFF000000 | (theme.pageTextColor() & 0xFFFFFF), false);
     }
 
     private void renderElement(GuiGraphics graphics, RenderedElement el, int originX, int originY) {
-        switch (el) {
-            case RenderedElement.TextLine line -> {
-                var pose = graphics.pose();
-                //? if >=1.21.11 {
-                /*pose.pushMatrix();
-                pose.translate(originX + line.x(), originY + line.y());
-                pose.scale(line.scale(), line.scale());
-                *///?} else {
-                pose.pushPose();
-                pose.translate(originX + line.x(), originY + line.y(), 0);
-                pose.scale(line.scale(), line.scale(), 1f);
-                //?}
+        // instanceof chains (not pattern-switch) — final on Java 17; sealed switch is preview.
+        if (el instanceof RenderedElement.TextLine line) {
+            var pose = graphics.pose();
+            //? if >=1.21.11 {
+            /*pose.pushMatrix();
+            pose.translate(originX + line.x(), originY + line.y());
+            pose.scale(line.scale(), line.scale());
+            *///?} else {
+            pose.pushPose();
+            pose.translate(originX + line.x(), originY + line.y(), 0);
+            pose.scale(line.scale(), line.scale(), 1f);
+            //?}
 
-                StyleFlags flags = line.style();
-                int baseColor = theme.pageTextColor();
-                if (flags.color().isPresent()) {
-                    baseColor = flags.color().get() & 0xFFFFFF;
-                } else if (line.link().isPresent()) {
-                    baseColor = theme.linkColor();
-                }
-                Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor);
-                Component text = Component.literal(line.text()).withStyle(mcStyle);
-                if (line.highlight()) {
-                    int w = Math.max(1, font.width(text));
-                    graphics.fill(-1, -1, w + 1, Math.round(line.height()) + 1, 0x66FFD54F);
-                }
-                graphics.drawString(font, text, 0, 0, baseColor, false);
-                //? if >=1.21.11 {
-                /*pose.popMatrix();
-                *///?} else {
-                pose.popPose();
-                //?}
+            StyleFlags flags = line.style();
+            int baseColor = 0xFF000000 | (theme.pageTextColor() & 0xFFFFFF);
+            if (flags.color().isPresent()) {
+                baseColor = 0xFF000000 | (flags.color().get() & 0xFFFFFF);
+            } else if (line.link().isPresent()) {
+                baseColor = 0xFF000000 | (theme.linkColor() & 0xFFFFFF);
             }
-            case RenderedElement.ImageBlock image -> {
-                int boxX = originX + Math.round(image.x());
-                int boxY = originY + Math.round(image.y());
-                blitImage(graphics, image.texture(), boxX, boxY, image.width(), image.height());
+            Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor);
+            Component text = Component.literal(line.text()).withStyle(mcStyle);
+            if (line.highlight()) {
+                int w = Math.max(1, font.width(text));
+                graphics.fill(-1, -1, w + 1, Math.round(line.height()) + 1, 0x66FFD54F);
             }
-            case RenderedElement.DividerLine divider -> {
-                int x = originX + Math.round(divider.x());
-                int y = originY + Math.round(divider.y() + divider.height() / 2f);
-                int w = Math.round(divider.width());
-                graphics.fill(x, y, x + w, y + 1, 0xFF000000 | theme.dividerColor());
-            }
+            graphics.drawString(font, text, 0, 0, baseColor, false);
+            //? if >=1.21.11 {
+            /*pose.popMatrix();
+            *///?} else {
+            pose.popPose();
+            //?}
+        } else if (el instanceof RenderedElement.ImageBlock image) {
+            int boxX = originX + Math.round(image.x());
+            int boxY = originY + Math.round(image.y());
+            blitImage(graphics, image.texture(), boxX, boxY, image.width(), image.height());
+        } else if (el instanceof RenderedElement.DividerLine divider) {
+            int x = originX + Math.round(divider.x());
+            int y = originY + Math.round(divider.y() + divider.height() / 2f);
+            int w = Math.round(divider.width());
+            graphics.fill(x, y, x + w, y + 1, 0xFF000000 | (theme.dividerColor() & 0xFFFFFF));
         }
     }
 

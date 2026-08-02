@@ -5,10 +5,10 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? if >=1.21 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-//?}
+*///?}
 
 import java.util.Locale;
 import java.util.Optional;
@@ -27,7 +27,7 @@ public sealed interface LinkAction permits LinkAction.None, LinkAction.CommandId
     Codec<LinkAction> SIMPLE_CODEC = SIMPLE_CODEC_HOLDER.CODEC;
 
     //? if >=1.21 {
-    StreamCodec<RegistryFriendlyByteBuf, LinkAction> STREAM_CODEC = StreamCodec.of(
+    /*StreamCodec<RegistryFriendlyByteBuf, LinkAction> STREAM_CODEC = StreamCodec.of(
             (buf, action) -> {
                 if (action instanceof None) {
                     buf.writeByte(0);
@@ -47,7 +47,7 @@ public sealed interface LinkAction permits LinkAction.None, LinkAction.CommandId
                 default -> None.INSTANCE;
             }
     );
-    //?}
+    *///?}
 
     static LinkAction commandId(String id) {
         return new CommandId(id);

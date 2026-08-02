@@ -110,12 +110,17 @@ public final class BookLayoutEngine {
         int cjk = 0;
         int total = 0;
         for (BookElement el : elements) {
-            String s = switch (el) {
-                case BookElement.Heading h -> resolveForDetection(h.text(), translator);
-                case BookElement.Paragraph p -> joinSpans(p.spans(), translator);
-                case BookElement.Bullet b -> joinSpans(b.spans(), translator);
-                default -> "";
-            };
+            // instanceof chains (not pattern-switch) — final on Java 17; sealed switch is preview.
+            String s;
+            if (el instanceof BookElement.Heading h) {
+                s = resolveForDetection(h.text(), translator);
+            } else if (el instanceof BookElement.Paragraph p) {
+                s = joinSpans(p.spans(), translator);
+            } else if (el instanceof BookElement.Bullet b) {
+                s = joinSpans(b.spans(), translator);
+            } else {
+                s = "";
+            }
             for (int i = 0; i < s.length(); i++) {
                 char c = s.charAt(i);
                 if (Character.isWhitespace(c)) {
@@ -175,73 +180,66 @@ public final class BookLayoutEngine {
         int col = 0;
 
         for (BookElement element : elements) {
-            switch (element) {
-                case BookElement.Heading heading -> {
-                    float sizeMul = heading.level() <= 1 ? 1.35f : 1.15f;
-                    float scale = params.scale * sizeMul;
-                    String text = resolveTranslatablePlain(heading.text(), translator);
-                    boolean hi = matchesSearch(text, searchLower);
-                    StyleFlags style = StyleFlags.EMPTY.withBold(true);
-                    style = applyFontOverride(style, heading.font(), bookFont);
-                    col = placeWrappedText(pages, page, colY, col, params, measurer, text, style, Optional.empty(), scale, 0, params.headingGap, hi);
+            // instanceof chains (not pattern-switch) — final on Java 17; sealed switch is preview.
+            if (element instanceof BookElement.Heading heading) {
+                float sizeMul = heading.level() <= 1 ? 1.35f : 1.15f;
+                float scale = params.scale * sizeMul;
+                String text = resolveTranslatablePlain(heading.text(), translator);
+                boolean hi = matchesSearch(text, searchLower);
+                StyleFlags style = StyleFlags.EMPTY.withBold(true);
+                style = applyFontOverride(style, heading.font(), bookFont);
+                col = placeWrappedText(pages, page, colY, col, params, measurer, text, style, Optional.empty(), scale, 0, params.headingGap, hi);
+                page = Compat.last(pages);
+            } else if (element instanceof BookElement.Paragraph paragraph) {
+                col = placeInlineSpans(pages, page, colY, col, params, measurer, translator, paragraph.spans(), 0, params.paragraphGap, searchLower, bookFont);
+                page = Compat.last(pages);
+            } else if (element instanceof BookElement.Bullet bullet) {
+                float markerScale = params.scale;
+                float x = columnX(col, params);
+                if (colY[col] + params.lineHeight * markerScale > params.pageContentHeight) {
+                    int next = advanceColumn(pages, colY, col, params);
+                    col = next;
+                    page = Compat.last(pages);
+                    x = columnX(col, params);
+                }
+                StyleFlags markerStyle = applyBookFont(StyleFlags.EMPTY, bookFont);
+                int markerW = measureWidth(measurer, "•", markerStyle, Optional.empty());
+                page.add(new RenderedElement.TextLine(
+                        x, colY[col], markerScale, "•", markerStyle, Optional.empty(),
+                        markerW, params.lineHeight, false
+                ));
+                col = placeInlineSpans(pages, page, colY, col, params, measurer, translator, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
+                page = Compat.last(pages);
+            } else if (element instanceof BookElement.LineBreak) {
+                colY[col] += params.lineHeight * params.scale * 0.5f;
+            } else if (element instanceof BookElement.Divider) {
+                float h = params.dividerHeight * params.scale;
+                if (colY[col] + h > params.pageContentHeight) {
+                    col = advanceColumn(pages, colY, col, params);
                     page = Compat.last(pages);
                 }
-                case BookElement.Paragraph paragraph -> {
-                    col = placeInlineSpans(pages, page, colY, col, params, measurer, translator, paragraph.spans(), 0, params.paragraphGap, searchLower, bookFont);
+                float x = columnX(col, params);
+                page.add(new RenderedElement.DividerLine(x, colY[col], params.scale, colW, h));
+                colY[col] += h + params.paragraphGap * params.scale;
+            } else if (element instanceof BookElement.Image image) {
+                float w = image.width() * params.scale;
+                float h = image.height() * params.scale;
+                if (w > colW) {
+                    float fit = colW / (float) image.width();
+                    w = image.width() * fit;
+                    h = image.height() * fit;
+                }
+                if (colY[col] + h > params.pageContentHeight) {
+                    col = advanceColumn(pages, colY, col, params);
                     page = Compat.last(pages);
                 }
-                case BookElement.Bullet bullet -> {
-                    float markerScale = params.scale;
-                    float x = columnX(col, params);
-                    if (colY[col] + params.lineHeight * markerScale > params.pageContentHeight) {
-                        int next = advanceColumn(pages, colY, col, params);
-                        col = next;
-                        page = Compat.last(pages);
-                        x = columnX(col, params);
-                    }
-                    StyleFlags markerStyle = applyBookFont(StyleFlags.EMPTY, bookFont);
-                    int markerW = measureWidth(measurer, "•", markerStyle, Optional.empty());
-                    page.add(new RenderedElement.TextLine(
-                            x, colY[col], markerScale, "•", markerStyle, Optional.empty(),
-                            markerW, params.lineHeight, false
-                    ));
-                    col = placeInlineSpans(pages, page, colY, col, params, measurer, translator, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
+                float x = columnX(col, params);
+                page.add(new RenderedElement.ImageBlock(x, colY[col], 1f, image.src(), Math.round(w), Math.round(h), image.tooltipKey()));
+                colY[col] += h + params.paragraphGap * params.scale;
+            } else if (element instanceof BookElement.Box box) {
+                for (BookElement child : box.children()) {
+                    col = layoutOne(child, pages, page, colY, col, params, measurer, translator, searchLower, bookFont);
                     page = Compat.last(pages);
-                }
-                case BookElement.LineBreak ignored -> {
-                    colY[col] += params.lineHeight * params.scale * 0.5f;
-                }
-                case BookElement.Divider ignored -> {
-                    float h = params.dividerHeight * params.scale;
-                    if (colY[col] + h > params.pageContentHeight) {
-                        col = advanceColumn(pages, colY, col, params);
-                        page = Compat.last(pages);
-                    }
-                    float x = columnX(col, params);
-                    page.add(new RenderedElement.DividerLine(x, colY[col], params.scale, colW, h));
-                    colY[col] += h + params.paragraphGap * params.scale;
-                }
-                case BookElement.Image image -> {
-                    float w = image.width() * params.scale;
-                    float h = image.height() * params.scale;
-                    if (w > colW) {
-                        float fit = colW / (float) image.width();
-                        w = image.width() * fit;
-                        h = image.height() * fit;
-                    }
-                    if (colY[col] + h > params.pageContentHeight) {
-                        col = advanceColumn(pages, colY, col, params);
-                        page = Compat.last(pages);
-                    }
-                    float x = columnX(col, params);
-                    page.add(new RenderedElement.ImageBlock(x, colY[col], 1f, image.src(), Math.round(w), Math.round(h), image.tooltipKey()));
-                    colY[col] += h + params.paragraphGap * params.scale;
-                }
-                case BookElement.Box box -> {
-                    for (BookElement child : box.children()) {
-                        col = layoutOne(child, pages, page, colY, col, params, measurer, translator, searchLower, bookFont);
-                        page = Compat.last(pages);
-                    }
                 }
             }
         }
@@ -251,70 +249,72 @@ public final class BookLayoutEngine {
     private static int layoutOne(BookElement element, List<RenderedPage> pages, RenderedPage page, float[] colY, int col,
                                  LayoutParams params, TextMeasurer measurer, TranslationProvider translator,
                                  String searchLower, Optional<ResourceLocation> bookFont) {
-        return switch (element) {
-            case BookElement.Heading heading -> {
-                float sizeMul = heading.level() <= 1 ? 1.35f : 1.15f;
-                float scale = params.scale * sizeMul;
-                String text = resolveTranslatablePlain(heading.text(), translator);
-                boolean hi = matchesSearch(text, searchLower);
-                StyleFlags style = applyFontOverride(StyleFlags.EMPTY.withBold(true), heading.font(), bookFont);
-                yield placeWrappedText(pages, page, colY, col, params, measurer, text, style, Optional.empty(), scale, 0, params.headingGap, hi);
+        // instanceof chains (not pattern-switch) — final on Java 17; sealed switch is preview.
+        if (element instanceof BookElement.Heading heading) {
+            float sizeMul = heading.level() <= 1 ? 1.35f : 1.15f;
+            float scale = params.scale * sizeMul;
+            String text = resolveTranslatablePlain(heading.text(), translator);
+            boolean hi = matchesSearch(text, searchLower);
+            StyleFlags style = applyFontOverride(StyleFlags.EMPTY.withBold(true), heading.font(), bookFont);
+            return placeWrappedText(pages, page, colY, col, params, measurer, text, style, Optional.empty(), scale, 0, params.headingGap, hi);
+        }
+        if (element instanceof BookElement.Paragraph paragraph) {
+            return placeInlineSpans(pages, page, colY, col, params, measurer, translator, paragraph.spans(), 0, params.paragraphGap, searchLower, bookFont);
+        }
+        if (element instanceof BookElement.Bullet bullet) {
+            float x = columnX(col, params);
+            if (colY[col] + params.lineHeight * params.scale > params.pageContentHeight) {
+                col = advanceColumn(pages, colY, col, params);
+                page = Compat.last(pages);
+                x = columnX(col, params);
             }
-            case BookElement.Paragraph paragraph -> placeInlineSpans(pages, page, colY, col, params, measurer, translator, paragraph.spans(), 0, params.paragraphGap, searchLower, bookFont);
-            case BookElement.Bullet bullet -> {
-                float x = columnX(col, params);
-                if (colY[col] + params.lineHeight * params.scale > params.pageContentHeight) {
-                    col = advanceColumn(pages, colY, col, params);
-                    page = Compat.last(pages);
-                    x = columnX(col, params);
-                }
-                StyleFlags markerStyle = applyBookFont(StyleFlags.EMPTY, bookFont);
-                int markerW = measureWidth(measurer, "•", markerStyle, Optional.empty());
-                Compat.last(pages).add(new RenderedElement.TextLine(
-                        x, colY[col], params.scale, "•", markerStyle, Optional.empty(),
-                        markerW, params.lineHeight, false
-                ));
-                yield placeInlineSpans(pages, Compat.last(pages), colY, col, params, measurer, translator, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
+            StyleFlags markerStyle = applyBookFont(StyleFlags.EMPTY, bookFont);
+            int markerW = measureWidth(measurer, "•", markerStyle, Optional.empty());
+            Compat.last(pages).add(new RenderedElement.TextLine(
+                    x, colY[col], params.scale, "•", markerStyle, Optional.empty(),
+                    markerW, params.lineHeight, false
+            ));
+            return placeInlineSpans(pages, Compat.last(pages), colY, col, params, measurer, translator, bullet.spans(), params.bulletIndent, params.paragraphGap, searchLower, bookFont);
+        }
+        if (element instanceof BookElement.LineBreak) {
+            colY[col] += params.lineHeight * params.scale * 0.5f;
+            return col;
+        }
+        if (element instanceof BookElement.Divider) {
+            float h = params.dividerHeight * params.scale;
+            if (colY[col] + h > params.pageContentHeight) {
+                col = advanceColumn(pages, colY, col, params);
             }
-            case BookElement.LineBreak ignored -> {
-                colY[col] += params.lineHeight * params.scale * 0.5f;
-                yield col;
+            float x = columnX(col, params);
+            Compat.last(pages).add(new RenderedElement.DividerLine(x, colY[col], params.scale, params.columnWidth(), h));
+            colY[col] += h + params.paragraphGap * params.scale;
+            return col;
+        }
+        if (element instanceof BookElement.Image image) {
+            float w = image.width() * params.scale;
+            float h = image.height() * params.scale;
+            int colW = params.columnWidth();
+            if (w > colW) {
+                float fit = colW / (float) image.width();
+                w = image.width() * fit;
+                h = image.height() * fit;
             }
-            case BookElement.Divider ignored -> {
-                float h = params.dividerHeight * params.scale;
-                if (colY[col] + h > params.pageContentHeight) {
-                    col = advanceColumn(pages, colY, col, params);
-                }
-                float x = columnX(col, params);
-                Compat.last(pages).add(new RenderedElement.DividerLine(x, colY[col], params.scale, params.columnWidth(), h));
-                colY[col] += h + params.paragraphGap * params.scale;
-                yield col;
+            if (colY[col] + h > params.pageContentHeight) {
+                col = advanceColumn(pages, colY, col, params);
             }
-            case BookElement.Image image -> {
-                float w = image.width() * params.scale;
-                float h = image.height() * params.scale;
-                int colW = params.columnWidth();
-                if (w > colW) {
-                    float fit = colW / (float) image.width();
-                    w = image.width() * fit;
-                    h = image.height() * fit;
-                }
-                if (colY[col] + h > params.pageContentHeight) {
-                    col = advanceColumn(pages, colY, col, params);
-                }
-                float x = columnX(col, params);
-                Compat.last(pages).add(new RenderedElement.ImageBlock(x, colY[col], 1f, image.src(), Math.round(w), Math.round(h), image.tooltipKey()));
-                colY[col] += h + params.paragraphGap * params.scale;
-                yield col;
+            float x = columnX(col, params);
+            Compat.last(pages).add(new RenderedElement.ImageBlock(x, colY[col], 1f, image.src(), Math.round(w), Math.round(h), image.tooltipKey()));
+            colY[col] += h + params.paragraphGap * params.scale;
+            return col;
+        }
+        if (element instanceof BookElement.Box box) {
+            int c = col;
+            for (BookElement child : box.children()) {
+                c = layoutOne(child, pages, Compat.last(pages), colY, c, params, measurer, translator, searchLower, bookFont);
             }
-            case BookElement.Box box -> {
-                int c = col;
-                for (BookElement child : box.children()) {
-                    c = layoutOne(child, pages, Compat.last(pages), colY, c, params, measurer, translator, searchLower, bookFont);
-                }
-                yield c;
-            }
-        };
+            return c;
+        }
+        return col;
     }
 
     private static int placeInlineSpans(List<RenderedPage> pages, RenderedPage page, float[] colY, int col,

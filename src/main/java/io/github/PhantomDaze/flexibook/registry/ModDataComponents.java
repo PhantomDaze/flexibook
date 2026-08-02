@@ -1,7 +1,7 @@
 package io.github.PhantomDaze.flexibook.registry;
 
 //? if neoforge {
-import io.github.PhantomDaze.flexibook.FlexiBookMod;
+/*import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -25,10 +25,10 @@ public final class ModDataComponents {
 
     private ModDataComponents() {}
 }
-//?} else {
-/*//? if fabric {
-/^//? if >=1.21 {
-import io.github.PhantomDaze.flexibook.FlexiBookMod;
+*///?} else {
+//? if fabric {
+//? if >=1.21 {
+/*import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.content.AdaptiveBookContent;
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.minecraft.core.Registry;
@@ -55,19 +55,19 @@ public final class ModDataComponents {
 
     private ModDataComponents() {}
 }
-//?} else {
-/^¹// 1.20.1 Fabric: book payload lives in NBT (BookContentAccess).
+*///?} else {
+// 1.20.1 Fabric: book payload lives in NBT (BookContentAccess).
 public final class ModDataComponents {
     public static void register() {
     }
 
     private ModDataComponents() {}
 }
-¹^///?}
-^///?} else {
-// Forge 1.20.1 — no DataComponents.
+//?}
+//?} else {
+/*// Forge 1.20.1 — no DataComponents.
 public final class ModDataComponents {
     private ModDataComponents() {}
 }
-//?}
 *///?}
+//?}

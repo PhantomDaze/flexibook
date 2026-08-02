@@ -1,5 +1,4 @@
-// Unified version-node buildscript for Stonecutter 0.6 + Gradle 8.11.
-// plugins {} must be first (aside from buildscript). Loader is chosen after plugins.
+// Forge/Fabric 1.20.1 version nodes use the shared 17 toolchain.
 
 buildscript {
     repositories {
@@ -9,7 +8,7 @@ buildscript {
     }
     dependencies {
         // Always on classpath; only applied when mod_loader=forge
-        classpath 'net.minecraftforge.gradle:ForgeGradle:6.0.36'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:6.0.54'
     }
 }
 
@@ -18,8 +17,6 @@ plugins {
     id 'maven-publish'
     id 'idea'
     id 'dev.kikugie.stonecutter'
-    // Applied only when mod_loader=neoforge (see below). Version from pluginManagement.
-    id 'net.neoforged.moddev' apply false
     // Applied only when mod_loader=fabric.
     id 'fabric-loom' apply false
 }
@@ -65,9 +62,7 @@ project.ext.javaVer = javaVer
 group = projProp('mod_group_id')
 version = "${projProp('mod_version')}+${mcVersion}"
 
-if (modLoader == 'neoforge') {
-    apply plugin: 'net.neoforged.moddev'
-} else if (modLoader == 'forge') {
+if (modLoader == 'forge') {
     apply plugin: 'net.minecraftforge.gradle'
 } else if (modLoader == 'fabric') {
     apply plugin: 'fabric-loom'
@@ -77,7 +72,6 @@ if (modLoader == 'neoforge') {
 
 repositories {
     mavenCentral()
-    maven { url = 'https://maven.neoforged.net/releases' }
     maven { url = 'https://maven.minecraftforge.net' }
     maven { url = 'https://maven.parchmentmc.org' }
     maven { url = 'https://maven.fabricmc.net/' }
@@ -90,17 +84,12 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    // Sealed-type pattern switches are preview on Java 17 (1.20.1); final on 21.
-    if (javaVer < 21) {
-        options.compilerArgs += ['--enable-preview']
-    }
+    // Do not use --enable-preview: released jars must load without it.
+    // Prefer instanceof pattern-matching (final on 17) over sealed switches (preview on 17).
 }
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
-    if (javaVer < 21) {
-        jvmArgs += ['--enable-preview']
-    }
 }
 
 dependencies {
@@ -113,7 +102,6 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
     def replaceProperties = [
             minecraft_version      : mcVersion,
             minecraft_version_range: projProp('minecraft_version_range'),
-            neo_version            : project.ext.has('neo_version') ? project.ext.neo_version : '',
             forge_version          : project.ext.has('forge_version') ? project.ext.forge_version : '',
             loader_version_range   : projProp('loader_version_range'),
             mod_id                 : projProp('mod_id'),
@@ -131,9 +119,6 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
     if (modLoader == 'forge') {
         exclude '**/neoforge.mods.toml'
         exclude '**/fabric.mod.json'
-    } else if (modLoader == 'neoforge') {
-        exclude '**/mods.toml'
-        exclude '**/fabric.mod.json'
     } else if (modLoader == 'fabric') {
         exclude '**/mods.toml'
         exclude '**/neoforge.mods.toml'
@@ -141,9 +126,16 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
     }
 }
 
+// Stonecutter also injects root src trees; pin every source root to the
+// per-node chiseled output so processResources never sees duplicate assets.
+sourceSets.main.java.setSrcDirs([layout.buildDirectory.dir('chiseledSrc/main/java')])
+sourceSets.test.java.setSrcDirs([layout.buildDirectory.dir('chiseledSrc/test/java')])
+sourceSets.main.resources.setSrcDirs([
+        layout.buildDirectory.dir('chiseledSrc/main/resources'),
+        'src/generated/resources',
+        generateModMetadata,
+])
 sourceSets.main.resources {
-    srcDir('src/generated/resources')
-    srcDir(generateModMetadata)
     exclude('**/*.bbmodel')
     exclude('src/generated/**/.cache')
 }
@@ -159,9 +151,8 @@ idea {
     }
 }
 
-// Stonecutter 0.6: //? if forge / //? if neoforge / //? if fabric
+// Stonecutter 0.6: //? if forge / //? if fabric
 // MC 1.21.11+ renamed ResourceLocation → Identifier (and ResourceLocationArgument → IdentifierArgument).
-// (Also covers NeoForge 26.x.) Map form omits identifier so replacements apply globally.
 stonecutter {
     consts(modLoader, 'forge', 'neoforge', 'fabric')
     def isIdentifier = eval(current.version, '>=1.21.11')
@@ -171,9 +162,7 @@ stonecutter {
     replacement(direction: isIdentifier, source: 'ResourceLocation', target: 'Identifier', phase: 'LAST')
 }
 
-if (modLoader == 'neoforge') {
-    apply from: rootProject.file('gradle/neoforge.gradle')
-} else if (modLoader == 'forge') {
+if (modLoader == 'forge') {
     apply from: rootProject.file('gradle/forge.gradle')
 } else if (modLoader == 'fabric') {
     apply from: rootProject.file('gradle/fabric.gradle')

@@ -19,8 +19,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 //? if <1.21 {
-/*import org.jetbrains.annotations.Nullable;
-*///?}
+import org.jetbrains.annotations.Nullable;
+//?}
 
 public class FlexiBookItem extends Item {
     private static Method openBookMethod;
@@ -96,16 +96,16 @@ public class FlexiBookItem extends Item {
     }
     *///?} else {
     //? if >=1.21 {
-    @Override
+    /*@Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         appendHover(stack, tooltipComponents);
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         appendHover(stack, tooltipComponents);
     }
-    *///?}
+    //?}
 
     private static void appendHover(ItemStack stack, List<Component> tooltipComponents) {
         tooltipComponents.add(Component.translatable("flexibook.item.flexi_book.tooltip"));

@@ -21,10 +21,10 @@ public final class BookContentAccess {
             return null;
         }
         //? if >=1.21 {
-        return stack.get(io.github.PhantomDaze.flexibook.registry.ModDataComponents.adaptiveBookContent());
-        //?} else {
-        /*return readNbt(stack);
-        *///?}
+        /*return stack.get(io.github.PhantomDaze.flexibook.registry.ModDataComponents.adaptiveBookContent());
+        *///?} else {
+        return readNbt(stack);
+        //?}
     }
 
     public static AdaptiveBookContent getOrEmpty(ItemStack stack) {
@@ -37,14 +37,14 @@ public final class BookContentAccess {
             return;
         }
         //? if >=1.21 {
-        stack.set(io.github.PhantomDaze.flexibook.registry.ModDataComponents.adaptiveBookContent(), content);
-        //?} else {
-        /*writeNbt(stack, content);
-        *///?}
+        /*stack.set(io.github.PhantomDaze.flexibook.registry.ModDataComponents.adaptiveBookContent(), content);
+        *///?} else {
+        writeNbt(stack, content);
+        //?}
     }
 
     //? if <1.21 {
-    /*private static @Nullable AdaptiveBookContent readNbt(ItemStack stack) {
+    private static @Nullable AdaptiveBookContent readNbt(ItemStack stack) {
         net.minecraft.nbt.CompoundTag tag = stack.getTag();
         if (tag == null || !tag.contains(NBT_KEY)) {
             return null;
@@ -72,5 +72,5 @@ public final class BookContentAccess {
                 .result()
                 .ifPresent(encoded -> stack.getOrCreateTag().put(NBT_KEY, encoded));
     }
-    *///?}
+    //?}
 }

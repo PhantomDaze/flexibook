@@ -3,10 +3,10 @@ package io.github.PhantomDaze.flexibook.content;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? if >=1.21 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-//?}
+*///?}
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
@@ -29,7 +29,7 @@ public record StyleFlags(
     ).apply(instance, StyleFlags::new));
 
     //? if >=1.21 {
-    public static final StreamCodec<RegistryFriendlyByteBuf, StyleFlags> STREAM_CODEC = StreamCodec.composite(
+    /*public static final StreamCodec<RegistryFriendlyByteBuf, StyleFlags> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL, StyleFlags::bold,
             ByteBufCodecs.BOOL, StyleFlags::italic,
             ByteBufCodecs.BOOL, StyleFlags::underline,
@@ -37,7 +37,7 @@ public record StyleFlags(
             ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), StyleFlags::font,
             StyleFlags::new
     );
-    //?}
+    *///?}
 
     public StyleFlags withBold(boolean value) {
         return new StyleFlags(value, italic, underline, color, font);

@@ -32,9 +32,9 @@ public final class Compat {
     /** Lazy codec: {@code ExtraCodecs.lazyInitializedCodec} on 1.20.1, {@code Codec.lazyInitialized} on 1.21+. */
     public static <A> Codec<A> lazyCodec(Supplier<Codec<A>> supplier) {
         //? if >=1.21 {
-        return Codec.lazyInitialized(supplier);
-        //?} else {
-        /*return net.minecraft.util.ExtraCodecs.lazyInitializedCodec(supplier);
-        *///?}
+        /*return Codec.lazyInitialized(supplier);
+        *///?} else {
+        return net.minecraft.util.ExtraCodecs.lazyInitializedCodec(supplier);
+        //?}
     }
 }

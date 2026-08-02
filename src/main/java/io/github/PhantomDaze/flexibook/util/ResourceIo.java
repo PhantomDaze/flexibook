@@ -13,8 +13,8 @@ public final class ResourceIo {
 
     public static BufferedReader openAsReader(Resource resource) throws IOException {
         //? if >=1.21 {
-        return resource.openAsReader();
-        //?} else
-        /*return new BufferedReader(new InputStreamReader(resource.open(), StandardCharsets.UTF_8));*/
+        /*return resource.openAsReader();
+        *///?} else
+        return new BufferedReader(new InputStreamReader(resource.open(), StandardCharsets.UTF_8));
     }
 }

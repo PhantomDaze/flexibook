@@ -1,7 +1,7 @@
 package io.github.PhantomDaze.flexibook.fabric;
 
 //? if fabric {
-/*import io.github.PhantomDaze.flexibook.FlexiBookMod;
+import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.api.FlexiBookAPI;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemeRegistry;
 import io.github.PhantomDaze.flexibook.command.FlexiBookCommands;
@@ -29,9 +29,9 @@ public final class FlexiBookFabric implements ModInitializer {
         FlexiBookMod.LOGGER.info("FlexiBook (Fabric) initialized");
     }
 }
-*///?} else {
-// Fabric-only entrypoint stub for non-Fabric builds.
+//?} else {
+/*// Fabric-only entrypoint stub for non-Fabric builds.
 public final class FlexiBookFabric {
     private FlexiBookFabric() {}
 }
-//?}
+*///?}

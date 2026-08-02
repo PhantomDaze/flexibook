@@ -2,13 +2,11 @@ pluginManagement {
     repositories {
         mavenCentral()
         gradlePluginPortal()
-        maven("https://maven.neoforged.net/releases")
         maven("https://maven.minecraftforge.net")
         maven("https://maven.parchmentmc.org")
         maven("https://maven.fabricmc.net/")
     }
     plugins {
-        id("net.neoforged.moddev") version "2.0.143"
         id("fabric-loom") version "1.13.6"
     }
 }

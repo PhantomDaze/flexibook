@@ -5,10 +5,10 @@ import com.mojang.serialization.MapCodec;
 import io.github.PhantomDaze.flexibook.util.Compat;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? if >=1.21 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-//?}
+*///?}
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -80,7 +80,7 @@ public sealed interface BookElement permits
     }
 
     //? if >=1.21 {
-    StreamCodec<RegistryFriendlyByteBuf, BookElement> NETWORK_CODEC = new StreamCodec<>() {
+    /*StreamCodec<RegistryFriendlyByteBuf, BookElement> NETWORK_CODEC = new StreamCodec<>() {
         @Override
         public BookElement decode(RegistryFriendlyByteBuf buf) {
             byte id = buf.readByte();
@@ -98,33 +98,30 @@ public sealed interface BookElement permits
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, BookElement value) {
-            switch (value) {
-                case Heading heading -> {
-                    buf.writeByte(1);
-                    Heading.STREAM_CODEC.encode(buf, heading);
-                }
-                case Paragraph paragraph -> {
-                    buf.writeByte(2);
-                    Paragraph.STREAM_CODEC.encode(buf, paragraph);
-                }
-                case LineBreak ignored -> buf.writeByte(3);
-                case Divider ignored -> buf.writeByte(4);
-                case Image image -> {
-                    buf.writeByte(5);
-                    Image.STREAM_CODEC.encode(buf, image);
-                }
-                case Bullet bullet -> {
-                    buf.writeByte(6);
-                    Bullet.STREAM_CODEC.encode(buf, bullet);
-                }
-                case Box box -> {
-                    buf.writeByte(7);
-                    Box.STREAM_CODEC.encode(buf, box);
-                }
+            // instanceof chains (not pattern-switch) — final on Java 17; sealed switch is preview.
+            if (value instanceof Heading heading) {
+                buf.writeByte(1);
+                Heading.STREAM_CODEC.encode(buf, heading);
+            } else if (value instanceof Paragraph paragraph) {
+                buf.writeByte(2);
+                Paragraph.STREAM_CODEC.encode(buf, paragraph);
+            } else if (value instanceof LineBreak) {
+                buf.writeByte(3);
+            } else if (value instanceof Divider) {
+                buf.writeByte(4);
+            } else if (value instanceof Image image) {
+                buf.writeByte(5);
+                Image.STREAM_CODEC.encode(buf, image);
+            } else if (value instanceof Bullet bullet) {
+                buf.writeByte(6);
+                Bullet.STREAM_CODEC.encode(buf, bullet);
+            } else if (value instanceof Box box) {
+                buf.writeByte(7);
+                Box.STREAM_CODEC.encode(buf, box);
             }
         }
     };
-    //?}
+    *///?}
 
     record Heading(int level, TranslatableText text, Optional<ResourceLocation> font) implements BookElement {
         public Heading(int level, TranslatableText text) {
@@ -138,13 +135,13 @@ public sealed interface BookElement permits
         ).apply(i, Heading::new));
 
         //? if >=1.21 {
-        public static final StreamCodec<RegistryFriendlyByteBuf, Heading> STREAM_CODEC = StreamCodec.composite(
+        /*public static final StreamCodec<RegistryFriendlyByteBuf, Heading> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Heading::level,
                 TranslatableText.STREAM_CODEC, Heading::text,
                 ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), Heading::font,
                 Heading::new
         );
-        //?}
+        *///?}
 
         @Override
         public String typeId() {
@@ -158,11 +155,11 @@ public sealed interface BookElement permits
         ).apply(i, Paragraph::new));
 
         //? if >=1.21 {
-        public static final StreamCodec<RegistryFriendlyByteBuf, Paragraph> STREAM_CODEC = StreamCodec.composite(
+        /*public static final StreamCodec<RegistryFriendlyByteBuf, Paragraph> STREAM_CODEC = StreamCodec.composite(
                 InlineSpan.STREAM_CODEC.apply(ByteBufCodecs.list()), Paragraph::spans,
                 Paragraph::new
         );
-        //?}
+        *///?}
 
         @Override
         public String typeId() {
@@ -199,14 +196,14 @@ public sealed interface BookElement permits
         ).apply(i, Image::new));
 
         //? if >=1.21 {
-        public static final StreamCodec<RegistryFriendlyByteBuf, Image> STREAM_CODEC = StreamCodec.composite(
+        /*public static final StreamCodec<RegistryFriendlyByteBuf, Image> STREAM_CODEC = StreamCodec.composite(
                 ResourceLocation.STREAM_CODEC, Image::src,
                 ByteBufCodecs.VAR_INT, Image::width,
                 ByteBufCodecs.VAR_INT, Image::height,
                 ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), Image::tooltipKey,
                 Image::new
         );
-        //?}
+        *///?}
 
         @Override
         public String typeId() {
@@ -220,11 +217,11 @@ public sealed interface BookElement permits
         ).apply(i, Bullet::new));
 
         //? if >=1.21 {
-        public static final StreamCodec<RegistryFriendlyByteBuf, Bullet> STREAM_CODEC = StreamCodec.composite(
+        /*public static final StreamCodec<RegistryFriendlyByteBuf, Bullet> STREAM_CODEC = StreamCodec.composite(
                 InlineSpan.STREAM_CODEC.apply(ByteBufCodecs.list()), Bullet::spans,
                 Bullet::new
         );
-        //?}
+        *///?}
 
         @Override
         public String typeId() {
@@ -239,7 +236,7 @@ public sealed interface BookElement permits
         ).apply(i, Box::new)));
 
         //? if >=1.21 {
-        public static final StreamCodec<RegistryFriendlyByteBuf, Box> STREAM_CODEC = new StreamCodec<>() {
+        /*public static final StreamCodec<RegistryFriendlyByteBuf, Box> STREAM_CODEC = new StreamCodec<>() {
             @Override
             public Box decode(RegistryFriendlyByteBuf buf) {
                 Optional<String> className = ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8).decode(buf);
@@ -253,7 +250,7 @@ public sealed interface BookElement permits
                 BookElement.NETWORK_CODEC.apply(ByteBufCodecs.list()).encode(buf, value.children());
             }
         };
-        //?}
+        *///?}
 
         @Override
         public String typeId() {

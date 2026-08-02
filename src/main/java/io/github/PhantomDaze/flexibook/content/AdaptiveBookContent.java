@@ -4,10 +4,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.PhantomDaze.flexibook.parse.TagParser;
 //? if >=1.21 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-//?}
+*///?}
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public record AdaptiveBookContent(
     ).apply(instance, AdaptiveBookContent::new));
 
     //? if >=1.21 {
-    public static final StreamCodec<RegistryFriendlyByteBuf, AdaptiveBookContent> STREAM_CODEC = StreamCodec.composite(
+    /*public static final StreamCodec<RegistryFriendlyByteBuf, AdaptiveBookContent> STREAM_CODEC = StreamCodec.composite(
             TranslatableText.STREAM_CODEC, AdaptiveBookContent::title,
             ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), AdaptiveBookContent::rawMarkup,
             ByteBufCodecs.optional(BookElement.NETWORK_CODEC.apply(ByteBufCodecs.list())), AdaptiveBookContent::elements,
@@ -58,7 +58,7 @@ public record AdaptiveBookContent(
             ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), AdaptiveBookContent::themeId,
             AdaptiveBookContent::new
     );
-    //?}
+    *///?}
 
     public static AdaptiveBookContent ofElements(TranslatableText title, List<BookElement> elements) {
         return ofElements(title, elements, Optional.empty(), Optional.empty());

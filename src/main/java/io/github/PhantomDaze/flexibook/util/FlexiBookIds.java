@@ -12,9 +12,9 @@ public final class FlexiBookIds {
 
     public static ResourceLocation of(String namespace, String path) {
         //? if >=1.21 {
-        return ResourceLocation.fromNamespaceAndPath(namespace, path);
-        //?} else
-        /*return new ResourceLocation(namespace, path);*/
+        /*return ResourceLocation.fromNamespaceAndPath(namespace, path);
+        *///?} else
+        return new ResourceLocation(namespace, path);
     }
 
     public static @Nullable ResourceLocation tryParse(String id) {

@@ -39,6 +39,14 @@ loom {
             setConfigName("Fabric Client")
             ideConfigGenerated true
             runDir 'run'
+            // Opt-in client smoke: -Pflexibook.smokeTest=true
+            if (project.findProperty('flexibook.smokeTest')?.toString() == 'true') {
+                property 'flexibook.smokeTest', 'true'
+                property 'flexibook.smokeTest.readSeconds',
+                        (project.findProperty('flexibook.smokeTest.readSeconds') ?: '10').toString()
+                property 'flexibook.smokeTest.timeoutSeconds',
+                        (project.findProperty('flexibook.smokeTest.timeoutSeconds') ?: '300').toString()
+            }
         }
         server {
             server()
@@ -57,9 +65,6 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    if (javaVer < 21) {
-        options.compilerArgs += ['--enable-preview']
-    }
 }
 
 // Loom remapJar is the distribution artifact.

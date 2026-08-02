@@ -8,23 +8,23 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 
 //? if neoforge {
-import net.neoforged.neoforge.registries.DeferredHolder;
+/*import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-//?} else {
-/*//? if forge {
-/^import net.minecraftforge.registries.DeferredRegister;
+*///?} else {
+//? if forge {
+/*import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
-^///?} else {
+*///?} else {
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 //?}
-*///?}
+//?}
 
 public final class ModCreativeTabs {
     //? if neoforge {
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+    /*public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FlexiBookMod.MOD_ID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> FLEXIBOOK_TAB =
@@ -36,9 +36,9 @@ public final class ModCreativeTabs {
                         output.accept(ExampleBooks.demoGuide());
                     })
                     .build());
-    //?} else {
-    /*//? if forge {
-    /^public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+    *///?} else {
+    //? if forge {
+    /*public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FlexiBookMod.MOD_ID);
 
     public static final RegistryObject<CreativeModeTab> FLEXIBOOK_TAB =
@@ -50,7 +50,7 @@ public final class ModCreativeTabs {
                         output.accept(ExampleBooks.demoGuide());
                     })
                     .build());
-    ^///?} else {
+    *///?} else {
     public static CreativeModeTab FLEXIBOOK_TAB;
 
     public static void register() {
@@ -67,7 +67,7 @@ public final class ModCreativeTabs {
                         .build());
     }
     //?}
-    *///?}
+    //?}
 
     private ModCreativeTabs() {}
 }

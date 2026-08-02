@@ -1,13 +1,15 @@
 package io.github.PhantomDaze.flexibook.fabric;
 
 //? if fabric {
-/*import io.github.PhantomDaze.flexibook.FlexiBookMod;
+import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.client.TextureSizeCache;
+import io.github.PhantomDaze.flexibook.client.smoke.BookClientSmokeTest;
 import io.github.PhantomDaze.flexibook.client.theme.BookContentReloadListener;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemeReloadListener;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -27,6 +29,9 @@ public final class FlexiBookFabricClient implements ClientModInitializer {
             BookLayoutEngine.clearCache();
             TextureSizeCache.clear();
         });
+
+        BookClientSmokeTest.bootstrap();
+        ClientTickEvents.END_CLIENT_TICK.register(BookClientSmokeTest::onClientTick);
     }
 
     private static void register(String path, net.minecraft.server.packs.resources.ResourceManagerReloadListener listener) {
@@ -45,9 +50,9 @@ public final class FlexiBookFabricClient implements ClientModInitializer {
                 });
     }
 }
-*///?} else {
-// Fabric-only client entrypoint stub for non-Fabric builds.
+//?} else {
+/*// Fabric-only client entrypoint stub for non-Fabric builds.
 public final class FlexiBookFabricClient {
     private FlexiBookFabricClient() {}
 }
-//?}
+*///?}

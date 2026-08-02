@@ -4,8 +4,11 @@ import io.github.PhantomDaze.flexibook.FlexiBookMod;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
 
 //? if forge {
-/*import net.minecraftforge.api.distmarker.Dist;
+/*import io.github.PhantomDaze.flexibook.client.smoke.BookClientSmokeTest;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -17,6 +20,14 @@ public final class ClientForgeGameEvents {
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         BookLayoutEngine.clearCache();
         TextureSizeCache.clear();
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+        BookClientSmokeTest.onClientTick(Minecraft.getInstance());
     }
 }
 *///?} else {
