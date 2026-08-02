@@ -95,6 +95,35 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 ./gradlew :java17-1.20.1-fabric:runClient
 ```
 
+### Client smoke test
+
+Headless-ish client check: create/load a creative world, open a book, render for N seconds, quit.
+
+```bash
+# Built-in demo guide (no extra pack)
+./gradlew smokeTestAllClients -Pflexibook.smokeTest=true
+
+# Shared extra resource pack(s) + a specific book definition
+# 1) Drop pack folder/zip into:  dev/smoke/resourcepacks/
+# 2) Run (Forge then Fabric sequentially):
+./gradlew smokeTestAllClients \
+  -Pflexibook.smokeTest=true \
+  -Pflexibook.smokeTest.resourcePacks=my_pack \
+  -Pflexibook.smokeTest.bookId=myns:mybook \
+  -Pflexibook.smokeTest.readSeconds=10 \
+  -Pflexibook.smokeTest.timeoutSeconds=300
+```
+
+| Property | Meaning |
+|---|---|
+| `flexibook.smokeTest` | `true` to enable |
+| `flexibook.smokeTest.resourcePacks` | Comma-separated pack folder/zip names under `dev/smoke/resourcepacks/` (optional `file/` prefix). Copied into every node’s `run/resourcepacks/` before `runClient`, then force-enabled |
+| `flexibook.smokeTest.bookId` | `namespace:path` from `assets/.../flexibook/books/`. Empty → built-in `ExampleBooks.demoGuide()` |
+| `flexibook.smokeTest.readSeconds` | How long to keep the book screen open (default `10`) |
+| `flexibook.smokeTest.timeoutSeconds` | Overall deadline (default `300`) |
+
+IDE: run config **FlexiBook smokeTest all clients**.
+
 ## In-game
 
 Creative tab **FlexiBook**:

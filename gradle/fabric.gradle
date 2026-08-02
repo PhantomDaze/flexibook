@@ -40,12 +40,23 @@ loom {
             ideConfigGenerated true
             runDir 'run'
             // Opt-in client smoke: -Pflexibook.smokeTest=true
+            // Optional: -Pflexibook.smokeTest.bookId=ns:path
+            //           -Pflexibook.smokeTest.resourcePacks=packA,packB
+            // Packs are copied from root dev/smoke/resourcepacks/ → run/resourcepacks/
             if (project.findProperty('flexibook.smokeTest')?.toString() == 'true') {
                 property 'flexibook.smokeTest', 'true'
                 property 'flexibook.smokeTest.readSeconds',
                         (project.findProperty('flexibook.smokeTest.readSeconds') ?: '10').toString()
                 property 'flexibook.smokeTest.timeoutSeconds',
                         (project.findProperty('flexibook.smokeTest.timeoutSeconds') ?: '300').toString()
+                def bookId = (project.findProperty('flexibook.smokeTest.bookId') ?: '').toString()
+                if (!bookId.isBlank()) {
+                    property 'flexibook.smokeTest.bookId', bookId
+                }
+                def packs = (project.findProperty('flexibook.smokeTest.resourcePacks') ?: '').toString()
+                if (!packs.isBlank()) {
+                    property 'flexibook.smokeTest.resourcePacks', packs
+                }
             }
         }
         server {

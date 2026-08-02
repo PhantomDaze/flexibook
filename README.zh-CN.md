@@ -85,6 +85,35 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 ./gradlew :java17-1.20.1-fabric:runClient
 ```
 
+### 客户端冒烟测试
+
+自动建/载创造世界 → 打开书 → 渲染 N 秒 → 退出。
+
+```bash
+# 内置 demo 书（不额外加资源包）
+./gradlew smokeTestAllClients -Pflexibook.smokeTest=true
+
+# 共用额外资源包 + 指定书
+# 1) 把 pack 文件夹或 zip 放到：dev/smoke/resourcepacks/
+# 2) 运行（先 Forge 再 Fabric，串行）：
+./gradlew smokeTestAllClients \
+  -Pflexibook.smokeTest=true \
+  -Pflexibook.smokeTest.resourcePacks=my_pack \
+  -Pflexibook.smokeTest.bookId=myns:mybook \
+  -Pflexibook.smokeTest.readSeconds=10 \
+  -Pflexibook.smokeTest.timeoutSeconds=300
+```
+
+| 属性 | 含义 |
+|---|---|
+| `flexibook.smokeTest` | `true` 开启 |
+| `flexibook.smokeTest.resourcePacks` | `dev/smoke/resourcepacks/` 下的包名（逗号分隔；可带 `file/` 前缀）。`runClient` 前会同步到各节点 `run/resourcepacks/` 并强制启用 |
+| `flexibook.smokeTest.bookId` | `namespace:path`（`assets/.../flexibook/books/`）。空 = 内置 `ExampleBooks.demoGuide()` |
+| `flexibook.smokeTest.readSeconds` | 书界面停留秒数（默认 `10`） |
+| `flexibook.smokeTest.timeoutSeconds` | 总超时（默认 `300`） |
+
+IDE 运行配置：**FlexiBook smokeTest all clients**。
+
 ## 游戏内
 
 创造栏 **FlexiBook** 分类：
