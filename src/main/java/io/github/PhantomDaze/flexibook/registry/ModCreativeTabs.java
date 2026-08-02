@@ -16,7 +16,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 ^///?} else {
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 //?}
@@ -57,7 +57,7 @@ public final class ModCreativeTabs {
         FLEXIBOOK_TAB = Registry.register(
                 BuiltInRegistries.CREATIVE_MODE_TAB,
                 FlexiBookIds.of(FlexiBookMod.MOD_ID, "flexibook"),
-                FabricItemGroup.builder()
+                FabricCreativeModeTab.builder()
                         .title(Component.translatable("itemGroup.flexibook"))
                         .icon(() -> new ItemStack(ModItems.book()))
                         .displayItems((params, output) -> {

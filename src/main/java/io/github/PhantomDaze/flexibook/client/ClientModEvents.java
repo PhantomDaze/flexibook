@@ -41,11 +41,20 @@ import net.minecraftforge.fml.common.Mod;
 public final class ClientModEvents {
     private ClientModEvents() {}
 
+    static {
+        AutoSmokeClient.bootstrap();
+    }
+
     //? if neoforge {
     @SubscribeEvent
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         BookLayoutEngine.clearCache();
         TextureSizeCache.clear();
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {
+        AutoSmokeClient.onClientTick();
     }
 
     //? if >=1.21.4 {

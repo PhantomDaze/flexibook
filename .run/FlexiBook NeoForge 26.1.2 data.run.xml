@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="FlexiBook build" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="FlexiBook NeoForge 26.1.2 data" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value=":chiseledBuild" />
+          <option value=":26.1.2:runClientData" />
         </list>
       </option>
       <option name="vmOptions" value="" />

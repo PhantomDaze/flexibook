@@ -1,10 +1,8 @@
 # FlexiBook
 
-**Minecraft 26.2 / 26.1.2 / 1.21.4 / 1.21.1（NeoForge）**、**1.20.1（Forge）** 与 **Fabric 1.20.1 / 1.21.1 / 1.21.4 / 1.21.11** 自适应排版成书模组。
+**Minecraft 26.2 / 26.1.2（NeoForge）自适应排版成书模组。**
 
-> 官方 NeoForge **没有** 1.20.1 线（从 1.20.2 起）。1.20.1 产物对应 **LexForge 47.x**。
-
-用自定义 DataComponent（26.x / 1.21.x）/ 物品 NBT（1.20.1）+ 客户端布局引擎 + `AdaptiveBookScreen`，在保留“书”交互的前提下支持：
+使用 DataComponent + 客户端布局引擎 + `AdaptiveBookScreen`，在保留“书”交互的前提下支持：
 
 - HTML 子集标签（`[h1]` / `[p]` / `[b]` / `[color]` / `[img]` / `[link]` …）
 - 打开时按当前语言解析翻译键并重新测量分页
@@ -30,27 +28,17 @@
 |------|--------|------------------|------|
 | **26.2** | NeoForge 26.2.x（beta） | **25** | DataComponent；`setScreenAndShow` |
 | **26.1.2** | NeoForge 26.1.2.x | **25** | DataComponent；`Identifier` + extract GUI |
-| **1.21.4** | NeoForge 21.4.x | **21** | DataComponent 存书 |
-| **1.21.1** | NeoForge 21.1.x | **21** | DataComponent 存书 |
-| **1.20.1** | Forge 47.4.x | **17** | NBT 键 `flexibook:content` |
-| **1.21.11-fabric** | Fabric Loader + API | **21** | DataComponent；`Identifier` + 混合 GUI |
-| **1.21.4-fabric** | Fabric Loader + API | **21** | DataComponent 存书 |
-| **1.21.1-fabric** | Fabric Loader + API | **21** | DataComponent 存书 |
-| **1.20.1-fabric** | Fabric Loader + API | **17** | NBT 键 `flexibook:content` |
 
-- **Gradle 8.14.x**（wrapper）+ **Fabric Loom 1.13.x**。Stonecutter 多版本；默认 active 为 **1.21.1**（可切换）。
-- Gradle 进程需 **JDK 21**（`org.gradle.java.home` 已固定；**26.x** 编译仍用 toolchain JDK 25）。系统默认 JDK 26 会弄坏 Stonecutter 的 Kotlin DSL。
+- **Gradle 8.14.x**（wrapper）+ Stonecutter 0.6.x。
+- Gradle 进程使用 **JDK 21**，版本节点使用 JDK 25 toolchain。
 
 ## Git 分支（按 JDK toolchain）
 
 | 分支 | 内容 |
 |------|------|
-| **`main`** | JDK 25 主线（MC **26.1.2 / 26.2** NeoForge）；默认 active **26.1.2** |
-| **`java17`** | 仅 MC **1.20.1** Forge + Fabric（toolchain **17**） |
-| **`java21`** | MC **1.21.1 / 1.21.4** NeoForge + Fabric，以及 **1.21.11** Fabric（toolchain **21**） |
-| **`java25`** | 仅 MC **26.1.2 / 26.2** NeoForge（toolchain **25**） |
+| **`main`** | NeoForge **26.1.2 / 26.2**，JDK 25 toolchain |
 
-开发时 checkout 与目标 JDK 对应的分支；精简分支的 `versions/` 与 Stonecutter 节点仅含该 JDK 线。
+`main` 是当前 26.x 主线；每个版本节点都可以直接构建，不需要切换 active 版本。Fabric 26.x 将在此构建架构上继续移植。
 
 ## 构建
 
@@ -75,10 +63,8 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 ./gradlew :26.1.2:runClient
 ./gradlew :26.2:runClient
 
-# 可选：只改 IDE/根 src/ 的注释状态（构建不需要）
-./gradlew "Set active project to 26.1.2"
-./gradlew "Set active project to 26.2"
-./gradlew "Reset active project"   # 提交前恢复 VCS 默认
+# 源码会自动针对每个版本节点预处理。
+# 不需要切换 active 版本。
 ```
 
 `main` 分支节点：`26.1.2`、`26.2`（NeoForge，JDK 25 toolchain）。

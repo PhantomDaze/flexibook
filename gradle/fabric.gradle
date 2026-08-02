@@ -6,6 +6,8 @@ def loaderVer = project.findProperty('loader_version') ?: project.ext.loader_ver
 def fabricApi = project.findProperty('fabric_api_version') ?: project.ext.fabric_api_version
 def modId = project.findProperty('mod_id') ?: project.ext.mod_id
 def javaVer = project.ext.javaVer as Integer
+// MC 26.x ships Mojang-named (unobfuscated); use Loom NoRemap plugin path.
+def unobfuscatedMc = mc.toString().startsWith('26.')
 
 repositories {
     maven { url = 'https://maven.fabricmc.net/' }
@@ -13,10 +15,17 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${mc}"
-    // Mojmap so shared sources match Forge/NeoForge official mappings.
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${loaderVer}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
+    if (unobfuscatedMc) {
+        // NoRemap plugin has no modImplementation — official example-mod uses implementation.
+        // Fabric API POM still pulls module jars onto the compile classpath.
+        implementation "net.fabricmc:fabric-loader:${loaderVer}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
+    } else {
+        // Mojmap so shared sources match Forge/NeoForge official mappings.
+        mappings loom.officialMojangMappings()
+        modImplementation "net.fabricmc:fabric-loader:${loaderVer}"
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
+    }
     // Tooltip @Nullable on 1.20.1 (no JSR-305 on Fabric classpath by default).
     compileOnly 'org.jetbrains:annotations:24.1.0'
 }
@@ -31,6 +40,7 @@ loom {
 
     // Fabric API jars often ship named javadoc; Loom requires intermediary → break mojmap setups.
     enableModProvidedJavadoc = false
+    // Needed so FAPI transitive-accessible entries (e.g. CreativeModeTab$Output) apply at compile.
     enableTransitiveAccessWideners = true
 
     runs {
@@ -45,6 +55,16 @@ loom {
             setConfigName("Fabric Server")
             ideConfigGenerated true
             runDir 'run'
+        }
+        // Auto smoke: create world → open demo book → read → quit (see AutoSmokeClient).
+        clientAutoSmoke {
+            client()
+            setConfigName("Fabric Client AutoSmoke")
+            ideConfigGenerated true
+            runDir 'run'
+            property 'flexibook.autoSmoke', 'true'
+            property 'flexibook.autoSmoke.readSeconds', '10'
+            property 'flexibook.autoSmoke.timeoutSeconds', '180'
         }
     }
 }
@@ -62,7 +82,10 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
-// Loom remapJar is the distribution artifact.
+// Remap plugin: remapJar is the distribution artifact.
+// NoRemap plugin: jar itself is already the distributable.
 tasks.named('build').configure {
-    dependsOn 'remapJar'
+    if (tasks.findByName('remapJar') != null) {
+        dependsOn 'remapJar'
+    }
 }

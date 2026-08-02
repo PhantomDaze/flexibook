@@ -1,10 +1,8 @@
 # FlexiBook
 
-Adaptive layout books for **Minecraft 26.2 / 26.1.2 / 1.21.4 / 1.21.1 (NeoForge)**, **1.20.1 (Forge)**, and **Fabric 1.20.1 / 1.21.1 / 1.21.4 / 1.21.11**.
+Adaptive layout books for **Minecraft 26.2 / 26.1.2 (NeoForge)**.
 
-> Official NeoForge does **not** ship a 1.20.1 line (it starts at 1.20.2). The 1.20.1 artifact targets **LexForge 47.x**.
-
-Custom DataComponent (26.x / 1.21.x) / ItemStack NBT (1.20.1) + client layout engine + `AdaptiveBookScreen`, keeping a book-like interaction while supporting:
+Custom DataComponents + client layout engine + `AdaptiveBookScreen`, keeping a book-like interaction while supporting:
 
 - HTML-subset markup (`[h1]` / `[p]` / `[b]` / `[color]` / `[img]` / `[link]` …)
 - Resolve translation keys and reflow pagination when the book opens (current client language)
@@ -27,30 +25,20 @@ Custom DataComponent (26.x / 1.21.x) / ItemStack NBT (1.20.1) + client layout en
 ## Requirements
 
 | Target | Loader | JDK (toolchain) | Notes |
-|--------|--------|-----------------|--------|
+|--------|--------|-----------------|-------|
 | **26.2** | NeoForge 26.2.x (beta) | **25** | DataComponent; `setScreenAndShow` |
 | **26.1.2** | NeoForge 26.1.2.x | **25** | DataComponent; `Identifier` + extract GUI |
-| **1.21.4** | NeoForge 21.4.x | **21** | DataComponent payload |
-| **1.21.1** | NeoForge 21.1.x | **21** | DataComponent payload |
-| **1.20.1** | Forge 47.4.x | **17** | NBT payload (`flexibook:content`) |
-| **1.21.11-fabric** | Fabric Loader + API | **21** | DataComponent; `Identifier` + hybrid GUI |
-| **1.21.4-fabric** | Fabric Loader + API | **21** | DataComponent payload |
-| **1.21.1-fabric** | Fabric Loader + API | **21** | DataComponent payload |
-| **1.20.1-fabric** | Fabric Loader + API | **17** | NBT payload (`flexibook:content`) |
 
-- **Gradle 8.14.x** (wrapper) + **Fabric Loom 1.13.x**. Stonecutter multi-version; active defaults to **1.21.1** (switch freely).
-- Gradle itself should run on **JDK 21** (`org.gradle.java.home` is pinned). JDK 25/26 breaks the Kotlin DSL used by Stonecutter.
+- **Gradle 8.14.x** (wrapper) + Stonecutter 0.6.x.
+- Gradle itself should run on **JDK 21** (`org.gradle.java.home` is pinned); version nodes compile with toolchain JDK 25.
 
 ## Git branches (by JDK toolchain)
 
 | Branch | Contents |
 |--------|----------|
-| **`main`** | JDK **25** primary line (MC **26.1.2 / 26.2** NeoForge); default active **26.1.2** |
-| **`java17`** | MC **1.20.1** Forge + Fabric only (toolchain **17**) |
-| **`java21`** | MC **1.21.1 / 1.21.4** NeoForge + Fabric, **1.21.11** Fabric (toolchain **21**) |
-| **`java25`** | MC **26.1.2 / 26.2** NeoForge (toolchain **25**) |
+| **`main`** | NeoForge **26.1.2 / 26.2**, JDK 25 toolchain |
 
-Checkout the branch that matches the JDK you develop against; each slim branch only registers its own Stonecutter version nodes under `versions/`.
+The `main` branch is the supported 26.x line. Each version node can be built directly without changing the active version.
 
 ## Build
 
@@ -69,16 +57,14 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 # versions/26.1.2/build/libs/flexibook-1.0.0+26.1.2.jar
 # versions/26.2/build/libs/flexibook-1.0.0+26.2.jar
 
-# Single node (works regardless of stonecutter.active):
+# Single node (works regardless of the default IDE node):
 ./gradlew :26.1.2:build
 ./gradlew :26.2:build
 ./gradlew :26.1.2:runClient
 ./gradlew :26.2:runClient
 
-# Optional: change IDE/default comment state in root src/ (not needed for builds)
-./gradlew "Set active project to 26.1.2"
-./gradlew "Set active project to 26.2"
-./gradlew "Reset active project"   # back to VCS default before commit
+# The source tree is preprocessed automatically for each version node.
+# No active-version switching is required.
 ```
 
 `main` branch nodes: `26.1.2`, `26.2` (NeoForge, JDK 25 toolchain).

@@ -30,6 +30,18 @@ neoForge {
             jvmArgument '-Dfml.earlyWindowControl=false'
         }
 
+        // Auto smoke: create world → open demo book → read → quit (see AutoSmokeClient).
+        clientAutoSmoke {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', modId
+            systemProperty 'fml.earlyWindowControl', 'false'
+            systemProperty 'fml.earlyProgressWindow', 'false'
+            systemProperty 'flexibook.autoSmoke', 'true'
+            systemProperty 'flexibook.autoSmoke.readSeconds', '10'
+            systemProperty 'flexibook.autoSmoke.timeoutSeconds', '180'
+            jvmArgument '-Dfml.earlyWindowControl=false'
+        }
+
         server {
             server()
             programArgument '--nogui'
@@ -41,8 +53,18 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', modId
         }
 
-        data {
-            data()
+        // MC 1.21.4+ / NeoForge 26.x: legacy type "data" was split into clientData + serverData.
+        // Using the old data() helper makes prepareDataRun fail IDE sync:
+        //   "Trying to prepare unknown run: data. Available run types: [client, clientData, ...]"
+        clientData {
+            clientData()
+            programArguments.addAll '--mod', modId, '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources/').absolutePath
+        }
+
+        serverData {
+            serverData()
             programArguments.addAll '--mod', modId, '--all',
                     '--output', file('src/generated/resources/').absolutePath,
                     '--existing', file('src/main/resources/').absolutePath

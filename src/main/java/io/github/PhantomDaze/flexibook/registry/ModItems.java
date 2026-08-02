@@ -16,6 +16,8 @@ import net.minecraftforge.registries.RegistryObject;
 import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 //?}
 *///?}
 
@@ -48,10 +50,13 @@ public final class ModItems {
     public static FlexiBookItem FLEXI_BOOK;
 
     public static void register() {
+        var id = FlexiBookIds.of(FlexiBookMod.MOD_ID, "flexi_book");
+        var key = ResourceKey.create(Registries.ITEM, id);
+        // MC 26+ requires Properties#setId before Item construction.
         FLEXI_BOOK = Registry.register(
                 BuiltInRegistries.ITEM,
-                FlexiBookIds.of(FlexiBookMod.MOD_ID, "flexi_book"),
-                new FlexiBookItem(new Item.Properties().stacksTo(1)));
+                key,
+                new FlexiBookItem(new Item.Properties().stacksTo(1).setId(key)));
     }
 
     public static FlexiBookItem book() {

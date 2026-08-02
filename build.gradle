@@ -20,7 +20,9 @@ plugins {
     id 'dev.kikugie.stonecutter'
     // Applied only when mod_loader=neoforge (see below). Version from pluginManagement.
     id 'net.neoforged.moddev' apply false
-    // Applied only when mod_loader=fabric.
+    // Fabric: NoRemap for MC 26.x; remap plugin for obfuscated versions.
+    id 'net.fabricmc.fabric-loom' apply false
+    id 'net.fabricmc.fabric-loom-remap' apply false
     id 'fabric-loom' apply false
 }
 
@@ -70,7 +72,13 @@ if (modLoader == 'neoforge') {
 } else if (modLoader == 'forge') {
     apply plugin: 'net.minecraftforge.gradle'
 } else if (modLoader == 'fabric') {
-    apply plugin: 'fabric-loom'
+    // MC 26.x is unobfuscated: official example-mod applies net.fabricmc.fabric-loom
+    // (LoomNoRemapGradlePlugin). Remap plugin still requires a mappings dependency.
+    if (mcVersion.startsWith('26.')) {
+        apply plugin: 'net.fabricmc.fabric-loom'
+    } else {
+        apply plugin: 'net.fabricmc.fabric-loom-remap'
+    }
 } else {
     throw new GradleException("Unknown mod_loader='$modLoader'")
 }

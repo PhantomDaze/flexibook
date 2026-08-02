@@ -10,13 +10,17 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="test" />
+          <option value=":26.1.2:test" />
+          <option value=":26.1.2-fabric:test" />
+          <option value=":26.2:test" />
+          <option value=":26.2-fabric:test" />
         </list>
       </option>
       <option name="vmOptions" value="" />
     </ExternalSystemSettings>
     <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+    <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
     <DebugAllEnabled>false</DebugAllEnabled>
     <RunAsTest>false</RunAsTest>
     <method v="2" />

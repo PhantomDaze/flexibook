@@ -27,6 +27,13 @@ public final class FlexiBookFabricClient implements ClientModInitializer {
             BookLayoutEngine.clearCache();
             TextureSizeCache.clear();
         });
+
+        // Optional sequential smoke: -Dflexibook.autoSmoke=true
+        io.github.PhantomDaze.flexibook.client.AutoSmokeClient.bootstrap();
+        if (io.github.PhantomDaze.flexibook.client.AutoSmokeClient.isEnabled()) {
+            net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
+                    client -> io.github.PhantomDaze.flexibook.client.AutoSmokeClient.onClientTick());
+        }
     }
 
     private static void register(String path, net.minecraft.server.packs.resources.ResourceManagerReloadListener listener) {

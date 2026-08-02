@@ -9,7 +9,13 @@ pluginManagement {
     }
     plugins {
         id("net.neoforged.moddev") version "2.0.143"
-        id("fabric-loom") version "1.13.6"
+        // Loom 1.17+ splits plugins:
+        // - net.fabricmc.fabric-loom       = NoRemap (MC 26.x unobfuscated)
+        // - net.fabricmc.fabric-loom-remap = classic remap + mappings
+        // - fabric-loom                   = legacy alias of the remap plugin
+        id("net.fabricmc.fabric-loom") version "1.17.17"
+        id("net.fabricmc.fabric-loom-remap") version "1.17.17"
+        id("fabric-loom") version "1.17.17"
     }
 }
 
@@ -22,9 +28,11 @@ stonecutter {
     kotlinController = true
     centralScript = "build.gradle"
     shared {
-        // java25 toolchain branch — nodes under versions/
+        // java25 toolchain branch — NeoForge and Fabric nodes under versions/
         vers("26.1.2", "26.1.2")
+        vers("26.1.2-fabric", "26.1.2")
         vers("26.2", "26.2")
+        vers("26.2-fabric", "26.2")
     }
     create(rootProject)
 }
