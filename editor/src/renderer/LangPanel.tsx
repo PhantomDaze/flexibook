@@ -112,11 +112,11 @@ export function LangPanel({
         <div className="section-head">
           <h4 className="section-title">{t('lang.section.tables')}</h4>
           <span className="hint">
-            {keys.length} 键 · {langs.length} 语言 · 实时缓存
+            {t('lang.stats', { keys: keys.length, langs: langs.length })}
           </span>
         </div>
         <p className="section-hint">
-          支持多种语言代码（如 en_us / zh_cn / ja_jp）。右侧「内容编辑」模式用大编辑器写当前键的值；切换语言会先写入缓存，不会丢字。
+          {t('lang.tablesHelp')}
           {t('lang.exportHelp')}
         </p>
         {onExportLangPack && (
@@ -155,11 +155,11 @@ export function LangPanel({
             }}
           />
           <button type="button" onClick={addLang} disabled={!newLangDraft.trim()}>
-            添加语言
+            {t('lang.addLang')}
           </button>
           {langs.length > 1 && (
             <button type="button" className="danger" onClick={() => removeLang(activeLang)} title={t('lang.removeTitle')}>
-              删语言
+              {t('lang.removeLang')}
             </button>
           )}
         </div>
@@ -189,14 +189,14 @@ export function LangPanel({
             }}
           />
           <button type="button" onClick={() => addKey(newKeyDraft)} disabled={!newKeyDraft.trim()}>
-            添加键
+            {t('lang.addKey')}
           </button>
         </div>
       </div>
 
       <div className="section">
         <div className="lang-key-list">
-          {filtered.length === 0 && <div className="empty-state">无匹配键</div>}
+          {filtered.length === 0 && <div className="empty-state">{t('lang.noMatch')}</div>}
           {filtered.map((key) => {
             const val = tables[activeLang]?.[key] ?? '';
             const active = selectedKey === key;
@@ -211,16 +211,16 @@ export function LangPanel({
                   <span className="mono lang-key-name">{key}</span>
                   {miss.length > 0 && (
                     <span className="badge warn-badge" title={miss.join(', ')}>
-                      缺 {miss.length}
+                      {t('lang.missing', { n: miss.length })}
                     </span>
                   )}
                 </div>
                 <div className="lang-key-val muted" title={val}>
-                  {val || <em className="muted">（空）</em>}
+                  {val || <em className="muted">{t('lang.emptyValue')}</em>}
                 </div>
                 <div className="lang-key-actions" onClick={(e) => e.stopPropagation()}>
                   <button type="button" className="danger" onClick={() => removeKey(key)}>
-                    删
+                    {t('lang.deleteShort')}
                   </button>
                 </div>
               </div>
@@ -345,6 +345,7 @@ export function TranslationValueWorkspace({
   selectedKey: string | null;
   onSelectedKeyChange: (key: string | null) => void;
 }) {
+  const t = useT();
   const langs = useMemo(() => listLangCodes(tables), [tables]);
   const keys = useMemo(() => allKeys(tables), [tables]);
   const value = selectedKey ? tables[activeLang]?.[selectedKey] ?? '' : '';
@@ -365,11 +366,11 @@ export function TranslationValueWorkspace({
     <div className="translate-workspace">
       <div className="translate-workspace-toolbar">
         <div className="translate-workspace-title">
-          <span className="label">内容编辑 · 译文</span>
+          <span className="label">{t('lang.workspaceTitle')}</span>
           {selectedKey ? (
             <span className="mono translate-key">{selectedKey}</span>
           ) : (
-            <span className="muted">在左侧 Lang 列表选择一个键</span>
+            <span className="muted">{t('lang.workspacePickKey')}</span>
           )}
         </div>
         <div className="lang-chip-row">
@@ -379,7 +380,7 @@ export function TranslationValueWorkspace({
               type="button"
               className={`chip-btn ${activeLang === l ? 'active' : ''}`}
               onClick={() => switchLang(l)}
-              title={`编辑 ${l}（当前内容已实时缓存）`}
+              title={t('lang.editLangTitle', { lang: l })}
             >
               {l}
               {selectedKey && (tables[l]?.[selectedKey] ?? '') === '' ? ' ·' : ''}
@@ -390,7 +391,7 @@ export function TranslationValueWorkspace({
 
       {selectedKey && miss.length > 0 && (
         <div className="banner banner-warn" style={{ margin: '0 0 8px' }}>
-          此键在以下语言为空：<span className="mono">{miss.join(', ')}</span>
+          {t('lang.missingInLangs')} <span className="mono">{miss.join(', ')}</span>
         </div>
       )}
 
@@ -401,14 +402,14 @@ export function TranslationValueWorkspace({
             autoFocus
             value={value}
             onChange={writeValue}
-            placeholder={`在此编写 ${activeLang} 译文…\n可用 [b][i][p] 等标记（语法高亮）`}
+            placeholder={t('lang.workspacePlaceholder', { lang: activeLang })}
           />
         </div>
       ) : (
         <div className="empty-state translate-workspace-empty">
-          选择翻译键后在此大编辑器中编写对应语言的值。
+          {t('lang.workspaceEmpty')}
           <div className="hint" style={{ marginTop: 8 }}>
-            共 {keys.length} 个键 · 当前语言 <span className="mono">{activeLang}</span>
+            {t('lang.workspaceStats', { n: keys.length })} <span className="mono">{activeLang}</span>
           </div>
         </div>
       )}
@@ -423,7 +424,7 @@ export function TranslationValueWorkspace({
               if (i > 0) onSelectedKeyChange(keys[i - 1]!);
             }}
           >
-            ← 上一键
+            {t('lang.prevKey')}
           </button>
           <span className="muted mono" style={{ fontSize: 11 }}>
             {keys.indexOf(selectedKey) + 1} / {keys.length}
@@ -436,7 +437,7 @@ export function TranslationValueWorkspace({
               if (i >= 0 && i < keys.length - 1) onSelectedKeyChange(keys[i + 1]!);
             }}
           >
-            下一键 →
+            {t('lang.nextKey')}
           </button>
         </div>
       )}

@@ -164,7 +164,9 @@ const JSON_FILTERS = [
 ];
 
 /** Electron native open → read UTF-8 JSON text; browser falls back to <input type=file>. */
-async function pickAndReadJsonText(): Promise<{ path?: string; text: string } | null> {
+async function pickAndReadJsonText(
+  t: (k: string, v?: Record<string, string | number>) => string,
+): Promise<{ path?: string; text: string } | null> {
   const api = window.electronAPI;
   if (api?.openFile && api?.readTextFile) {
     const result = await api.openFile({ filters: JSON_FILTERS, properties: ['openFile'] });
@@ -175,8 +177,8 @@ async function pickAndReadJsonText(): Promise<{ path?: string; text: string } | 
     if (!read?.ok || typeof read.text !== 'string') {
       await api.showMessage?.({
         type: 'error',
-        title: '读取失败',
-        message: read?.error || '无法读取文件',
+        title: t('dlg.readFail'),
+        message: read?.error || t('dlg.cannotRead'),
       });
       return null;
     }
@@ -208,6 +210,7 @@ async function pickAndReadJsonText(): Promise<{ path?: string; text: string } | 
 async function pickAndWriteJsonText(
   defaultName: string,
   data: unknown,
+  t: (k: string, v?: Record<string, string | number>) => string,
 ): Promise<{ ok: boolean; path?: string }> {
   const text = JSON.stringify(data, null, 2);
   const api = window.electronAPI;
@@ -223,14 +226,14 @@ async function pickAndWriteJsonText(
     if (!write?.ok) {
       await api.showMessage?.({
         type: 'error',
-        title: '保存失败',
-        message: write?.error || '无法写入文件',
+        title: t('dlg.saveFail'),
+        message: write?.error || t('dlg.cannotWrite'),
       });
       return { ok: false };
     }
     await api.showMessage?.({
       type: 'info',
-      title: '已保存',
+      title: t('dlg.saved'),
       message: write.path || filePath,
     });
     return { ok: true, path: write.path || filePath };
@@ -701,7 +704,7 @@ export default function App() {
 
   const handleLoadTheme = useCallback(async () => {
     try {
-      const picked = await pickAndReadJsonText();
+      const picked = await pickAndReadJsonText(t);
       if (!picked) return;
       const json = JSON.parse(picked.text);
       const next = parseThemeJson(json);
@@ -716,20 +719,20 @@ export default function App() {
       console.error('[FlexiBook] load theme failed', e);
       alert(t('dlg.themeLoadFail', { err: e?.message || e }));
     }
-  }, [theme.revision]);
+  }, [theme.revision, t]);
 
   const handleSaveTheme = useCallback(async () => {
     try {
-      await pickAndWriteJsonText('theme.json', themeToWire(theme));
+      await pickAndWriteJsonText('theme.json', themeToWire(theme), t);
     } catch (e: any) {
       console.error('[FlexiBook] save theme failed', e);
       alert(t('dlg.themeSaveFail', { err: e?.message || e }));
     }
-  }, [theme]);
+  }, [theme, t]);
 
   const handleLoadContent = useCallback(async () => {
     try {
-      const picked = await pickAndReadJsonText();
+      const picked = await pickAndReadJsonText(t);
       if (!picked) return;
       const json = JSON.parse(picked.text);
       const next = parseBookContentJson(json);
@@ -744,16 +747,16 @@ export default function App() {
       console.error('[FlexiBook] load content failed', e);
       alert(t('dlg.contentLoadFail', { err: e?.message || e }));
     }
-  }, []);
+  }, [t]);
 
   const handleSaveContent = useCallback(async () => {
     try {
-      await pickAndWriteJsonText('book.json', bookContentToWire(content));
+      await pickAndWriteJsonText('book.json', bookContentToWire(content), t);
     } catch (e: any) {
       console.error('[FlexiBook] save content failed', e);
       alert(t('dlg.contentSaveFail', { err: e?.message || e }));
     }
-  }, [content]);
+  }, [content, t]);
 
   const registeredFontIds = useMemo(() => new Set(customFonts.map((f) => f.id)), [customFonts]);
   const unregisteredFonts = useMemo(
@@ -808,7 +811,7 @@ export default function App() {
       for (const file of Array.from(fileList)) {
         const ext = detectFontExt(file.name);
         if (!ext) {
-          alert(`跳过非 TTF/OTF：${file.name}`);
+          alert(t('dlg.skipNonFont', { name: file.name }));
           continue;
         }
         const bytes = await file.arrayBuffer();
@@ -863,7 +866,7 @@ export default function App() {
     } finally {
       setFontImportBusy(false);
     }
-  }, [customFonts]);
+  }, [customFonts, t]);
 
   const ensureLangKey = useCallback((key: string) => {
     const k = key.trim();
@@ -953,7 +956,7 @@ export default function App() {
             await api.showMessage?.({
               type: 'info',
               title: t('dlg.exportOk'),
-              message: `资源包已写入：\n${res.root}\n\n共 ${packFiles.length} 个文件`,
+              message: t('dlg.packWritten', { root: res.root || '', n: packFiles.length }),
             });
           } else {
             alert(t('dlg.writeFail', { err: res?.error || t('dlg.unknown') }));
@@ -969,14 +972,14 @@ export default function App() {
           a.click();
           a.remove();
           URL.revokeObjectURL(url);
-          alert(`已下载 ${packRootName}.zip（${packFiles.length} 文件）。`);
+          alert(t('dlg.packDownloaded', { name: packRootName, n: packFiles.length }));
         }
       } catch (e: any) {
         console.error('[FlexiBook] pack export failed', e);
         alert(t('dlg.exportFail', { err: e?.message || e }));
       }
     },
-    [theme, content, customTextures, langTables, customFonts, packExportMode],
+    [theme, content, customTextures, langTables, customFonts, packExportMode, t],
   );
 
   const buildCustomFontEntry = useCallback(
@@ -1185,7 +1188,11 @@ export default function App() {
           await api.showMessage?.({
             type: 'info',
             title: t('dlg.importDone'),
-            message: summary + (imported.warnings.length ? `\n\n警告:\n- ${imported.warnings.join('\n- ')}` : ''),
+            message:
+              summary +
+              (imported.warnings.length
+                ? `\n\n${t('dlg.warnings')}:\n- ${imported.warnings.join('\n- ')}`
+                : ''),
           });
           return;
         }
@@ -1220,20 +1227,28 @@ export default function App() {
         const imported = importPackFromZip(buf);
         await applyPackImport(imported);
         sourceLabel = file.name;
-        alert(summarizeImport(imported, t) + (imported.warnings.length ? `\n\n警告:\n- ${imported.warnings.join('\n- ')}` : ''));
+        alert(
+          summarizeImport(imported, t) +
+            (imported.warnings.length
+              ? `\n\n${t('dlg.warnings')}:\n- ${imported.warnings.join('\n- ')}`
+              : ''),
+        );
         return;
       }
 
       if (files) {
         const imported = parsePackFiles(files);
         await applyPackImport(imported);
-        const summary = summarizeImport(imported, t) + `\n来源: ${sourceLabel}`;
+        const summary = summarizeImport(imported, t) + `\n${t('dlg.source', { src: sourceLabel })}`;
         if (api?.showMessage) {
           await api.showMessage({
             type: 'info',
             title: t('dlg.importDone'),
             message:
-              summary + (imported.warnings.length ? `\n\n警告:\n- ${imported.warnings.join('\n- ')}` : ''),
+              summary +
+              (imported.warnings.length
+                ? `\n\n${t('dlg.warnings')}:\n- ${imported.warnings.join('\n- ')}`
+                : ''),
           });
         } else {
           alert(summary);
@@ -1245,7 +1260,7 @@ export default function App() {
     } finally {
       setPackImportBusy(false);
     }
-  }, [applyPackImport]);
+  }, [applyPackImport, t]);
 
   const handleClearDraft = useCallback(async () => {
     if (!confirm(t('dlg.clearDraftConfirm'))) return;
@@ -1254,7 +1269,7 @@ export default function App() {
     setDraftSavedAt(null);
     setDraftStatus('ready');
     alert(t('dlg.draftCleared'));
-  }, []);
+  }, [t]);
 
   const changePage = useCallback(
     (delta: number) => {
@@ -1315,10 +1330,10 @@ export default function App() {
           </select>
         </label>
           <div>
-            <div className="title">FlexiBook Editor</div>
+            <div className="title">{t('app.brand')}</div>
           </div>
           <span className="subtitle">
-            {workspaceMode === 'preview' ? 'layout parity preview' : 'content edit · translations'}
+            {workspaceMode === 'preview' ? t('app.subtitle.preview') : t('app.subtitle.edit')}
           </span>
         </div>
 
@@ -1329,7 +1344,7 @@ export default function App() {
             onClick={() => setWorkspaceMode('preview')}
             title={t('app.mode.previewTitle')}
           >
-            预览
+            {t('app.mode.preview')}
           </button>
           <button
             type="button"
@@ -1340,7 +1355,7 @@ export default function App() {
             }}
             title={t('app.mode.contentEditTitle')}
           >
-            内容编辑
+            {t('app.mode.contentEdit')}
           </button>
         </div>
 
@@ -1418,7 +1433,7 @@ export default function App() {
           onClick={() => openPackExport('full')}
           title={t('app.exportFullTitle')}
         >
-          导出完整资源包…
+          {t('app.exportFull')}
         </button>
 
         <button
@@ -1427,11 +1442,11 @@ export default function App() {
           onClick={() => void handleClearDraft()}
           title={t('app.clearDraftTitle')}
         >
-          清草稿
+          {t('app.clearDraft')}
         </button>
 
         {workspaceMode === 'preview' && (
-          <div className="chip" title="当前页码">
+          <div className="chip" title={t('app.pageChipTitle')}>
             {t('app.pageChip')} <strong>{pageLabel}</strong>
           </div>
         )}
@@ -1575,7 +1590,7 @@ export default function App() {
                   onClick={handleRelayout}
                   title={t('app.relayoutTitle')}
                 >
-                  重新布局
+                  {t('app.relayout')}
                 </button>
                 <div className="page-meta">Page {pageLabel}</div>
                 <div className="preview-nav">
