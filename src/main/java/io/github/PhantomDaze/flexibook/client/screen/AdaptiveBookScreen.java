@@ -204,7 +204,7 @@ public class AdaptiveBookScreen extends Screen {
         Component title = content.title().resolve();
         title = title.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int titleX = leftPos + (theme.bookTexWidth() - font.width(title)) / 2;
-        graphics.text(font, title, titleX, topPos + theme.titleOffsetY(), theme.pageTextColor(), false);
+        graphics.text(font, title, titleX, topPos + theme.titleOffsetY(), 0xFF000000 | theme.pageTextColor(), false);
 
         int contentX = leftPos + theme.contentLeft();
         int contentY = topPos + theme.contentTop() + theme.contentOffsetY();
@@ -222,7 +222,7 @@ public class AdaptiveBookScreen extends Screen {
         pageComp = pageComp.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int pageLabelX = leftPos + (theme.bookTexWidth() - font.width(pageComp)) / 2;
         graphics.text(font, pageComp, pageLabelX,
-                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), theme.pageTextColor(), false);
+                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), 0xFF000000 | theme.pageTextColor(), false);
     }
 
     private void renderElement(GuiGraphicsExtractor graphics, RenderedElement el, int originX, int originY) {
@@ -234,13 +234,13 @@ public class AdaptiveBookScreen extends Screen {
                 pose.scale(line.scale(), line.scale());
 
                 StyleFlags flags = line.style();
-                int baseColor = theme.pageTextColor();
+                int baseColor = 0xFF000000 | theme.pageTextColor();
                 if (flags.color().isPresent()) {
-                    baseColor = flags.color().get() & 0xFFFFFF;
+                    baseColor = 0xFF000000 | (flags.color().get() & 0xFFFFFF);
                 } else if (line.link().isPresent()) {
-                    baseColor = theme.linkColor();
+                    baseColor = 0xFF000000 | theme.linkColor();
                 }
-                Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor);
+                Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor, content.resolvedFont());
                 Component text = Component.literal(line.text()).withStyle(mcStyle);
                 if (line.highlight()) {
                     int w = Math.max(1, font.width(text));
@@ -365,7 +365,7 @@ public class AdaptiveBookScreen extends Screen {
         Component title = content.title().resolve();
         title = title.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int titleX = leftPos + (theme.bookTexWidth() - font.width(title)) / 2;
-        graphics.drawString(font, title, titleX, topPos + theme.titleOffsetY(), theme.pageTextColor(), false);
+        graphics.drawString(font, title, titleX, topPos + theme.titleOffsetY(), 0xFF000000 | theme.pageTextColor(), false);
 
         int contentX = leftPos + theme.contentLeft();
         int contentY = topPos + theme.contentTop() + theme.contentOffsetY();
@@ -387,7 +387,7 @@ public class AdaptiveBookScreen extends Screen {
         pageComp = pageComp.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int pageLabelX = leftPos + (theme.bookTexWidth() - font.width(pageComp)) / 2;
         graphics.drawString(font, pageComp, pageLabelX,
-                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), theme.pageTextColor(), false);
+                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), 0xFF000000 | theme.pageTextColor(), false);
     }
 
     private void renderElement(GuiGraphics graphics, RenderedElement el, int originX, int originY) {
@@ -405,13 +405,13 @@ public class AdaptiveBookScreen extends Screen {
                 //?}
 
                 StyleFlags flags = line.style();
-                int baseColor = theme.pageTextColor();
+                int baseColor = 0xFF000000 | theme.pageTextColor();
                 if (flags.color().isPresent()) {
-                    baseColor = flags.color().get() & 0xFFFFFF;
+                    baseColor = 0xFF000000 | (flags.color().get() & 0xFFFFFF);
                 } else if (line.link().isPresent()) {
-                    baseColor = theme.linkColor();
+                    baseColor = 0xFF000000 | theme.linkColor();
                 }
-                Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor);
+                Style mcStyle = toMinecraftStyle(flags, line.link().isPresent(), baseColor, content.resolvedFont());
                 Component text = Component.literal(line.text()).withStyle(mcStyle);
                 if (line.highlight()) {
                     int w = Math.max(1, font.width(text));
@@ -573,7 +573,7 @@ public class AdaptiveBookScreen extends Screen {
         return Optional.empty();
     }
 
-    static Style toMinecraftStyle(StyleFlags flags, boolean link, int rgb) {
+    static Style toMinecraftStyle(StyleFlags flags, boolean link, int rgb, ResourceLocation defaultFont) {
         Style style = Style.EMPTY.withColor(rgb);
         if (flags.bold()) {
             style = style.withBold(true);
@@ -584,9 +584,7 @@ public class AdaptiveBookScreen extends Screen {
         if (flags.underline() || link) {
             style = style.withUnderlined(true);
         }
-        if (flags.font().isPresent()) {
-            style = McFonts.withFont(style, flags.font().get());
-        }
+        style = McFonts.withFont(style, flags.font().orElse(defaultFont));
         return style;
     }
 

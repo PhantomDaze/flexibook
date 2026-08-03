@@ -1,7 +1,6 @@
 package io.github.PhantomDaze.flexibook.client;
 
 import io.github.PhantomDaze.flexibook.FlexiBookMod;
-import io.github.PhantomDaze.flexibook.client.screen.AdaptiveBookScreen;
 import io.github.PhantomDaze.flexibook.client.theme.BookContentReloadListener;
 import io.github.PhantomDaze.flexibook.client.theme.BookThemeReloadListener;
 import io.github.PhantomDaze.flexibook.layout.BookLayoutEngine;
@@ -41,6 +40,17 @@ import net.minecraftforge.fml.common.Mod;
 public final class ClientModEvents {
     private ClientModEvents() {}
 
+    static {
+        AutoSmokeClient.bootstrap();
+    }
+
+    //? if neoforge {
+    @SubscribeEvent
+    public static void onClientTick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {
+        AutoSmokeClient.onClientTick();
+    }
+    //?}
+
     //? if neoforge {
     @SubscribeEvent
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
@@ -78,10 +88,6 @@ public final class ClientModEvents {
 
     /** Client-only open helper so item code does not classload Screen on dedicated server until invoked. */
     public static void openBook(ItemStack stack) {
-        //? if >=26.2 {
-        /*Minecraft.getInstance().setScreenAndShow(new AdaptiveBookScreen(stack));
-        *///?} else {
-        Minecraft.getInstance().setScreen(new AdaptiveBookScreen(stack));
-        //?}
+        BookScreenFactory.open(Minecraft.getInstance(), stack);
     }
 }

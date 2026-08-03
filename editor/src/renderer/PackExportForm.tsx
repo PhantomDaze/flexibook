@@ -80,11 +80,11 @@ export function PackExportForm({
   function handleExport() {
     const ns = (packNamespace || '').trim();
     if (!ns) {
-      alert('namespace 必填');
+      alert(t('pack.nsRequired'));
       return;
     }
     if (!/^[a-z0-9_.-]+$/.test(ns)) {
-      alert('namespace 格式不合法，应为 [a-z0-9_.-]+');
+      alert(t('pack.nsInvalid'));
       return;
     }
     onExport({

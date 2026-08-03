@@ -30,6 +30,20 @@ neoForge {
             jvmArgument '-Dfml.earlyWindowControl=false'
         }
 
+        // Auto smoke: enable dev/smoke packs -> create world -> open book -> read -> quit.
+        clientAutoSmoke {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', modId
+            systemProperty 'fml.earlyWindowControl', 'false'
+            systemProperty 'fml.earlyProgressWindow', 'false'
+            systemProperty 'flexibook.autoSmoke', 'true'
+            systemProperty 'flexibook.autoSmoke.readSeconds', '10'
+            systemProperty 'flexibook.autoSmoke.timeoutSeconds', '180'
+            systemProperty 'flexibook.autoSmoke.dir', rootProject.file('dev/smoke').absolutePath
+            systemProperty 'flexibook.autoSmoke.resourcePacksDir', rootProject.file('dev/smoke/resourcepacks').absolutePath
+            jvmArgument '-Dfml.earlyWindowControl=false'
+        }
+
         server {
             server()
             programArgument '--nogui'
@@ -41,11 +55,28 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', modId
         }
 
-        data {
-            data()
-            programArguments.addAll '--mod', modId, '--all',
-                    '--output', file('src/generated/resources/').absolutePath,
-                    '--existing', file('src/main/resources/').absolutePath
+        // MC 1.21.4+ split data gen into clientData/serverData (MDG RunModel).
+        // 1.21.3 and earlier still use the combined data() run type.
+        def dataArgs = ['--mod', modId, '--all',
+                '--output', file('src/generated/resources/').absolutePath,
+                '--existing', file('src/main/resources/').absolutePath]
+        def mc = (project.findProperty('minecraft_version') ?: project.ext.minecraft_version).toString()
+        // Combined data() only through 1.21.3; 1.21.4+ and 26.x need clientData/serverData.
+        def useCombinedData = mc ==~ /^1\.(20(\.\d+)?|21(\.[0-3])?)$/
+        if (useCombinedData) {
+            data {
+                data()
+                programArguments.addAll dataArgs
+            }
+        } else {
+            clientData {
+                clientData()
+                programArguments.addAll dataArgs
+            }
+            serverData {
+                serverData()
+                programArguments.addAll dataArgs
+            }
         }
 
         configureEach {

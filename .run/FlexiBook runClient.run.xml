@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="FlexiBook runClient" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="FlexiBook runClient (1.21.1 NeoForge)" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="1.20.1:runClient" />
+          <option value=":1.21.1:runClient" />
         </list>
       </option>
       <option name="vmOptions" value="" />

@@ -40,6 +40,18 @@ loom {
             ideConfigGenerated true
             runDir 'run'
         }
+        // Auto smoke: enable dev/smoke packs -> create world -> open book -> read -> quit.
+        clientAutoSmoke {
+            client()
+            setConfigName("Fabric Client AutoSmoke")
+            ideConfigGenerated true
+            runDir 'run'
+            property 'flexibook.autoSmoke', 'true'
+            property 'flexibook.autoSmoke.readSeconds', '10'
+            property 'flexibook.autoSmoke.timeoutSeconds', '180'
+            property 'flexibook.autoSmoke.dir', rootProject.file('dev/smoke').absolutePath
+            property 'flexibook.autoSmoke.resourcePacksDir', rootProject.file('dev/smoke/resourcepacks').absolutePath
+        }
         server {
             server()
             setConfigName("Fabric Server")

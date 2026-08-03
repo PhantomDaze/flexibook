@@ -142,10 +142,42 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
 }
 
 sourceSets.main.resources {
+    srcDir(rootProject.file('src/main/resources'))
     srcDir('src/generated/resources')
     srcDir(generateModMetadata)
     exclude('**/*.bbmodel')
     exclude('src/generated/**/.cache')
+}
+
+sourceSets.test.resources.srcDir(rootProject.file('src/test/resources'))
+
+// Node-local sources are an explicit extension point for loader/version adapters.
+// Stonecutter still supplies shared sources (or chiseledSrc) for the common code;
+// this directory adds only the current node's API-boundary glue.
+sourceSets.main.java.srcDir('src/main/java')
+sourceSets.test.java.srcDir('src/test/java')
+
+afterEvaluate {
+    def setupChiseled = tasks.named('setupChiseledBuild')
+    tasks.withType(JavaCompile).configureEach {
+        dependsOn(setupChiseled)
+    }
+    sourceSets.main.java.setSrcDirs([
+            layout.buildDirectory.dir('chiseledSrc/main/java').get().asFile,
+            file('src/main/java')
+    ])
+    sourceSets.test.java.setSrcDirs([
+            layout.buildDirectory.dir('chiseledSrc/test/java').get().asFile,
+            file('src/test/java')
+    ])
+}
+
+tasks.withType(Jar).matching { it.name == 'sourcesJar' }.configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType(ProcessResources).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 base {

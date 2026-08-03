@@ -23,8 +23,15 @@ public final class ModItems {
     //? if neoforge {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FlexiBookMod.MOD_ID);
 
+    //? if >=1.21.4 {
+    public static final DeferredItem<FlexiBookItem> FLEXI_BOOK = ITEMS.registerItem(
+            "flexi_book",
+            FlexiBookItem::new,
+            new Item.Properties().stacksTo(1));
+    //?} else {
     public static final DeferredItem<FlexiBookItem> FLEXI_BOOK = ITEMS.register("flexi_book",
             () -> new FlexiBookItem(new Item.Properties().stacksTo(1)));
+    //?}
 
     /** Resolved item instance (loader-agnostic). */
     public static FlexiBookItem book() {
@@ -48,7 +55,7 @@ public final class ModItems {
         FLEXI_BOOK = Registry.register(
                 BuiltInRegistries.ITEM,
                 FlexiBookIds.of(FlexiBookMod.MOD_ID, "flexi_book"),
-                new FlexiBookItem(new Item.Properties().stacksTo(1)));
+                new FlexiBookItem(FabricItemProperties.create()));
     }
 
     public static FlexiBookItem book() {
