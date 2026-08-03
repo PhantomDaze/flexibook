@@ -100,25 +100,20 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 Headless-ish client check: create/load a creative world, open a book, render for N seconds, quit.
 
 ```bash
-# Built-in demo guide (no extra pack)
-./gradlew smokeTestAllClients -Pflexibook.smokeTest=true
-
-# Shared extra resource pack(s) + a specific book definition
-# 1) Drop pack folder/zip into:  dev/smoke/resourcepacks/
-# 2) Run (Forge then Fabric sequentially):
+# 1) Optional packs: drop folder(s)/zip(s) into dev/smoke/resourcepacks/
+# 2) Book id: edit dev/smoke/book.txt (first non-# line = namespace:path; blank → demo)
+# 3) Run (Forge then Fabric sequentially):
 ./gradlew smokeTestAllClients \
   -Pflexibook.smokeTest=true \
-  -Pflexibook.smokeTest.resourcePacks=my_pack \
-  -Pflexibook.smokeTest.bookId=myns:mybook \
   -Pflexibook.smokeTest.readSeconds=10 \
   -Pflexibook.smokeTest.timeoutSeconds=300
 ```
 
-| Property | Meaning |
+| Property / file | Meaning |
 |---|---|
 | `flexibook.smokeTest` | `true` to enable |
-| `flexibook.smokeTest.resourcePacks` | Comma-separated pack folder/zip names under `dev/smoke/resourcepacks/` (optional `file/` prefix). Copied into every node’s `run/resourcepacks/` before `runClient`, then force-enabled |
-| `flexibook.smokeTest.bookId` | `namespace:path` from `assets/.../flexibook/books/`. Empty → built-in `ExampleBooks.demoGuide()` |
+| `dev/smoke/resourcepacks/` | Copied into each node’s `run/resourcepacks/` before `runClient`; **all** `file/*` packs there are force-enabled |
+| `dev/smoke/book.txt` | Synced to `run/book.txt`. First non-empty, non-`#` line = book `namespace:path`. Blank → built-in `ExampleBooks.demoGuide()` |
 | `flexibook.smokeTest.readSeconds` | How long to keep the book screen open (default `10`) |
 | `flexibook.smokeTest.timeoutSeconds` | Overall deadline (default `300`) |
 

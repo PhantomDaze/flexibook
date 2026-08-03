@@ -103,3 +103,5 @@ coverage/
 *.swo
 *~
 /.playwright-mcp/
+/dev/smoke/resourcepacks/*
+/dev/smoke/book.txt

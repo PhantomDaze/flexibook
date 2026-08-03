@@ -185,7 +185,7 @@ function SpanEditor({
               />
               {span.translate && onPickKey && (
                 <button type="button" title={t('content.pickKey')} onClick={() => onPickKey((key) => update(i, { text: key, translate: true }))}>
-                  键…
+                  {t('content.pickKeyShort')}
                 </button>
               )}
             </div>
@@ -193,15 +193,15 @@ function SpanEditor({
             <div className="btn-row">
               <label className="inline-check">
                 <input type="checkbox" checked={!!span.style?.bold} onChange={() => toggleFlag(i, 'bold')} />
-                粗体
+                {t('content.bold')}
               </label>
               <label className="inline-check">
                 <input type="checkbox" checked={!!span.style?.italic} onChange={() => toggleFlag(i, 'italic')} />
-                斜体
+                {t('content.italic')}
               </label>
               <label className="inline-check">
                 <input type="checkbox" checked={!!span.style?.underline} onChange={() => toggleFlag(i, 'underline')} />
-                下划线
+                {t('content.underline')}
               </label>
               <label className="inline-check">
                 <input
@@ -209,13 +209,13 @@ function SpanEditor({
                   checked={span.translate}
                   onChange={(e) => update(i, { translate: e.target.checked })}
                 />
-                翻译键
+                {t('content.translateKey')}
               </label>
             </div>
 
             <div className="field-grid span-meta">
               <div className="field">
-                <label>颜色</label>
+                <label>{t('content.color')}</label>
                 <div className="color-inline">
                   <input
                     type="color"
@@ -243,14 +243,14 @@ function SpanEditor({
                   />
                   {span.style?.color != null && (
                     <button type="button" className="ghost" onClick={() => updateStyle(i, { color: undefined })}>
-                      清除
+                      {t('content.clear')}
                     </button>
                   )}
                 </div>
               </div>
 
               <div className="field">
-                <label>font id</label>
+                <label>{t('content.fontId')}</label>
                 <input
                   type="text"
                   className="mono"
@@ -271,12 +271,12 @@ function SpanEditor({
 
               {fontExt && (
                 <div className="banner banner-warn span-font-warn">
-                  外部字体 <span className="mono">{span.style?.font}</span>：预览回退 unihex
+                  {t('content.externalFont', { font: span.style?.font || '' })}
                 </div>
               )}
 
               <div className="field">
-                <label>链接</label>
+                <label>{t('content.link')}</label>
                 <div className="link-row">
                   <select
                     value={linkKind}
@@ -287,7 +287,7 @@ function SpanEditor({
                       else setLink(i, 'url', linkValue || 'https://');
                     }}
                   >
-                    <option value="none">无</option>
+                    <option value="none">{t('content.linkNone')}</option>
                     <option value="command">cmd</option>
                     <option value="url">url</option>
                   </select>
@@ -307,7 +307,7 @@ function SpanEditor({
         );
       })}
       <button type="button" onClick={addSpan}>
-        + 添加 span
+        {t('content.addSpan')}
       </button>
     </div>
   );
@@ -418,7 +418,7 @@ function ElementListEditor({
               {el.type === 'paragraph' || el.type === 'bullet' ? (
                 <span className="badge">{el.spans?.length || 0} span</span>
               ) : null}
-              {el.type === 'box' && <span className="badge">{el.children?.length || 0} 子</span>}
+              {el.type === 'box' && <span className="badge">{t('content.childCount', { n: el.children?.length || 0 })}</span>}
               <span className="badge">#{idx + 1}</span>
             </span>
             <div className="element-actions">
@@ -467,7 +467,7 @@ function ElementListEditor({
                         )
                       }
                     >
-                      键…
+                      {t('content.pickKeyShort')}
                     </button>
                   )}
                 </div>
@@ -505,7 +505,7 @@ function ElementListEditor({
                 </div>
                 {isExternalFont(el.font) && !fontIds.includes(el.font || '') && (
                   <div className="banner banner-warn">
-                    外部字体 <span className="mono">{el.font}</span>：预览回退 unihex
+                    {t('content.externalFont', { font: el.font || '' })}
                   </div>
                 )}
               </>
@@ -561,8 +561,8 @@ function ElementListEditor({
               </>
             )}
 
-            {el.type === 'divider' && <div className="hint">水平分隔线</div>}
-            {el.type === 'br' && <div className="hint">软换行</div>}
+            {el.type === 'divider' && <div className="hint">{t('content.dividerHint')}</div>}
+            {el.type === 'br' && <div className="hint">{t('content.brHint')}</div>}
 
             {el.type === 'box' && (
               <>
@@ -582,7 +582,7 @@ function ElementListEditor({
                 <div className="box-children">
                   <div className="section-head">
                     <h4 className="section-title">{t('content.children')}</h4>
-                    <span className="hint">{el.children?.length || 0} 项</span>
+                    <span className="hint">{t('content.itemCount', { n: el.children?.length || 0 })}</span>
                   </div>
                   <ElementListEditor
                     elements={el.children || []}
@@ -649,10 +649,10 @@ export function ContentPanel({
     <div>
       {(bookFontUnknown || unknownFonts.length > 0) && (
         <div className="banner banner-warn">
-          <strong>未导入的外部字体</strong>
+          <strong>{t('content.externalFontsTitle')}</strong>
           <span>
             {' '}
-            — 数据已保留，预览回退 <span className="mono">{FLEXIBOOK_DEFAULT_FONT}</span>
+            {t('content.externalFontsBody')} <span className="mono">{FLEXIBOOK_DEFAULT_FONT}</span>
             {unknownFonts.length ? (
               <>
                 ：<span className="mono">{unknownFonts.join(', ')}</span>
@@ -667,7 +667,7 @@ export function ContentPanel({
           <h4 className="section-title">{t('content.section.title')}</h4>
         </div>
         <div className="field full">
-          <label htmlFor="book-title">title key / 字面量</label>
+          <label htmlFor="book-title">{t('content.titleLabel')}</label>
           <div className="btn-row" style={{ alignItems: 'center' }}>
             <input
               id="book-title"
@@ -679,13 +679,13 @@ export function ContentPanel({
             />
             {langTables && (
               <button type="button" onClick={() => openKeyPicker((k) => setTitleKey(k))}>
-                键…
+                {t('content.pickKeyShort')}
               </button>
             )}
           </div>
         </div>
         <div className="field full">
-          <label htmlFor="book-font">defaultFont（可选覆盖）</label>
+          <label htmlFor="book-font">{t('content.defaultFontLabel')}</label>
           <input
             id="book-font"
             type="text"
@@ -707,7 +707,7 @@ export function ContentPanel({
       <div className="section">
         <div className="section-head">
           <h4 className="section-title">{t('content.section.elements')}</h4>
-          <span className="hint">{elements.length} 项</span>
+          <span className="hint">{t('content.itemCount', { n: elements.length })}</span>
         </div>
         <ElementListEditor
           elements={elements}
@@ -718,30 +718,29 @@ export function ContentPanel({
       </div>
 
       <p className="hint">
-        当前语言 <strong style={{ color: 'var(--text-dim)' }}>{lang}</strong>
-        。默认内容来自模组 <span className="mono">flexibook:demo_guide</span>。
-        切换语言会重新加载翻译并触发布局。结构化元素编辑；译文请用顶栏「内容编辑」模式。
+        {t('content.footer.prefix')} <strong style={{ color: 'var(--text-dim)' }}>{lang}</strong>
+        {t('content.footer.suffix')}
       </p>
 
       <div className="toolbar sticky-actions">
         {onLoad && (
           <button type="button" onClick={onLoad} title={t('content.openTitle')}>
-            打开…
+            {t('content.open')}
           </button>
         )}
         {onSave && (
           <button type="button" onClick={onSave} title={t('content.saveTitle')}>
-            保存…
+            {t('content.save')}
           </button>
         )}
         {onResetDemo && (
           <button type="button" onClick={onResetDemo} title={t('content.resetDemoTitle')}>
-            重置为模组模板
+            {t('content.resetDemo')}
           </button>
         )}
         {onExport && (
           <button type="button" onClick={onExport}>
-            导出内容 JSON
+            {t('content.exportJson')}
           </button>
         )}
         {onExportContentPack && (
@@ -751,7 +750,7 @@ export function ContentPanel({
             onClick={onExportContentPack}
             title={t('content.exportPackTitle')}
           >
-            导出内容资源包…
+            {t('content.exportPack')}
           </button>
         )}
       </div>

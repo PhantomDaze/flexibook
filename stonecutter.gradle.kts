@@ -33,21 +33,22 @@ versionPaths.drop(1).forEach { path ->
     }
 }
 
-// Shared smoke resource packs live at the monorepo root so Forge + Fabric (and
-// future version nodes) all see the same pack tree under run/resourcepacks/.
+// Shared smoke inputs live at the monorepo root so Forge + Fabric (and future
+// version nodes) all see the same tree under run/:
 //
-//   dev/smoke/resourcepacks/<pack_folder_or.zip>
+//   dev/smoke/resourcepacks/<pack_folder_or.zip>  → run/resourcepacks/
+//   dev/smoke/book.txt                            → run/book.txt
 //
-// Enable with:
-//   -Pflexibook.smokeTest=true
-//   -Pflexibook.smokeTest.resourcePacks=my_pack   (comma-separated; optional file/ prefix)
-//   -Pflexibook.smokeTest.bookId=ns:path          (empty → built-in demo guide)
+// On smoke (-Pflexibook.smokeTest=true):
+//   - every file/* pack under run/resourcepacks/ is force-enabled
+//   - book id is the first non-# line of run/book.txt (blank → built-in demo)
 val sharedSmokePacksDir = rootProject.layout.projectDirectory.dir("dev/smoke/resourcepacks")
+val sharedSmokeBookFile = rootProject.layout.projectDirectory.file("dev/smoke/book.txt")
 
 versionPaths.forEach { path ->
     val node = project(path)
     node.afterEvaluate {
-        val syncTask = node.tasks.register("syncSmokeResourcePacks", Copy::class.java) {
+        val syncPacks = node.tasks.register("syncSmokeResourcePacks", Copy::class.java) {
             group = "verification"
             description =
                 "Copy shared dev/smoke/resourcepacks into this node's run/resourcepacks/"
@@ -59,8 +60,17 @@ versionPaths.forEach { path ->
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
             onlyIf { sharedSmokePacksDir.asFile.isDirectory }
         }
+        val syncBook = node.tasks.register("syncSmokeBookId", Copy::class.java) {
+            group = "verification"
+            description = "Copy shared dev/smoke/book.txt into this node's run/book.txt"
+            from(sharedSmokeBookFile)
+            into(node.layout.projectDirectory.dir("run"))
+            rename { "book.txt" }
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            onlyIf { sharedSmokeBookFile.asFile.isFile }
+        }
         node.tasks.matching { it.name == "runClient" }.configureEach {
-            dependsOn(syncTask)
+            dependsOn(syncPacks, syncBook)
         }
     }
 }
@@ -70,7 +80,7 @@ versionPaths.forEach { path ->
 tasks.register("smokeTestAllClients") {
     group = "verification"
     description =
-        "Run Forge then Fabric client smoke (shared packs + optional bookId, quit)."
+        "Run Forge then Fabric client smoke (auto packs + book.txt id, quit)."
     dependsOn(":1.20.1:runClient", ":1.20.1-fabric:runClient")
     // Strict order so only one client window/process runs at a time.
     project(":1.20.1-fabric").tasks.named("runClient").configure {

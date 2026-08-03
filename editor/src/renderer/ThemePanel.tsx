@@ -82,7 +82,7 @@ export function ThemePanel({
         </div>
 
         <TexturePicker
-          title="{t('theme.bookBg')}"
+          title={t('theme.bookBg')}
           path={theme.bookTexture}
           defaultPath={DEFAULT_THEME.bookTexture}
           custom={customTextures.book}
@@ -102,7 +102,7 @@ export function ThemePanel({
 
         <div style={{ marginTop: 10 }}>
           <TexturePicker
-            title="{t('theme.itemIcon')}"
+            title={t('theme.itemIcon')}
             path={DEFAULT_ITEM_TEXTURE}
             defaultPath={DEFAULT_ITEM_TEXTURE}
             custom={customTextures.item}
@@ -149,7 +149,7 @@ export function ThemePanel({
               onClick={onExportTexturesPack}
               title={t('theme.exportTexturesTitle')}
             >
-              导出纹理资源包…
+              {t('theme.exportTextures')}
             </button>
           </div>
         )}
@@ -231,11 +231,11 @@ export function ThemePanel({
               onClick={onExportThemePack}
               title={t('theme.exportThemePackTitle')}
             >
-              导出主题资源包…
+              {t('theme.exportThemePack')}
             </button>
           )}
           <button type="button" onClick={onExport} title={t('theme.exportJsonTitle')}>
-            导出主题 JSON
+            {t('theme.exportJson')}
           </button>
         </div>
       </div>
@@ -243,19 +243,19 @@ export function ThemePanel({
       <div className="toolbar sticky-actions">
         {onLoad && (
           <button type="button" onClick={onLoad} title={t('theme.openTitle')}>
-            打开…
+            {t('theme.open')}
           </button>
         )}
         {onSave && (
           <button type="button" onClick={onSave} title={t('theme.saveTitle')}>
-            保存…
+            {t('theme.save')}
           </button>
         )}
         <button type="button" onClick={onResetDefault}>
-          重置默认
+          {t('theme.resetDefault')}
         </button>
         <button type="button" onClick={onLoadContain}>
-          Contain 示例
+          {t('theme.loadContain')}
         </button>
       </div>
     </div>
@@ -333,15 +333,15 @@ function TexturePicker({
           )}
           <div className="btn-row" style={{ marginTop: 6 }}>
             <button type="button" onClick={() => inputRef.current?.click()}>
-              选择图片…
+              {t('theme.pickImage')}
             </button>
             {isCustom && (
               <button type="button" onClick={onClearCustom}>
-                清除本地
+                {t('theme.clearLocal')}
               </button>
             )}
             <button type="button" className="ghost" onClick={onResetPath} disabled={isDefault && !isCustom}>
-              恢复默认
+              {t('theme.resetPath')}
             </button>
           </div>
           <input

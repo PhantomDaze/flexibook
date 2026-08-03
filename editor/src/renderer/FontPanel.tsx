@@ -71,15 +71,9 @@ export function FontPanel({
       <div className="section">
         <div className="section-head">
           <h4 className="section-title">{t('font.section.custom')}</h4>
-          <span className="hint">{fonts.length} 个 · TTF/OTF</span>
+          <span className="hint">{t('font.count', { n: fonts.length })}</span>
         </div>
-        <p className="section-hint">
-          导入后可作书级 <span className="mono">defaultFont</span> 或 span/heading 的{' '}
-          <span className="mono">font</span>。预览使用浏览器 FontFace（
-          <strong>近似</strong>，非游戏逐像素 parity）。导出写入{' '}
-          <span className="mono">assets/&lt;ns&gt;/font/*.json</span> + ttf/otf。默认书字体仍为{' '}
-          <span className="mono">{FLEXIBOOK_DEFAULT_FONT}</span>。
-        </p>
+        <p className="section-hint">{t('font.help')}</p>
         <div className="toolbar">
           <button
             type="button"
@@ -117,7 +111,7 @@ export function FontPanel({
 
       <div className="section">
         {fonts.length === 0 && (
-          <div className="empty-state">尚未导入{t('font.section.custom')}。unihex 默认始终可用。</div>
+          <div className="empty-state">{t('font.empty')}</div>
         )}
         <div className="element-list">
           {fonts.map((f) => (
@@ -132,7 +126,7 @@ export function FontPanel({
                   >
                     {f.status}
                   </span>
-                  {content.defaultFont === f.id && <span className="badge">书默认</span>}
+                  {content.defaultFont === f.id && <span className="badge">{t('font.bookDefaultBadge')}</span>}
                 </span>
                 <div className="element-actions">
                   <button type="button" className="danger" title={t('font.delete')} onClick={() => removeFont(f.id)}>
@@ -187,7 +181,7 @@ export function FontPanel({
                     disabled={f.status !== 'ready'}
                     onClick={() => setAsBookDefault(f.id)}
                   >
-                    设为书默认字体
+                    {t('font.setBookDefault')}
                   </button>
                   {content.defaultFont === f.id && (
                     <button
@@ -199,7 +193,7 @@ export function FontPanel({
                         onContentChange(c);
                       }}
                     >
-                      清除书默认
+                      {t('font.clearBookDefault')}
                     </button>
                   )}
                 </div>
@@ -208,7 +202,7 @@ export function FontPanel({
                     className="font-preview-sample"
                     style={{ fontFamily: `"${f.family}"`, fontSize: 16 }}
                   >
-                    Sample 预览 Aa 中文 0123
+                    {t('font.sample')}
                   </div>
                 )}
               </div>

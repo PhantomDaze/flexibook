@@ -24,27 +24,29 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
- * Dev-only client smoke: optionally enable shared resource packs, create/load a creative
- * test world, open a configured book (or the built-in demo), keep the book screen open,
- * then exit.
+ * Dev-only client smoke: enable every folder/zip pack under {@code run/resourcepacks/}
+ * (Gradle copies the shared tree {@code dev/smoke/resourcepacks/} there before
+ * {@code runClient}), create/load a creative test world, open a configured book
+ * (or the built-in demo), keep the book screen open, then exit.
  * <p>
  * Enabled with {@code -Dflexibook.smokeTest=true} (or Gradle {@code -Pflexibook.smokeTest=true}).
  * <ul>
- *   <li>{@code -Dflexibook.smokeTest.bookId=ns:path} — open a registered book definition;
- *       empty/omitted → {@link ExampleBooks#demoGuide()}.</li>
- *   <li>{@code -Dflexibook.smokeTest.resourcePacks=packA,packB} — enable these folder/zip
- *       names from {@code run/resourcepacks/} (optional {@code file/} prefix). Gradle copies
- *       the shared tree {@code dev/smoke/resourcepacks/} into each node before {@code runClient}.</li>
+ *   <li>Book id from {@code run/book.txt} (synced from monorepo {@code dev/smoke/book.txt}):
+ *       first non-empty, non-{@code #} line as {@code namespace:path}. Blank / missing →
+ *       {@link ExampleBooks#demoGuide()}.</li>
+ *   <li>All available {@code file/…} packs under {@code run/resourcepacks/} are force-enabled
+ *       automatically (no pack name list required).</li>
  * </ul>
  */
 public final class BookClientSmokeTest {
@@ -53,6 +55,8 @@ public final class BookClientSmokeTest {
     private static final String LEVEL_NAME = "FlexiBook Smoke";
     private static final long WORLD_SEED = 1L;
     private static final String FILE_PACK_PREFIX = "file/";
+    /** Relative to the game run directory (copied from {@code dev/smoke/book.txt}). */
+    private static final String BOOK_ID_FILE = "book.txt";
 
     private enum Phase {
         WAIT_TITLE,
@@ -73,7 +77,6 @@ public final class BookClientSmokeTest {
     private static Phase phase = Phase.WAIT_TITLE;
     private static boolean worldStartRequested;
     private static boolean failed;
-    private static List<String> requestedPackNames = List.of();
     private static String bookIdProp = "";
     private static CompletableFuture<Void> packReloadFuture;
 
@@ -96,14 +99,39 @@ public final class BookClientSmokeTest {
         long overallSeconds = parseLongProp("flexibook.smokeTest.timeoutSeconds", 300L);
         overallDeadlineMs = System.currentTimeMillis() + overallSeconds * 1000L;
         phaseDeadlineMs = System.currentTimeMillis() + 60_000L;
-        requestedPackNames = parseCsvProp("flexibook.smokeTest.resourcePacks");
-        bookIdProp = System.getProperty("flexibook.smokeTest.bookId", "").trim();
+        bookIdProp = readBookIdFromFile();
         LOGGER.info(
-                "FlexiBook smoke test enabled (read={}s, timeout={}s, bookId={}, packs={})",
+                "FlexiBook smoke test enabled (read={}s, timeout={}s, bookId={}, packs=all file/*)",
                 readMillis / 1000L,
                 overallSeconds,
-                bookIdProp.isEmpty() ? "<demoGuide>" : bookIdProp,
-                requestedPackNames.isEmpty() ? "<none>" : requestedPackNames);
+                bookIdProp.isEmpty() ? "<demoGuide>" : bookIdProp);
+    }
+
+    /**
+     * First non-empty, non-comment line of {@code run/book.txt}. Missing/blank → empty
+     * (demo guide). Comments start with {@code #}.
+     */
+    private static String readBookIdFromFile() {
+        Path path = Path.of(BOOK_ID_FILE);
+        if (!Files.isRegularFile(path)) {
+            LOGGER.info("Smoke test: {} not found; using demo guide", BOOK_ID_FILE);
+            return "";
+        }
+        try {
+            for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
+                if (line == null) {
+                    continue;
+                }
+                String trimmed = line.trim();
+                if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                    continue;
+                }
+                return trimmed;
+            }
+        } catch (IOException e) {
+            LOGGER.warn("Smoke test: failed to read {}: {}", BOOK_ID_FILE, e.toString());
+        }
+        return "";
     }
 
     public static void onClientTick(Minecraft mc) {
@@ -169,44 +197,31 @@ public final class BookClientSmokeTest {
         if (mc.getOverlay() != null) {
             return;
         }
-        if (requestedPackNames.isEmpty()) {
-            beginWorld(mc, now);
-            return;
-        }
 
         PackRepository repo = mc.getResourcePackRepository();
         repo.reload();
 
-        List<String> missing = new ArrayList<>();
-        List<String> resolvedIds = new ArrayList<>();
-        for (String name : requestedPackNames) {
-            String id = resolvePackId(repo, name);
-            if (id == null) {
-                missing.add(name);
-            } else {
-                resolvedIds.add(id);
-            }
-        }
-        if (!missing.isEmpty()) {
-            fail(mc, "resource pack(s) not found in run/resourcepacks: " + missing
-                    + " (available file packs: " + availableFilePackIds(repo) + ")");
+        List<String> filePackIds = availableFilePackIds(repo);
+        if (filePackIds.isEmpty()) {
+            LOGGER.info("Smoke test: no file/* packs under run/resourcepacks; continuing without extras");
+            beginWorld(mc, now);
             return;
         }
 
         Set<String> selected = new LinkedHashSet<>(repo.getSelectedIds());
         boolean changed = false;
-        for (String id : resolvedIds) {
+        for (String id : filePackIds) {
             if (selected.add(id)) {
                 changed = true;
             }
         }
         if (!changed) {
-            LOGGER.info("Smoke test: resource packs already enabled {}", resolvedIds);
+            LOGGER.info("Smoke test: resource packs already enabled {}", filePackIds);
             beginWorld(mc, now);
             return;
         }
 
-        LOGGER.info("Smoke test: enabling resource packs {}", resolvedIds);
+        LOGGER.info("Smoke test: enabling all file resource packs {}", filePackIds);
         repo.setSelected(selected);
         // Do not call Options#updateResourcePacks: it reloads and discards the future.
         // Mirror its options sync, then reload once so we can await completion.
@@ -224,7 +239,7 @@ public final class BookClientSmokeTest {
         }
         mc.options.save();
         if (mc.options.resourcePacks.equals(previous)) {
-            LOGGER.info("Smoke test: options already listed packs {}", resolvedIds);
+            LOGGER.info("Smoke test: options already listed packs {}", filePackIds);
             beginWorld(mc, now);
             return;
         }
@@ -374,39 +389,7 @@ public final class BookClientSmokeTest {
         return mc.screen == null ? "null" : mc.screen.getClass().getName();
     }
 
-    /**
-     * Resolve a user-facing pack name to the repository id used by 1.20.1 folder packs
-     * ({@code file/&lt;name&gt;}). Accepts bare folder/zip names or already-prefixed ids.
-     */
-    private static String resolvePackId(PackRepository repo, String raw) {
-        if (raw == null || raw.isBlank()) {
-            return null;
-        }
-        String name = raw.trim();
-        if (repo.isAvailable(name)) {
-            return name;
-        }
-        if (!name.startsWith(FILE_PACK_PREFIX)) {
-            String withPrefix = FILE_PACK_PREFIX + name;
-            if (repo.isAvailable(withPrefix)) {
-                return withPrefix;
-            }
-        }
-        // Case-insensitive match on file packs (folder name may differ in case on disk).
-        String bare = name.startsWith(FILE_PACK_PREFIX) ? name.substring(FILE_PACK_PREFIX.length()) : name;
-        String bareLower = bare.toLowerCase(Locale.ROOT);
-        for (String id : repo.getAvailableIds()) {
-            if (!id.startsWith(FILE_PACK_PREFIX)) {
-                continue;
-            }
-            String idBare = id.substring(FILE_PACK_PREFIX.length());
-            if (idBare.equalsIgnoreCase(bare) || idBare.toLowerCase(Locale.ROOT).equals(bareLower)) {
-                return id;
-            }
-        }
-        return null;
-    }
-
+    /** All folder/zip packs discovered under {@code run/resourcepacks/} ({@code file/…} ids). */
     private static List<String> availableFilePackIds(PackRepository repo) {
         return repo.getAvailableIds().stream()
                 .filter(id -> id.startsWith(FILE_PACK_PREFIX))
@@ -450,17 +433,5 @@ public final class BookClientSmokeTest {
             LOGGER.warn("Invalid {}='{}', using {}", key, raw, defaultValue);
             return defaultValue;
         }
-    }
-
-    private static List<String> parseCsvProp(String key) {
-        String raw = System.getProperty(key, "");
-        if (raw == null || raw.isBlank()) {
-            return List.of();
-        }
-        return Arrays.stream(raw.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .distinct()
-                .toList();
     }
 }

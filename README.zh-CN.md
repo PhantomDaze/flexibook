@@ -90,25 +90,20 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 自动建/载创造世界 → 打开书 → 渲染 N 秒 → 退出。
 
 ```bash
-# 内置 demo 书（不额外加资源包）
-./gradlew smokeTestAllClients -Pflexibook.smokeTest=true
-
-# 共用额外资源包 + 指定书
-# 1) 把 pack 文件夹或 zip 放到：dev/smoke/resourcepacks/
-# 2) 运行（先 Forge 再 Fabric，串行）：
+# 1) 可选资源包：放到 dev/smoke/resourcepacks/
+# 2) 书 id：编辑 dev/smoke/book.txt（第一行非 # 为 namespace:path；空 = 内置 demo）
+# 3) 运行（先 Forge 再 Fabric，串行）：
 ./gradlew smokeTestAllClients \
   -Pflexibook.smokeTest=true \
-  -Pflexibook.smokeTest.resourcePacks=my_pack \
-  -Pflexibook.smokeTest.bookId=myns:mybook \
   -Pflexibook.smokeTest.readSeconds=10 \
   -Pflexibook.smokeTest.timeoutSeconds=300
 ```
 
-| 属性 | 含义 |
+| 属性 / 文件 | 含义 |
 |---|---|
 | `flexibook.smokeTest` | `true` 开启 |
-| `flexibook.smokeTest.resourcePacks` | `dev/smoke/resourcepacks/` 下的包名（逗号分隔；可带 `file/` 前缀）。`runClient` 前会同步到各节点 `run/resourcepacks/` 并强制启用 |
-| `flexibook.smokeTest.bookId` | `namespace:path`（`assets/.../flexibook/books/`）。空 = 内置 `ExampleBooks.demoGuide()` |
+| `dev/smoke/resourcepacks/` | `runClient` 前同步到各节点 `run/resourcepacks/`，并**自动强制启用**其中所有 `file/*` 包 |
+| `dev/smoke/book.txt` | 同步为 `run/book.txt`。首个非空、非 `#` 行 = 书 `namespace:path`。空 = 内置 `ExampleBooks.demoGuide()` |
 | `flexibook.smokeTest.readSeconds` | 书界面停留秒数（默认 `10`） |
 | `flexibook.smokeTest.timeoutSeconds` | 总超时（默认 `300`） |
 
