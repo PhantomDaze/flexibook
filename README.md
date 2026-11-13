@@ -1,8 +1,8 @@
 # FlexiBook
 
-Adaptive layout books for **Minecraft 26.2 / 26.1.2 (NeoForge)**.
+Adaptive layout books for **Minecraft 1.20.1 → 26.2** on **Forge / NeoForge / Fabric**.
 
-Custom DataComponents + client layout engine + `AdaptiveBookScreen`, keeping a book-like interaction while supporting:
+Custom DataComponents (or legacy NBT on 1.20.1), a client layout engine and `AdaptiveBookScreen`, keeping a book-like interaction while supporting:
 
 - HTML-subset markup (`[h1]` / `[p]` / `[b]` / `[color]` / `[img]` / `[link]` …)
 - Resolve translation keys and reflow pagination when the book opens (current client language)
@@ -22,53 +22,162 @@ Custom DataComponents + client layout engine + `AdaptiveBookScreen`, keeping a b
 | [docs/README.md](./docs/README.md) | Design / plans / todo index |
 | [README.zh-CN.md](./README.zh-CN.md) | **中文说明** |
 
+## Branches
+
+`unified` is the **only development branch**. It contains one shared `src/` tree and **11 version nodes** under `versions/`, preprocessed by Stonecutter.
+
+The old per-JDK branches (`main`, `1.20.1`, `java21`, `java25`) are kept only as history snapshots; do not develop on them.
+
+## Version nodes
+
+Every node compiles the same shared source tree. `mod_version = 1.0.1`.
+
+| Node | Minecraft | Loader | JDK toolchain | Build |
+|------|-----------|--------|---------------|-------|
+| `1.20.1` | 1.20.1 | Forge 47.4.9 | 17 | legacy (Gradle 8.14.3) |
+| `1.20.1-fabric` | 1.20.1 | Fabric 0.19.3 | 17 | legacy (Gradle 8.14.3) |
+| `1.21.1` | 1.21.1 | NeoForge 21.1.244 | 21 | main (Gradle 9.6.1) |
+| `1.21.1-fabric` | 1.21.1 | Fabric 0.19.3 | 21 | main |
+| `1.21.4` | 1.21.4 | NeoForge 21.4.157 | 21 | main |
+| `1.21.4-fabric` | 1.21.4 | Fabric 0.19.3 | 21 | main |
+| `1.21.11-fabric` | 1.21.11 | Fabric 0.19.3 | 21 | main |
+| `26.1.2` | 26.1.2 | NeoForge 26.1.2.93 | 25 | main |
+| `26.1.2-fabric` | 26.1.2 | Fabric 0.19.3 | 25 | main |
+| `26.2` | 26.2 | NeoForge 26.2.0.41-beta | 25 | main |
+| `26.2-fabric` | 26.2 | Fabric 0.19.3 | 25 | main |
+
+### Plan B: two Gradle builds
+
+The 11 nodes are split across two Gradle builds because the loaders demand incompatible Gradle versions:
+
+- **Main build** — Gradle **9.6.1** + ModDevGradle **2.0.143** + Loom **1.17.17**, 9 nodes (`1.21.x`, `26.x`).
+- **Legacy build** — Gradle **8.14.3** + ForgeGradle **6.0.54** + Loom **1.13.6**, 2 nodes (`1.20.1`, `1.20.1-fabric`), driven by `legacy-gradle8/gradlew` with `-c settings.legacy.gradle.kts`.
+
+Root cause: ForgeGradle 6's `MCPRuntime.ExecuteFunction` fails with `project services has been closed` on Gradle 9.6.1 / 8.14.5 — only 8.14.3 still completes the cold artifact generation. Conversely Loom 1.17.17 declares plugin `api-version` 9.5.0 and cannot load on Gradle 8. Hence one shared source tree, two wrappers, two settings files.
+
 ## Requirements
 
-| Target | Loader | JDK (toolchain) | Notes |
-|--------|--------|-----------------|-------|
-| **26.2** | NeoForge 26.2.x (beta) | **25** | DataComponent; `setScreenAndShow` |
-| **26.1.2** | NeoForge 26.1.2.x | **25** | DataComponent; `Identifier` + extract GUI |
+- **JDK 21** for the Gradle daemon of all `1.20.1` / `1.21.x` work.
+- **JDK 25** for the Gradle daemon of all `26.x` work.
+- **JDK 17** toolchain for `1.20.1` nodes (provisioned automatically: `org.gradle.java.installations.auto-download=true`).
+- Gradle wrappers are committed: `./gradlew` = 9.6.1, `legacy-gradle8/gradlew` = 8.14.3.
+- Stonecutter 0.6.2.
 
-- **Gradle 9.6.1** (main build) / **Gradle 8.14.3** (legacy 1.20.1 build), Stonecutter 0.6.x.
-- The Gradle daemon JVM comes from `JAVA_HOME`: JDK 21 for 1.20.1/1.21.x, JDK 25 for 26.x. `scripts/build-all.sh` runs both passes.
+### JDK selection
 
-## Git branches (by JDK toolchain)
+There is **no hard-coded `org.gradle.java.home`**. The Gradle daemon JVM comes from `JAVA_HOME` on every invocation, so pick it per pass:
 
-| Branch | Contents |
-|--------|----------|
-| **`main`** | NeoForge **26.1.2 / 26.2**, JDK 25 toolchain |
+| Work | `JAVA_HOME` | Node toolchain |
+|------|-------------|----------------|
+| `1.20.1*` (legacy build) | JDK 21 | 17 |
+| `1.21.x` (main build, Pass A) | JDK 21 | 21 |
+| `26.x` (main build, Pass B) | JDK 25 | 25 |
 
-The `main` branch is the supported 26.x line. Each version node can be built directly without changing the active version.
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk   # or java-25-openjdk / java-17-openjdk
+```
 
 ## Build
 
 ```bash
-# JAVA_HOME selects the Gradle daemon JVM (JDK21 for 1.20.1/1.21.x, JDK25 for 26.x).
-# Version nodes still compile with their own toolchain (17 / 21 / 25).
-export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+# Single node in the main build (JDK21 for 1.21.x, JDK25 for 26.x)
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./gradlew :1.21.4:build --console=plain
+JAVA_HOME=/usr/lib/jvm/java-25-openjdk ./gradlew :26.1.2:build --console=plain
 
-# --- No version switching required ---
-# Every :version:compileJava / :version:runClient / :version:build runs
-# setupChiseledBuild first, which preprocesses root src/ into
-# versions/<v>/build/chiseledSrc for THAT version only.
+# Whole main build, one pass at a time (build includes tests)
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./gradlew buildPassA --console=plain
+JAVA_HOME=/usr/lib/jvm/java-25-openjdk ./gradlew buildPassB --console=plain
 
-# All version nodes on this branch (jars + tests):
-./gradlew chiseledBuild
-# versions/26.1.2/build/libs/flexibook-1.0.0+26.1.2.jar
-# versions/26.2/build/libs/flexibook-1.0.0+26.2.jar
+# Legacy 1.20.1 nodes: Gradle 8.14.3 wrapper + legacy settings file
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk legacy-gradle8/gradlew \
+    -c settings.legacy.gradle.kts \
+    -Pstonecutter.active=1.20.1-fabric \
+    :1.20.1:build --console=plain --stacktrace
 
-# Single node (works regardless of the default IDE node):
-./gradlew :26.1.2:build
-./gradlew :26.2:build
-./gradlew :26.1.2:runClient
-./gradlew :26.2:runClient
-
-# The source tree is preprocessed automatically for each version node.
-# No active-version switching is required.
+# Everything (11 nodes, three JVM passes)
+bash scripts/build-all.sh          # override JDK21=... / JDK25=... if needed
 ```
 
-`main` branch nodes: `26.1.2`, `26.2` (NeoForge, JDK 25 toolchain).
-Other JDK lines live on `java17` / `java21` branches with the same always-chiseled workflow.
+`./gradlew chiseledBuild` also exists, but it visits every node in **one** daemon; use the pass tasks or `scripts/build-all.sh` when 26.x and 1.21.x must run under different JDKs.
+
+No `Set active` step is required: `build.gradle` preprocesses the shared `src/` into `versions/<node>/build/chiseledSrc` for every node on demand.
+
+### Artifacts
+
+```text
+versions/<node>/build/libs/flexibook-1.0.1+<mc>.jar          # distributable
+versions/<node>/build/libs/flexibook-1.0.1+<mc>-sources.jar  # sources
+```
+
+Loaders differ per node as expected (`META-INF/mods.toml` for Forge, `META-INF/neoforge.mods.toml` for NeoForge, `fabric.mod.json` for Fabric).
+
+## Client smoke tests
+
+The harness launches a real client, enables the smoke resource packs, creates a creative world, opens a book and keeps it open for N seconds. Each run ends with `[FlexiBook AutoSmoke] PASS` or `[FlexiBook AutoSmoke] FAIL: …`; the Gradle smoke tasks fail on the FAIL marker even when the game process exits 0.
+
+```bash
+# All 11 nodes (Pass L → A → B, each pass with its own JAVA_HOME)
+./gradlew smokeAllClients
+
+# One pass at a time
+./gradlew smokeAllClientsPassL   # 1.20.1 Forge/Fabric, legacy-gradle8, JDK21
+./gradlew smokeAllClientsPassA   # 1.21.x five nodes, JDK21
+./gradlew smokeAllClientsPassB   # 26.x four nodes, JDK25
+
+# Compatibility aliases (old IDE configs still work)
+./gradlew autoSmokeClients        # 26.x four nodes
+./gradlew autoSmokeAllClients     # 1.21.x five nodes
+./gradlew smokeTestAllClients     # 1.20.1 two nodes
+```
+
+Timings (defaults) can be overridden; the legacy `flexibook.smokeTest.*` names are still accepted:
+
+```bash
+./gradlew smokeAllClientsPassA \
+    -Pflexibook.autoSmoke.readSeconds=10 \
+    -Pflexibook.autoSmoke.timeoutSeconds=300
+```
+
+### Fixtures (`dev/smoke`)
+
+```text
+dev/smoke/
+├── book.txt                 # book under test
+└── resourcepacks/
+    └── note_pack/           # any folder or .zip here is copied into run/resourcepacks/
+```
+
+- `book.txt`: the **first non-empty, non-`#` line** wins. `demo` means the built-in `ExampleBooks.demoGuide()`; anything else is a registered id such as `note:note11`.
+- Every folder/`.zip` under `dev/smoke/resourcepacks/` is copied into the node's `run/resourcepacks/` and force-enabled by `AutoSmokeClient`.
+- `syncSmokeResourcePacks` / `syncSmokeBookId` generate the per-node copies (`versions/<node>/run/`), and every `runClient` / `runClientAutoSmoke` depends on them.
+
+### `run/options.txt` and accessibility onboarding
+
+Before every client run, `prepareSmokeOptions` ensures the node's `run/options.txt` contains `onboardAccessibility:false`.
+
+Reason: on 1.20.2+ a clean `run/` directory opens the accessibility onboarding screen on first launch instead of `TitleScreen`. The smoke harness waits for `TitleScreen` in `WAIT_TITLE`, so without this line it waits forever. (Verified on 1.21.4: 29 s PASS with the line, timeout without it.)
+
+## CI
+
+| Workflow | Blocking | Contents |
+|----------|----------|----------|
+| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | **yes** (push / PR) | `build-main` (JDK21+25, Gradle 9.6.1, 9 nodes) and `build-legacy` (JDK21 daemon + JDK17 toolchain, Gradle 8.14.3, 2 nodes); uploads the 11 jars |
+| [`.github/workflows/client-smoke.yml`](./.github/workflows/client-smoke.yml) | no (`continue-on-error: true`) | Pass A (1.21.x) via `xvfb-run` + Mesa llvmpipe; Pass B optional on manual dispatch |
+
+**The client-smoke workflow has not been verified on GitHub Actions.** Hosted runners have no GPU; Minecraft under software OpenGL may time out or fail. The workflow carries `continue-on-error: true` and a commented `runs-on: [self-hosted, gpu]` example. Pass L is intentionally excluded (extra ForgeGradle network/cache requirements and a longer legacy build).
+
+CI notes:
+
+- ForgeGradle needs `piston-meta.mojang.com`; NeoForge MDG/NFRT downloads `version_manifest_v2.json` on every `createMinecraftArtifacts`. Hosted CI has network, so this is fine.
+- For offline local runs, warm the ForgeGradle cache and refresh its 1-hour etag TTL:
+  `find ~/.gradle/caches/forge_gradle -type f -exec touch {} +`
+- MDG's manifest download has no offline switch; without network, reuse already-generated artifacts.
+
+## Smoke status and limitations
+
+- **All 11 nodes pass the local client smoke** (Pass L, Pass A, Pass B).
+- The former 1.20.1 Forge `WAIT_TITLE` timeout was caused by a Forge mod-loading warning: without a `pack.mcmeta`, Forge shows `LoadingErrorScreen` ("failed to load a valid ResourcePackInfo") instead of `TitleScreen`. The legacy build now generates `pack.mcmeta` for the 1.20.1 nodes; `AutoSmokeClient` also logs the actual `screen`/`overlay` classes (and, on timeout, the screen's fields) for future diagnosis.
+- The client-smoke CI workflow is experimental and unverified on GitHub Actions (see above).
 
 ## In-game
 
@@ -170,7 +279,7 @@ Escape: `\[` `\]`.
 
 ## v1 scope
 
-**Done:** DataComponent, dual storage (elements or rawMarkup), TagParser, adaptive layout + cache, single-page Screen, Builder, bilingual sample book, search, data-driven themes (default + contain + JSON reload), built-in `flexibook:default` unihex (same ZIP as editor), standalone editor with Unihex preview, pack export/import, `/flexibook give|list`.
+**Done:** DataComponent (legacy NBT on 1.20.1), dual storage (elements or rawMarkup), TagParser, adaptive layout + cache, single-page Screen, Builder, bilingual sample book, search, data-driven themes (default + contain + JSON reload), built-in `flexibook:default` unihex (same ZIP as editor), standalone editor with Unihex preview, pack export/import, `/flexibook give|list`, multi-version build (11 nodes), client smoke harness.
 
 **Not in v1 / simplified:**
 

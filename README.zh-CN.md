@@ -1,8 +1,8 @@
 # FlexiBook
 
-**Minecraft 26.2 / 26.1.2（NeoForge）自适应排版成书模组。**
+**Minecraft 1.20.1 → 26.2 的自适应排版成书模组，支持 Forge / NeoForge / Fabric。**
 
-使用 DataComponent + 客户端布局引擎 + `AdaptiveBookScreen`，在保留“书”交互的前提下支持：
+使用 DataComponent（1.20.1 走传统 NBT）+ 客户端布局引擎 + `AdaptiveBookScreen`，在保留“书”交互的前提下支持：
 
 - HTML 子集标签（`[h1]` / `[p]` / `[b]` / `[color]` / `[img]` / `[link]` …）
 - 打开时按当前语言解析翻译键并重新测量分页
@@ -22,53 +22,162 @@
 | [docs/README.md](./docs/README.md) | 设计 / 计划 / todo 索引 |
 | [README.md](./README.md) | **English** (default) |
 
-## 要求
+## 分支
 
-| 目标 | 加载器 | JDK（toolchain） | 说明 |
-|------|--------|------------------|------|
-| **26.2** | NeoForge 26.2.x（beta） | **25** | DataComponent；`setScreenAndShow` |
-| **26.1.2** | NeoForge 26.1.2.x | **25** | DataComponent；`Identifier` + extract GUI |
+`unified` 是**唯一的开发分支**：一份共享 `src/` + `versions/` 下的 **11 个版本节点**，由 Stonecutter 预处理。
 
-- **Gradle 9.6.1**（主构建）/ **Gradle 8.14.3**（legacy 1.20.1 子构建），Stonecutter 0.6.x。
-- Gradle 守护进程的 JVM 由 `JAVA_HOME` 决定：1.20.1/1.21.x 用 JDK 21，26.x 用 JDK 25；`scripts/build-all.sh` 会跑两趟。
+旧的按 JDK 划分的分支（`main`、`1.20.1`、`java21`、`java25`）仅作为历史快照保留，不要在其上开发。
 
-## Git 分支（按 JDK toolchain）
+## 版本节点
 
-| 分支 | 内容 |
-|------|------|
-| **`main`** | NeoForge **26.1.2 / 26.2**，JDK 25 toolchain |
+所有节点编译同一份共享源码树。`mod_version = 1.0.1`。
 
-`main` 是当前 26.x 主线；每个版本节点都可以直接构建，不需要切换 active 版本。Fabric 26.x 将在此构建架构上继续移植。
+| 节点 | Minecraft | 加载器 | JDK toolchain | 构建 |
+|------|-----------|--------|---------------|------|
+| `1.20.1` | 1.20.1 | Forge 47.4.9 | 17 | legacy（Gradle 8.14.3） |
+| `1.20.1-fabric` | 1.20.1 | Fabric 0.19.3 | 17 | legacy（Gradle 8.14.3） |
+| `1.21.1` | 1.21.1 | NeoForge 21.1.244 | 21 | main（Gradle 9.6.1） |
+| `1.21.1-fabric` | 1.21.1 | Fabric 0.19.3 | 21 | main |
+| `1.21.4` | 1.21.4 | NeoForge 21.4.157 | 21 | main |
+| `1.21.4-fabric` | 1.21.4 | Fabric 0.19.3 | 21 | main |
+| `1.21.11-fabric` | 1.21.11 | Fabric 0.19.3 | 21 | main |
+| `26.1.2` | 26.1.2 | NeoForge 26.1.2.93 | 25 | main |
+| `26.1.2-fabric` | 26.1.2 | Fabric 0.19.3 | 25 | main |
+| `26.2` | 26.2 | NeoForge 26.2.0.41-beta | 25 | main |
+| `26.2-fabric` | 26.2 | Fabric 0.19.3 | 25 | main |
+
+### Plan B：两套 Gradle 构建
+
+11 个节点被拆到两套 Gradle 构建，因为加载器要求的 Gradle 版本互不兼容：
+
+- **主构建** — Gradle **9.6.1** + ModDevGradle **2.0.143** + Loom **1.17.17**，9 个节点（`1.21.x`、`26.x`）。
+- **legacy 构建** — Gradle **8.14.3** + ForgeGradle **6.0.54** + Loom **1.13.6**，2 个节点（`1.20.1`、`1.20.1-fabric`），通过 `legacy-gradle8/gradlew` + `-c settings.legacy.gradle.kts` 驱动。
+
+根因：ForgeGradle 6 的 `MCPRuntime.ExecuteFunction` 在 Gradle 9.6.1 / 8.14.5 上以 `project services has been closed` 失败——只有 8.14.3 还能完成冷的 artifact 生成；反过来 Loom 1.17.17 声明 plugin `api-version` 9.5.0，无法在 Gradle 8 上加载。因此同一份源码树配两个 wrapper、两个 settings 文件。
+
+## 环境要求
+
+- **JDK 21**：所有 `1.20.1` / `1.21.x` 任务的 Gradle daemon。
+- **JDK 25**：所有 `26.x` 任务的 Gradle daemon。
+- **JDK 17**：`1.20.1` 节点的 toolchain（已配置 `org.gradle.java.installations.auto-download=true`，缺省会自动下载）。
+- Gradle wrapper 已入库：`./gradlew` = 9.6.1，`legacy-gradle8/gradlew` = 8.14.3。
+- Stonecutter 0.6.2。
+
+### JDK 选择
+
+项目**没有硬编码 `org.gradle.java.home`**。每次调用时 Gradle daemon 的 JVM 由 `JAVA_HOME` 决定，因此要按 pass 选对：
+
+| 任务 | `JAVA_HOME` | 节点 toolchain |
+|------|-------------|----------------|
+| `1.20.1*`（legacy 构建） | JDK 21 | 17 |
+| `1.21.x`（主构建 Pass A） | JDK 21 | 21 |
+| `26.x`（主构建 Pass B） | JDK 25 | 25 |
+
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk   # 或 java-25-openjdk / java-17-openjdk
+```
 
 ## 构建
 
 ```bash
-# JAVA_HOME 决定 Gradle 守护进程 JVM（1.20.1/1.21.x 用 JDK21，26.x 用 JDK25）。
-# 各版本节点仍用各自 toolchain 编译（17 / 21 / 25）。
-export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+# 主构建单节点（1.21.x 用 JDK21，26.x 用 JDK25）
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./gradlew :1.21.4:build --console=plain
+JAVA_HOME=/usr/lib/jvm/java-25-openjdk ./gradlew :26.1.2:build --console=plain
 
-# --- 无需切换 active ---
-# 任意 :version:compileJava / :version:runClient / :version:build
-# 都会先跑 setupChiseledBuild，把根 src/ 预处理到
-# versions/<v>/build/chiseledSrc（仅针对该版本）。
+# 主构建整趟（build 已包含 test）
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./gradlew buildPassA --console=plain
+JAVA_HOME=/usr/lib/jvm/java-25-openjdk ./gradlew buildPassB --console=plain
 
-# 本分支全部版本（jar + 测试）：
-./gradlew chiseledBuild
-# versions/26.1.2/build/libs/flexibook-1.0.0+26.1.2.jar
-# versions/26.2/build/libs/flexibook-1.0.0+26.2.jar
+# legacy 1.20.1 节点：Gradle 8.14.3 wrapper + legacy settings 文件
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk legacy-gradle8/gradlew \
+    -c settings.legacy.gradle.kts \
+    -Pstonecutter.active=1.20.1-fabric \
+    :1.20.1:build --console=plain --stacktrace
 
-# 单版本（与 stonecutter.active 无关）：
-./gradlew :26.1.2:build
-./gradlew :26.2:build
-./gradlew :26.1.2:runClient
-./gradlew :26.2:runClient
-
-# 源码会自动针对每个版本节点预处理。
-# 不需要切换 active 版本。
+# 全量（11 节点，三趟 JVM）；可覆盖 JDK21=... / JDK25=...
+bash scripts/build-all.sh
 ```
 
-`main` 分支节点：`26.1.2`、`26.2`（NeoForge，JDK 25 toolchain）。
-其它 JDK 线在 `java17` / `java21` 分支，同样始终走 chiseled 源码。
+`./gradlew chiseledBuild` 仍然存在，但它会在**同一个** daemon 里访问所有节点；需要 26.x 与 1.21.x 用不同 JDK 时，请用 pass 任务或 `scripts/build-all.sh`。
+
+无需 `Set active`：`build.gradle` 会按需把共享 `src/` 预处理到 `versions/<node>/build/chiseledSrc`。
+
+### 产物
+
+```text
+versions/<node>/build/libs/flexibook-1.0.1+<mc>.jar          # 可分发
+versions/<node>/build/libs/flexibook-1.0.1+<mc>-sources.jar  # 源码
+```
+
+各节点加载器元数据正确（Forge 为 `META-INF/mods.toml`，NeoForge 为 `META-INF/neoforge.mods.toml`，Fabric 为 `fabric.mod.json`）。
+
+## 客户端 smoke
+
+smoke 会启动真实客户端：启用 smoke 资源包 → 创建创造世界 → 打开一本书并保持 N 秒。每次运行以 `[FlexiBook AutoSmoke] PASS` 或 `[FlexiBook AutoSmoke] FAIL: …` 结束；即使游戏进程以 0 退出，Gradle 任务也会因 FAIL 标记而失败。
+
+```bash
+# 全部 11 节点（Pass L → A → B，每趟使用各自的 JAVA_HOME）
+./gradlew smokeAllClients
+
+# 单趟
+./gradlew smokeAllClientsPassL   # 1.20.1 Forge/Fabric，legacy-gradle8，JDK21
+./gradlew smokeAllClientsPassA   # 1.21.x 五节点，JDK21
+./gradlew smokeAllClientsPassB   # 26.x 四节点，JDK25
+
+# 兼容别名（旧 IDE 配置仍可用）
+./gradlew autoSmokeClients        # 26.x 四节点
+./gradlew autoSmokeAllClients     # 1.21.x 五节点
+./gradlew smokeTestAllClients     # 1.20.1 两节点
+```
+
+默认读 10 秒、超时 300 秒，可覆盖；旧属性名 `flexibook.smokeTest.*` 仍然接受：
+
+```bash
+./gradlew smokeAllClientsPassA \
+    -Pflexibook.autoSmoke.readSeconds=10 \
+    -Pflexibook.autoSmoke.timeoutSeconds=300
+```
+
+### 夹具（`dev/smoke`）
+
+```text
+dev/smoke/
+├── book.txt                 # 被测书
+└── resourcepacks/
+    └── note_pack/           # 这里的任意文件夹或 .zip 会复制到 run/resourcepacks/
+```
+
+- `book.txt`：**第一个非空、非 `#` 行**生效。`demo` 表示内置 `ExampleBooks.demoGuide()`；其它值必须是已注册的 id，例如 `note:note11`。
+- `dev/smoke/resourcepacks/` 下的每个文件夹/`.zip` 都会被复制到节点的 `run/resourcepacks/`，并由 `AutoSmokeClient` 强制启用。
+- `syncSmokeResourcePacks` / `syncSmokeBookId` 负责生成每节点副本（`versions/<node>/run/`）；所有 `runClient` / `runClientAutoSmoke` 都依赖它们。
+
+### `run/options.txt` 与无障碍引导
+
+每次客户端启动前，`prepareSmokeOptions` 会确保节点的 `run/options.txt` 含 `onboardAccessibility:false`。
+
+原因：1.20.2+ 的干净 `run/` 首次启动会先显示无障碍引导屏而不是 `TitleScreen`，smoke 在 `WAIT_TITLE` 等标题屏会一直等下去。实测 1.21.4：加该行后 29 秒 PASS，不加则超时。
+
+## CI
+
+| 工作流 | 阻塞 | 内容 |
+|--------|------|------|
+| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | **是**（push / PR） | `build-main`（JDK21+25，Gradle 9.6.1，9 节点）与 `build-legacy`（JDK21 daemon + JDK17 toolchain，Gradle 8.14.3，2 节点）；上传 11 个 jar |
+| [`.github/workflows/client-smoke.yml`](./.github/workflows/client-smoke.yml) | 否（`continue-on-error: true`） | 通过 `xvfb-run` + Mesa llvmpipe 跑 Pass A（1.21.x）；手动触发时可加 Pass B |
+
+**客户端 smoke 工作流尚未在 GitHub Actions 上验证。** 托管 runner 无 GPU，Minecraft 走软件 OpenGL 很可能超时或失败。该 workflow 带 `continue-on-error: true`，并提供注释掉的 `runs-on: [self-hosted, gpu]` 示例。Pass L 被有意排除（legacy 构建需要额外的 ForgeGradle 网络/缓存，耗时也更长）。
+
+CI 备注：
+
+- ForgeGradle 需要 `piston-meta.mojang.com`；NeoForge MDG/NFRT 每次 `createMinecraftArtifacts` 都会下载 `version_manifest_v2.json`。托管 CI 有网，正常。
+- 本地离线复跑需暖缓存并刷新 ForgeGradle 的 1 小时 etag TTL：
+  `find ~/.gradle/caches/forge_gradle -type f -exec touch {} +`
+- MDG 的 manifest 下载没有离线开关；断网时只能复用已生成的 artifacts。
+
+## smoke 状态与已知限制
+
+- **11 个节点全部通过本机客户端 smoke**（Pass L、Pass A、Pass B）。
+- 此前的 1.20.1 Forge `WAIT_TITLE` 超时根因是 Forge 的 mod 加载警告：缺少 `pack.mcmeta` 时 Forge 会显示 `LoadingErrorScreen`（“failed to load a valid ResourcePackInfo”）而不是 `TitleScreen`。legacy 构建现在为 1.20.1 节点生成 `pack.mcmeta`；`AutoSmokeClient` 也会打印实际的 `screen`/`overlay` 类名（超时时还会反射打印 screen 字段）便于后续排查。
+- 客户端 smoke CI 工作流是实验性的，未在 GitHub Actions 上验证（见上）。
 
 ## 游戏内
 
@@ -170,7 +279,7 @@ ItemStack stack = FlexiBookAPI.createBookFromDefinition(
 
 ## v1 范围与非目标
 
-**已做**：DataComponent、双形态存储（elements 或 rawMarkup）、TagParser、自适应 layout + 缓存、单页 Screen、Builder、示例书双语、搜索、可注册数据驱动主题（默认 + contain 示例 + JSON 重载）、内置书字体 `flexibook:default`（unihex，与编辑器同一 ZIP）、独立编辑器 Unihex 预览、资源包导出/导入、`/flexibook give|list`。
+**已做**：DataComponent（1.20.1 为传统 NBT）、双形态存储（elements 或 rawMarkup）、TagParser、自适应 layout + 缓存、单页 Screen、Builder、示例书双语、搜索、可注册数据驱动主题（默认 + contain 示例 + JSON 重载）、内置书字体 `flexibook:default`（unihex，与编辑器同一 ZIP）、独立编辑器 Unihex 预览、资源包导出/导入、`/flexibook give|list`、多版本构建（11 节点）、客户端 smoke harness。
 
 **未做 / 简化**：
 
