@@ -226,7 +226,7 @@ afterEvaluate {
     def chiseledTestRes = file("${buildDir}/chiseledSrc/test/resources")
 
     // Node-local sources are an explicit extension point for loader/version
-    // adapters (e.g. versions/1.21.4/src/main/java/.../BookScreenFactory.java).
+    // adapters (e.g. versions/<node>/src/main/java/.../SomeClientAdapter.java).
     // Chiseled shared sources come first so a node-local duplicate never wins.
     sourceSets.main.java.setSrcDirs([chiseledMainJava, file('src/main/java')])
     sourceSets.main.resources.setSrcDirs([chiseledMainRes, file('src/main/resources')])
