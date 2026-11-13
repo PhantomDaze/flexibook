@@ -162,8 +162,12 @@ base {
 
 idea {
     module {
-        downloadSources = true
-        downloadJavadoc = true
+        // Loom resolves sources/javadoc artifacts at configuration time when these
+        // are true, turning every CLI invocation into a large download across all
+        // 11 nodes. Opt in only for IDE sync:
+        //   ./gradlew -Pidea.downloadSources=true -Pidea.downloadJavadoc=true
+        downloadSources = (findProperty('idea.downloadSources') ?: 'false').toString().toBoolean()
+        downloadJavadoc = (findProperty('idea.downloadJavadoc') ?: 'false').toString().toBoolean()
     }
 }
 
