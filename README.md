@@ -29,8 +29,8 @@ Custom DataComponents + client layout engine + `AdaptiveBookScreen`, keeping a b
 | **26.2** | NeoForge 26.2.x (beta) | **25** | DataComponent; `setScreenAndShow` |
 | **26.1.2** | NeoForge 26.1.2.x | **25** | DataComponent; `Identifier` + extract GUI |
 
-- **Gradle 8.14.x** (wrapper) + Stonecutter 0.6.x.
-- Gradle itself should run on **JDK 21** (`org.gradle.java.home` is pinned); version nodes compile with toolchain JDK 25.
+- **Gradle 9.6.1** (main build) / **Gradle 8.14.3** (legacy 1.20.1 build), Stonecutter 0.6.x.
+- The Gradle daemon JVM comes from `JAVA_HOME`: JDK 21 for 1.20.1/1.21.x, JDK 25 for 26.x. `scripts/build-all.sh` runs both passes.
 
 ## Git branches (by JDK toolchain)
 
@@ -43,7 +43,7 @@ The `main` branch is the supported 26.x line. Each version node can be built dir
 ## Build
 
 ```bash
-# JDK for Gradle daemon (must be 21 — see gradle.properties org.gradle.java.home).
+# JAVA_HOME selects the Gradle daemon JVM (JDK21 for 1.20.1/1.21.x, JDK25 for 26.x).
 # Version nodes still compile with their own toolchain (17 / 21 / 25).
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 

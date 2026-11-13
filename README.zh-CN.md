@@ -29,8 +29,8 @@
 | **26.2** | NeoForge 26.2.x（beta） | **25** | DataComponent；`setScreenAndShow` |
 | **26.1.2** | NeoForge 26.1.2.x | **25** | DataComponent；`Identifier` + extract GUI |
 
-- **Gradle 8.14.x**（wrapper）+ Stonecutter 0.6.x。
-- Gradle 进程使用 **JDK 21**，版本节点使用 JDK 25 toolchain。
+- **Gradle 9.6.1**（主构建）/ **Gradle 8.14.3**（legacy 1.20.1 子构建），Stonecutter 0.6.x。
+- Gradle 守护进程的 JVM 由 `JAVA_HOME` 决定：1.20.1/1.21.x 用 JDK 21，26.x 用 JDK 25；`scripts/build-all.sh` 会跑两趟。
 
 ## Git 分支（按 JDK toolchain）
 
@@ -43,7 +43,7 @@
 ## 构建
 
 ```bash
-# Gradle 守护进程用 JDK 21（见 gradle.properties 的 org.gradle.java.home）。
+# JAVA_HOME 决定 Gradle 守护进程 JVM（1.20.1/1.21.x 用 JDK21，26.x 用 JDK25）。
 # 各版本节点仍用各自 toolchain 编译（17 / 21 / 25）。
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 
