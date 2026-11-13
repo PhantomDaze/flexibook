@@ -1,0 +1,136 @@
+# FlexiBook 客户端 smoke CI（默认不阻塞）
+#
+# ⚠️ 重要：本 workflow 尚未在 GitHub Actions 上实际验证过。
+#    GitHub 托管 runner 没有 GPU，Minecraft 只能使用 Mesa llvmpipe 软件 OpenGL。
+#    软件渲染很可能在 WAIT_TITLE / WAIT_WORLD 阶段超时（900s 也不一定够），
+#    或直接因 GL 能力不足崩溃。因此本 job 默认 continue-on-error: true，不阻塞 PR。
+#    推荐改用带 GPU 的 self-hosted runner：把 runs-on 换成
+#      runs-on: [self-hosted, gpu]
+#    （文件下方已给出注释掉的示例）。更换后建议把 continue-on-error 改为 false。
+#
+# 只跑主构建的 Pass A（1.21.x 五节点）和可选 Pass B（26.x 四节点）：
+#   - 不跑 Pass L（1.20.1）：legacy 构建需要 ForgeGradle 额外联网/暖缓存，
+#     且 legacy 构建本身更慢，不适合托管 runner 的短 job。
+#   - smoke 任务会用子 Gradle 进程逐个节点启动客户端；本机实测 Pass A ~3 分钟，
+#     软件渲染下请预留更长时间（timeout-minutes: 120）。
+#
+# 触发：
+#   - workflow_dispatch：手动触发，可选 pass-a / pass-a+b。
+#   - workflow_run：build 工作流成功后触发（只跑 Pass A）。
+#     注意：workflow_run 需要本文件存在于默认分支上才会触发；首次上线前
+#     只能手动 workflow_dispatch 验证。
+
+name: client-smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      passes:
+        description: "Which smoke passes to run"
+        required: true
+        default: pass-a
+        type: choice
+        options:
+          - pass-a
+          - pass-a+b
+      read_seconds:
+        description: "Seconds to keep the book open (AutoSmoke readSeconds)"
+        required: false
+        default: "10"
+  workflow_run:
+    workflows: ["build"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: client-smoke-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  client-smoke:
+    name: client smoke (xvfb + llvmpipe)
+    # GitHub 托管 runner：无 GPU，软件渲染，未实测，可能超时。
+    runs-on: ubuntu-latest
+    # 推荐（带 GPU 的 self-hosted runner）：
+    # runs-on: [self-hosted, gpu]
+    timeout-minutes: 120
+    # 默认不阻塞：托管 runner 上软件渲染很可能失败，先观察日志再决定是否收紧。
+    continue-on-error: true
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # workflow_run 要检出触发 build 的那个 commit，而不是默认分支 HEAD。
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
+
+      - name: Set up JDK 21 (Pass A)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up JDK 25 (Pass B)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Install Xvfb + Mesa software OpenGL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgl1-mesa-dri mesa-utils
+
+      - name: Cache Gradle (both Plan B Gradle versions)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-g9.6.1-g8.14.3-main-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', 'legacy-gradle8/gradle/wrapper/gradle-wrapper.properties', '**/*.gradle', '**/*.gradle.kts', 'gradle.properties', 'versions/*/gradle.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-g9.6.1-g8.14.3-main-
+
+      # smokeAllClientsPassA 会为每个节点启动子 Gradle 进程；smokeJdk 会读取
+      # JDK21 环境变量（见 stonecutter.gradle.kts 的 smokeJdk），这里显式指向
+      # setup-java 安装的 JDK21。软件渲染较慢，timeoutSeconds 放大到 900。
+      - name: Smoke Pass A — 1.21.x (JDK21, xvfb + llvmpipe)
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          export JAVA_HOME="$JAVA_HOME_21_X64"
+          export JDK21="$JAVA_HOME_21_X64"
+          READ_SECONDS="${{ github.event.inputs.read_seconds || '10' }}"
+          xvfb-run -a --server-args="-screen 0 1280x720x24" \
+            ./gradlew smokeAllClientsPassA \
+              -Pflexibook.autoSmoke.readSeconds="$READ_SECONDS" \
+              -Pflexibook.autoSmoke.timeoutSeconds=900 \
+              --console=plain
+
+      - name: Smoke Pass B — 26.x (JDK25, xvfb + llvmpipe)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.passes == 'pass-a+b'
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          export JAVA_HOME="$JAVA_HOME_25_X64"
+          export JDK25="$JAVA_HOME_25_X64"
+          READ_SECONDS="${{ github.event.inputs.read_seconds || '10' }}"
+          xvfb-run -a --server-args="-screen 0 1280x720x24" \
+            ./gradlew smokeAllClientsPassB \
+              -Pflexibook.autoSmoke.readSeconds="$READ_SECONDS" \
+              -Pflexibook.autoSmoke.timeoutSeconds=900 \
+              --console=plain
+
+      - name: Upload smoke logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-smoke-logs
+          path: |
+            versions/*/run/logs/*.log
+            versions/*/run/logs/*.log.gz
+          if-no-files-found: ignore

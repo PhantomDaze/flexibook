@@ -1,0 +1,152 @@
+# FlexiBook CI — Plan B 双构建（阻塞型）
+#
+# 结构
+#   build-main    Gradle 9.6.1 + MDG 2.0.143 + Loom 1.17.17 —— 9 个节点
+#                 Pass A: 1.21.x（Gradle daemon JDK21，节点 toolchain 21）
+#                 Pass B: 26.x   （Gradle daemon JDK25，节点 toolchain 25）
+#   build-legacy  Gradle 8.14.3 + ForgeGradle 6.0.54 + Loom 1.13.6 —— 2 个节点
+#                 1.20.1 Forge / 1.20.1 Fabric（daemon JDK21，节点 toolchain 17）
+#
+# 为什么必须拆成两套 Gradle（Plan B）
+#   ForgeGradle 6 的 MCPRuntime.ExecuteFunction 在 Gradle 9.6.1 / 8.14.5 上以
+#   "project services has been closed" 失败，只有 8.14.3 能完成冷 artifact 生成；
+#   反过来 Loom 1.17.17 的 plugin api-version 是 9.5.0，无法在 Gradle 8 上加载。
+#   因此 legacy 节点固定走 legacy-gradle8/ 的 8.14.3 wrapper +
+#   settings.legacy.gradle.kts，主构建保持 9.6.1。
+#
+# 网络依赖（GitHub 托管 runner 有网，正常路径不需要额外处理）
+#   - ForgeGradle 运行时需要 piston-meta.mojang.com（Minecraft 版本元数据）。
+#   - NeoForge MDG / NFRT 每次 createMinecraftArtifacts 都会拉
+#     version_manifest_v2.json（launchermeta.mojang.com），--offline 无效。
+#   本地离线复跑需要暖缓存：ForgeGradle 的 etag 缓存只有 1 小时 TTL，可执行
+#     find ~/.gradle/caches/forge_gradle -type f -exec touch {} +
+#   刷新 mtime；MDG 的 manifest 下载没有离线开关，断网时只能复用已生成的 artifacts。
+#
+# 注意：本 workflow 尚未在 GitHub Actions 上实际运行过（本机无法验证 CI）。
+
+name: build
+
+on:
+  push:
+    branches: [unified, main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GRADLE_MAIN_VERSION: "9.6.1"
+  GRADLE_LEGACY_VERSION: "8.14.3"
+
+jobs:
+  build-main:
+    name: build-main (Gradle 9.6.1, 9 nodes)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 同一次 job 里安装两个 JDK：最后一个会把 JAVA_HOME 指向 JDK25，
+      # 两个都通过 JAVA_HOME_21_X64 / JAVA_HOME_25_X64 暴露给后续 step。
+      - name: Set up JDK 21 (Pass A daemon + toolchain)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up JDK 25 (Pass B daemon + toolchain)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Cache Gradle (both Plan B Gradle versions)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-g9.6.1-g8.14.3-main-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', 'legacy-gradle8/gradle/wrapper/gradle-wrapper.properties', '**/*.gradle', '**/*.gradle.kts', 'gradle.properties', 'versions/*/gradle.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-g9.6.1-g8.14.3-main-
+
+      # buildPassA/B 依赖每个节点的 :build，build 已包含 test（9 节点共 649 tests）。
+      - name: Build + test Pass A — 1.21.x (JDK 21)
+        run: JAVA_HOME="$JAVA_HOME_21_X64" ./gradlew buildPassA --console=plain --stacktrace
+
+      - name: Build + test Pass B — 26.x (JDK 25)
+        run: JAVA_HOME="$JAVA_HOME_25_X64" ./gradlew buildPassB --console=plain --stacktrace
+
+      - name: Upload main jars (9)
+        uses: actions/upload-artifact@v4
+        with:
+          name: flexibook-jars-main
+          path: |
+            versions/*/build/libs/*.jar
+            !versions/*/build/libs/*-sources.jar
+          if-no-files-found: error
+
+  build-legacy:
+    name: build-legacy (Gradle 8.14.3, 1.20.1 x2)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # JDK21 作为 Gradle 8.14.3 daemon；JDK17 是 1.20.1 节点的 toolchain。
+      - name: Set up JDK 21 (Gradle daemon)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up JDK 17 (toolchain)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Cache Gradle (both Plan B Gradle versions)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-g9.6.1-g8.14.3-legacy-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', 'legacy-gradle8/gradle/wrapper/gradle-wrapper.properties', '**/*.gradle', '**/*.gradle.kts', 'gradle.properties', 'versions/*/gradle.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-g9.6.1-g8.14.3-legacy-
+
+      # 两个节点分开跑：build-all.sh 也是按节点独立调用，避免 FG6/Loom 在同一
+      # Gradle invocation 里互相干扰。JAVA_HOME 决定 daemon JVM，toolchain 17 由
+      # org.gradle.java.installations.fromEnv 显式指向 setup-java 安装的 JDK17。
+      - name: Build + test :1.20.1 (Forge, legacy-gradle8, Gradle 8.14.3)
+        run: |
+          JAVA_HOME="$JAVA_HOME_21_X64" ./legacy-gradle8/gradlew \
+            -c settings.legacy.gradle.kts \
+            -Pstonecutter.active=1.20.1-fabric \
+            -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64 \
+            :1.20.1:build --console=plain --stacktrace
+
+      - name: Build + test :1.20.1-fabric (legacy-gradle8, Gradle 8.14.3)
+        run: |
+          JAVA_HOME="$JAVA_HOME_21_X64" ./legacy-gradle8/gradlew \
+            -c settings.legacy.gradle.kts \
+            -Pstonecutter.active=1.20.1-fabric \
+            -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64 \
+            :1.20.1-fabric:build --console=plain --stacktrace
+
+      - name: Upload legacy jars (2)
+        uses: actions/upload-artifact@v4
+        with:
+          name: flexibook-jars-legacy
+          path: |
+            versions/1.20.1/build/libs/*.jar
+            versions/1.20.1-fabric/build/libs/*.jar
+            !**/*-sources.jar
+          if-no-files-found: error
