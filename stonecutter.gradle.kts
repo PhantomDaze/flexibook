@@ -134,12 +134,27 @@ fun runSmokeGradle(
     project.logger.lifecycle("========== $label ==========")
     val pb = ProcessBuilder(command)
     pb.directory(project.rootDir)
-    pb.inheritIO()
+    // inheritIO() would inherit the Gradle daemon's /dev/null fds, hiding all child
+    // output. Pipe the combined stream through the Gradle logger instead.
+    pb.redirectErrorStream(true)
     pb.environment()["JAVA_HOME"] = javaHome
-    val code = pb.start().waitFor()
+    val proc = pb.start()
+    var reportedFail: String? = null
+    proc.inputStream.bufferedReader(Charsets.UTF_8).use { reader ->
+        reader.forEachLine { line ->
+            project.logger.lifecycle(line)
+            if (line.contains("[FlexiBook AutoSmoke] FAIL")) {
+                reportedFail = line
+            }
+        }
+    }
+    val code = proc.waitFor()
     if (code != 0) {
         throw GradleException("$label failed with exit code $code")
     }
+    // The client harness stops the game cleanly on failure (exit code 0), so the
+    // explicit marker is the only reliable failure signal.
+    reportedFail?.let { throw GradleException("$label reported smoke failure: $it") }
     project.logger.lifecycle("========== finished $label ==========")
 }
 
