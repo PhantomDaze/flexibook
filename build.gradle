@@ -129,6 +129,9 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
     expand replaceProperties
     // Templates live on the monorepo root (Stonecutter version nodes sit under versions/<ver>/).
     from rootProject.file('src/main/templates')
+    // pack.mcmeta 只用于 legacy 1.20.1（pack_format 15）；主构建节点版本更高，
+    // 打进错误的 pack_format 会产生资源包警告，这里统一排除。
+    exclude 'pack.mcmeta'
     into layout.buildDirectory.dir('generated/sources/modMetadata')
     if (modLoader == 'forge') {
         exclude '**/neoforge.mods.toml'

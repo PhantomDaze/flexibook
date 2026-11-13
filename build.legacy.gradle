@@ -118,6 +118,8 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
     expand replaceProperties
     // Templates live on the monorepo root (Stonecutter version nodes sit under versions/<ver>/).
     from rootProject.file('src/main/templates')
+    // 1.20.1 Forge 会把缺失 pack.mcmeta 的 mod 资源目录当作加载警告，
+    // 弹 LoadingErrorScreen 挡住 TitleScreen。两个 1.20.1 节点都打包（format 15）。
     into layout.buildDirectory.dir('generated/sources/modMetadata')
     if (modLoader == 'forge') {
         exclude '**/neoforge.mods.toml'
