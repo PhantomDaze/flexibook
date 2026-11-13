@@ -5,7 +5,9 @@ import io.github.PhantomDaze.flexibook.client.screen.AdaptiveBookScreen;
 import io.github.PhantomDaze.flexibook.client.theme.BookDefinitionRegistry;
 import io.github.PhantomDaze.flexibook.data.ExampleBooks;
 import net.minecraft.client.Minecraft;
+//? if >=1.20.2 {
 import net.minecraft.client.gui.screens.GenericMessageScreen;
+//?}
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.gui.screens.ProgressScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,6 +15,9 @@ import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.Difficulty;
+//? if <1.20.2 {
+/*import net.minecraft.world.level.GameRules;
+*///?}
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelSettings;
@@ -66,6 +71,8 @@ public final class AutoSmokeClient {
     private static final String PROP_PACKS_DIR = "flexibook.autoSmoke.resourcePacksDir";
     private static final String PROP_SMOKE_DIR = "flexibook.autoSmoke.dir";
     private static final String WORLD_ID = "flexibook_auto_smoke";
+    // Used by the pre-1.21.4 WorldOptions constructor.
+    private static final long WORLD_SEED = 1L;
     private static final String DEFAULT_BOOK = "demo";
     private static final String BOOK_FILE_NAME = "book.txt";
 
@@ -203,19 +210,38 @@ public final class AutoSmokeClient {
                 LevelSettings settings = new LevelSettings(
                         "FlexiBook Smoke",
                         GameType.CREATIVE,
+                        //? if >=1.21.4 {
                         new LevelSettings.DifficultySettings(Difficulty.PEACEFUL, false, false),
+                        //?} else {
+                        /*false,
+                        Difficulty.PEACEFUL,
+                        *///?}
                         true,
+                        //? if <1.20.2 {
+                        /*new GameRules(),
+                        *///?}
                         WorldDataConfiguration.DEFAULT);
                 mc.createWorldOpenFlows().createFreshLevel(
                         WORLD_ID,
                         settings,
+                        //? if >=1.21.4 {
                         WorldOptions.testWorldWithRandomSeed(),
+                        //?} else {
+                        /*new WorldOptions(WORLD_SEED, false, false),
+                        *///?}
                         //? if >=26.2 {
-                        /*WorldPresets::createTestWorldDimensions,
+                        /*WorldPresets::createTestWorldDimensions
                         *///?} else {
-                        WorldPresets::createFlatWorldDimensions,
+                        //? if >=1.21.4 {
+                        WorldPresets::createFlatWorldDimensions
+                        //?} else {
+                        /*WorldPresets::createNormalWorldDimensions
+                        *///?}
                         //?}
-                        new TitleScreen());
+                        //? if >=1.20.2 {
+                        , new TitleScreen()
+                        //?}
+                        );
                 createRequested = true;
                 phase = Phase.WAIT_WORLD;
                 LOGGER.info("createFreshLevel requested");
@@ -235,7 +261,11 @@ public final class AutoSmokeClient {
                     phase = Phase.OPEN_BOOK;
                     LOGGER.info(
                             "in world as {} → opening book '{}'",
+                            //? if >=1.21.11 {
                             mc.player.getGameProfile().name(),
+                            //?} else {
+                            /*mc.player.getGameProfile().getName(),
+                            *///?}
                             readBookSpec());
                 }
             }
@@ -249,7 +279,11 @@ public final class AutoSmokeClient {
                     return; // fail() already called
                 }
                 mc.player.getInventory().setItem(0, book);
+                //? if >=1.21.11 {
                 mc.player.getInventory().setSelectedSlot(0);
+                //?} else {
+                /*mc.player.getInventory().selected = 0;
+                *///?}
                 // open via the same path as item use
                 ClientModEvents.openBook(mc.player.getMainHandItem().isEmpty()
                         ? book
@@ -511,7 +545,10 @@ public final class AutoSmokeClient {
     private static boolean isLoadingScreen(Screen screen) {
         return screen instanceof LevelLoadingScreen
                 || screen instanceof ProgressScreen
-                || screen instanceof GenericMessageScreen;
+                //? if >=1.20.2 {
+                || screen instanceof GenericMessageScreen
+                //?}
+                ;
     }
 
     private static Screen currentScreen(Minecraft mc) {

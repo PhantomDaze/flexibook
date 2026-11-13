@@ -52,11 +52,11 @@ public final class ModItems {
     public static void register() {
         var id = FlexiBookIds.of(FlexiBookMod.MOD_ID, "flexi_book");
         var key = ResourceKey.create(Registries.ITEM, id);
-        // MC 26+ requires Properties#setId before Item construction.
+        // Version-specific properties: setId on MC >=1.21.4 (see FabricItemProperties).
         FLEXI_BOOK = Registry.register(
                 BuiltInRegistries.ITEM,
                 key,
-                new FlexiBookItem(new Item.Properties().stacksTo(1).setId(key)));
+                new FlexiBookItem(FabricItemProperties.create()));
     }
 
     public static FlexiBookItem book() {
