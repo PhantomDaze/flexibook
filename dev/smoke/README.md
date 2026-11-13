@@ -22,6 +22,11 @@ the harness at another directory with `-Dflexibook.autoSmoke.dir=<dir>` /
 `.git/info/exclude`. Generated per-node copies live in `versions/*/run/` and
 are already ignored.
 
+The per-node `run/options.txt` is prepared automatically before every client
+run: `prepareSmokeOptions` ensures `onboardAccessibility:false`, because a
+fresh run directory otherwise opens the 1.20.2+ accessibility onboarding screen
+and the smoke harness would wait forever for the title screen.
+
 ## Gradle entry points
 
 - `./gradlew smokeAllClients` — all 11 nodes, three JVM passes.

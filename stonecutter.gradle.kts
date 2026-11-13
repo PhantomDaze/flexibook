@@ -330,10 +330,27 @@ smokeSyncNodes.forEach { nodeName ->
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
             onlyIf { sharedSmokeBookFile.asFile.isFile }
         }
+        // 1.20.2+ 首次启动会先显示无障碍引导屏幕（不是 TitleScreen），
+        // AutoSmokeClient 的 WAIT_TITLE 会一直等下去。干净 clone 的 run/ 没有
+        // options.txt，所以这里在每次客户端启动前确保该项关闭。
+        val smokeOptions = nodeProject.tasks.register("prepareSmokeOptions") {
+            group = "verification"
+            description = "Ensure :$nodeName's run/options.txt skips the first-launch accessibility onboarding"
+            outputs.upToDateWhen { false }
+            doLast {
+                val options = nodeProject.layout.projectDirectory.dir("run").file("options.txt").asFile
+                options.parentFile.mkdirs()
+                val key = "onboardAccessibility:false"
+                val lines = if (options.isFile) options.readLines().toMutableList() else mutableListOf()
+                val idx = lines.indexOfFirst { it.trim().startsWith("onboardAccessibility:") }
+                if (idx < 0) lines.add(key) else lines[idx] = key
+                options.writeText(lines.joinToString("\n").trimEnd() + "\n")
+            }
+        }
         nodeProject.tasks.matching {
             it.name == "runClient" || it.name == "runClientAutoSmoke"
         }.configureEach {
-            dependsOn(syncPacks, syncBook)
+            dependsOn(syncPacks, syncBook, smokeOptions)
         }
     }
 }
