@@ -27,18 +27,17 @@ minecraft {
 
         client {
             property 'forge.enabledGameTestNamespaces', modId
-        }
-
-        // Auto smoke: same flexibook.autoSmoke contract as fabric/neoforge.
-        // Ported from the 1.20.1 smoke run (da16b22) onto the unified property naming.
-        clientAutoSmoke {
-            client()
-            property 'forge.enabledGameTestNamespaces', modId
-            property 'flexibook.autoSmoke', 'true'
-            property 'flexibook.autoSmoke.readSeconds', '10'
-            property 'flexibook.autoSmoke.timeoutSeconds', '180'
-            property 'flexibook.autoSmoke.dir', rootProject.file('dev/smoke').absolutePath
-            property 'flexibook.autoSmoke.resourcePacksDir', rootProject.file('dev/smoke/resourcepacks').absolutePath
+            // opt-in client smoke: -Pflexibook.autoSmoke=true
+            // FG6 RunConfig has no custom run types, so the forge node reuses runClient.
+            if (project.findProperty('flexibook.autoSmoke')?.toString() == 'true') {
+                property 'flexibook.autoSmoke', 'true'
+                property 'flexibook.autoSmoke.readSeconds',
+                        (project.findProperty('flexibook.autoSmoke.readSeconds') ?: '10').toString()
+                property 'flexibook.autoSmoke.timeoutSeconds',
+                        (project.findProperty('flexibook.autoSmoke.timeoutSeconds') ?: '180').toString()
+                property 'flexibook.autoSmoke.dir', rootProject.file('dev/smoke').absolutePath
+                property 'flexibook.autoSmoke.resourcePacksDir', rootProject.file('dev/smoke/resourcepacks').absolutePath
+            }
         }
 
         server {
