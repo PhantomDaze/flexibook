@@ -6,6 +6,21 @@ def mc = project.findProperty('minecraft_version') ?: project.ext.minecraft_vers
 def fg = project.findProperty('forge_version') ?: project.ext.forge_version
 def modId = project.findProperty('mod_id') ?: project.ext.mod_id
 
+// Smoke switches. Prefer the unified flexibook.autoSmoke* names; keep accepting
+// the old flexibook.smokeTest* names. Smoke aggregate tasks enable it implicitly
+// so a single `smokeAllClients` invocation needs no extra -P flags.
+def smokeProp = { String unified, String legacy, String fallback ->
+    def v = project.findProperty(unified) ?: project.findProperty(legacy)
+    return v == null ? fallback : v.toString()
+}
+def smokeExplicit = project.findProperty('flexibook.autoSmoke') ?: project.findProperty('flexibook.smokeTest')
+def smokeTaskNames = ['smokeAllClients', 'smokeAllClientsPassL', 'smokeTestAllClients']
+def smokeEnabled = smokeExplicit != null
+        ? smokeExplicit.toString() == 'true'
+        : gradle.startParameter.taskNames.any { it.substring(it.lastIndexOf(':') + 1) in smokeTaskNames }
+def smokeReadSeconds = smokeProp('flexibook.autoSmoke.readSeconds', 'flexibook.smokeTest.readSeconds', '10')
+def smokeTimeoutSeconds = smokeProp('flexibook.autoSmoke.timeoutSeconds', 'flexibook.smokeTest.timeoutSeconds', '300')
+
 // Official mappings first — Parchment on FG6 needs the parchment plugin + specific channel setup.
 // Names may be slightly less readable on 1.20.1; functional compile is the goal.
 minecraft {
@@ -27,15 +42,16 @@ minecraft {
 
         client {
             property 'forge.enabledGameTestNamespaces', modId
-            // Opt-in client smoke: -Pflexibook.smokeTest=true
-            // Book id: root dev/smoke/book.txt → run/book.txt (first non-# line).
-            // Packs: root dev/smoke/resourcepacks/ → run/resourcepacks/ (all file/* auto-enabled).
-            if (project.findProperty('flexibook.smokeTest')?.toString() == 'true') {
-                property 'flexibook.smokeTest', 'true'
-                property 'flexibook.smokeTest.readSeconds',
-                        (project.findProperty('flexibook.smokeTest.readSeconds') ?: '10').toString()
-                property 'flexibook.smokeTest.timeoutSeconds',
-                        (project.findProperty('flexibook.smokeTest.timeoutSeconds') ?: '300').toString()
+            // Client smoke: -Pflexibook.autoSmoke=true (or the legacy -Pflexibook.smokeTest=true),
+            // or any smoke aggregate task (smokeAllClients / smokeAllClientsPassL / smokeTestAllClients).
+            // The shared source AutoSmokeClient only understands flexibook.autoSmoke*.
+            if (smokeEnabled) {
+                property 'flexibook.autoSmoke', 'true'
+                property 'flexibook.autoSmoke.readSeconds', smokeReadSeconds
+                property 'flexibook.autoSmoke.timeoutSeconds', smokeTimeoutSeconds
+                property 'flexibook.autoSmoke.dir', rootProject.file('dev/smoke').absolutePath
+                property 'flexibook.autoSmoke.resourcePacksDir',
+                        rootProject.file('dev/smoke/resourcepacks').absolutePath
             }
         }
 

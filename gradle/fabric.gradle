@@ -5,6 +5,9 @@ def mc = project.findProperty('minecraft_version') ?: project.ext.minecraft_vers
 def loaderVer = project.findProperty('loader_version') ?: project.ext.loader_version
 def fabricApi = project.findProperty('fabric_api_version') ?: project.ext.fabric_api_version
 def modId = project.findProperty('mod_id') ?: project.ext.mod_id
+// Smoke timings can be overridden from the CLI (smokeAllClients forwards them).
+def smokeReadSeconds = (project.findProperty('flexibook.autoSmoke.readSeconds') ?: '10').toString()
+def smokeTimeoutSeconds = (project.findProperty('flexibook.autoSmoke.timeoutSeconds') ?: '180').toString()
 def javaVer = project.ext.javaVer as Integer
 // MC 26.x ships Mojang-named (unobfuscated); use Loom NoRemap plugin path.
 def unobfuscatedMc = mc.toString().startsWith('26.')
@@ -63,8 +66,8 @@ loom {
             ideConfigGenerated true
             runDir 'run'
             property 'flexibook.autoSmoke', 'true'
-            property 'flexibook.autoSmoke.readSeconds', '10'
-            property 'flexibook.autoSmoke.timeoutSeconds', '180'
+            property 'flexibook.autoSmoke.readSeconds', smokeReadSeconds
+            property 'flexibook.autoSmoke.timeoutSeconds', smokeTimeoutSeconds
             property 'flexibook.autoSmoke.dir', rootProject.file('dev/smoke').absolutePath
             property 'flexibook.autoSmoke.resourcePacksDir', rootProject.file('dev/smoke/resourcepacks').absolutePath
         }

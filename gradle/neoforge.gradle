@@ -7,6 +7,9 @@ def parchMc = project.findProperty('parchment_minecraft_version')
 def parchVer = project.findProperty('parchment_mappings_version')
         ?: (project.ext.has('parchment_mappings_version') ? project.ext.parchment_mappings_version : null)
 def modId = project.findProperty('mod_id') ?: project.ext.mod_id
+// Smoke timings can be overridden from the CLI (smokeAllClients forwards them).
+def smokeReadSeconds = (project.findProperty('flexibook.autoSmoke.readSeconds') ?: '10').toString()
+def smokeTimeoutSeconds = (project.findProperty('flexibook.autoSmoke.timeoutSeconds') ?: '180').toString()
 
 neoForge {
     version = neoVer
@@ -37,8 +40,8 @@ neoForge {
             systemProperty 'fml.earlyWindowControl', 'false'
             systemProperty 'fml.earlyProgressWindow', 'false'
             systemProperty 'flexibook.autoSmoke', 'true'
-            systemProperty 'flexibook.autoSmoke.readSeconds', '10'
-            systemProperty 'flexibook.autoSmoke.timeoutSeconds', '180'
+            systemProperty 'flexibook.autoSmoke.readSeconds', smokeReadSeconds
+            systemProperty 'flexibook.autoSmoke.timeoutSeconds', smokeTimeoutSeconds
             systemProperty 'flexibook.autoSmoke.dir', rootProject.file('dev/smoke').absolutePath
             systemProperty 'flexibook.autoSmoke.resourcePacksDir', rootProject.file('dev/smoke/resourcepacks').absolutePath
             jvmArgument '-Dfml.earlyWindowControl=false'
