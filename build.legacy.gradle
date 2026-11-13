@@ -1,0 +1,216 @@
+// Legacy central build script for the 1.20.1 nodes (settings.legacy.gradle.kts).
+// Pinned to Gradle 8.14.5 via legacy-gradle8/gradlew: ForgeGradle 6 cannot run
+// on Gradle 9 (MCPRuntime touches closed project services at execution time).
+// Forge/Fabric 1.20.1 version nodes use the shared 17 toolchain.
+
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        // Always on classpath; only applied when mod_loader=forge
+        classpath 'net.minecraftforge.gradle:ForgeGradle:6.0.54'
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'idea'
+    id 'dev.kikugie.stonecutter'
+    // Applied only when mod_loader=fabric.
+    id 'fabric-loom' apply false
+}
+
+// Load versions/<ver>/gradle.properties into project.ext
+def versionPropsFile = file('gradle.properties')
+if (versionPropsFile.isFile()) {
+    versionPropsFile.eachLine('UTF-8') { raw ->
+        def line = raw.trim()
+        if (line.isEmpty() || line.startsWith('#') || !line.contains('=')) return
+        def idx = line.indexOf('=')
+        def key = line.substring(0, idx).trim()
+        def value = line.substring(idx + 1).trim()
+        if (!key.isEmpty()) {
+            project.ext.set(key, value)
+        }
+    }
+}
+
+ext.projProp = { String name ->
+    def v = project.findProperty(name)
+    if (v == null && project.ext.has(name)) v = project.ext.get(name)
+    if (v == null && rootProject.hasProperty(name)) v = rootProject.property(name)
+    if (v == null) {
+        throw new GradleException("$name missing (project=${project.path} dir=${project.projectDir})")
+    }
+    return v.toString()
+}
+
+['mod_id', 'mod_name', 'mod_license', 'mod_version', 'mod_group_id', 'mod_authors', 'mod_description'].each { k ->
+    if (!project.ext.has(k) && rootProject.hasProperty(k)) {
+        project.ext.set(k, rootProject.property(k).toString())
+    }
+}
+
+def modLoader = projProp('mod_loader')
+def mcVersion = projProp('minecraft_version')
+def javaVer = Integer.parseInt(projProp('java_version'))
+project.ext.modLoader = modLoader
+project.ext.mcVersion = mcVersion
+project.ext.javaVer = javaVer
+
+group = projProp('mod_group_id')
+version = "${projProp('mod_version')}+${mcVersion}"
+
+if (modLoader == 'forge') {
+    apply plugin: 'net.minecraftforge.gradle'
+} else if (modLoader == 'fabric') {
+    apply plugin: 'fabric-loom'
+} else {
+    throw new GradleException("Unknown mod_loader='$modLoader'")
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.minecraftforge.net' }
+    maven { url = 'https://maven.parchmentmc.org' }
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(javaVer)
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    // Shared sources (main base) use pattern-matching switch on sealed types,
+    // which is preview on Java 17. TODO(source-port): replace with instanceof
+    // so released 1.20.1 jars do not need --enable-preview at runtime.
+    if (javaVer < 21) {
+        options.compilerArgs += ['--enable-preview']
+    }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    if (javaVer < 21) {
+        jvmArgs += ['--enable-preview']
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+def javaVerStr = projProp('java_version')
+def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    def replaceProperties = [
+            minecraft_version      : mcVersion,
+            minecraft_version_range: projProp('minecraft_version_range'),
+            forge_version          : project.ext.has('forge_version') ? project.ext.forge_version : '',
+            loader_version_range   : projProp('loader_version_range'),
+            mod_id                 : projProp('mod_id'),
+            mod_name               : projProp('mod_name'),
+            mod_license            : projProp('mod_license'),
+            mod_version            : projProp('mod_version'),
+            mod_loader             : modLoader,
+            java_version           : javaVerStr,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    // Templates live on the monorepo root (Stonecutter version nodes sit under versions/<ver>/).
+    from rootProject.file('src/main/templates')
+    into layout.buildDirectory.dir('generated/sources/modMetadata')
+    if (modLoader == 'forge') {
+        exclude '**/neoforge.mods.toml'
+        exclude '**/fabric.mod.json'
+    } else if (modLoader == 'fabric') {
+        exclude '**/mods.toml'
+        exclude '**/neoforge.mods.toml'
+        exclude '**/META-INF/**'
+    }
+}
+
+// Stonecutter also injects root src trees; pin every source root to the
+// per-node chiseled output so processResources never sees duplicate assets.
+sourceSets.main.java.setSrcDirs([layout.buildDirectory.dir('chiseledSrc/main/java')])
+sourceSets.test.java.setSrcDirs([layout.buildDirectory.dir('chiseledSrc/test/java')])
+sourceSets.test.resources.setSrcDirs([layout.buildDirectory.dir('chiseledSrc/test/resources')])
+sourceSets.main.resources.setSrcDirs([
+        layout.buildDirectory.dir('chiseledSrc/main/resources'),
+        'src/generated/resources',
+        generateModMetadata,
+])
+sourceSets.main.resources {
+    exclude('**/*.bbmodel')
+    exclude('src/generated/**/.cache')
+}
+
+base {
+    archivesName = projProp('mod_id')
+}
+
+idea {
+    module {
+        // Opt in for IDE sync; default off avoids configuration-time downloads.
+        downloadSources = (findProperty('idea.downloadSources') ?: 'false').toString().toBoolean()
+        downloadJavadoc = (findProperty('idea.downloadJavadoc') ?: 'false').toString().toBoolean()
+    }
+}
+
+// Stonecutter 0.6: //? if forge / //? if fabric
+// MC 1.21.11+ renamed ResourceLocation → Identifier (and ResourceLocationArgument → IdentifierArgument).
+stonecutter {
+    consts(modLoader, 'forge', 'neoforge', 'fabric')
+    def isIdentifier = eval(current.version, '>=1.21.11')
+    replacement(direction: isIdentifier, source: 'net.minecraft.commands.arguments.ResourceLocationArgument', target: 'net.minecraft.commands.arguments.IdentifierArgument', phase: 'FIRST')
+    replacement(direction: isIdentifier, source: 'net.minecraft.resources.ResourceLocation', target: 'net.minecraft.resources.Identifier', phase: 'FIRST')
+    replacement(direction: isIdentifier, source: 'ResourceLocationArgument', target: 'IdentifierArgument', phase: 'LAST')
+    replacement(direction: isIdentifier, source: 'ResourceLocation', target: 'Identifier', phase: 'LAST')
+}
+
+if (modLoader == 'forge') {
+    apply from: rootProject.file('legacy-gradle8/gradle/forge.gradle')
+} else if (modLoader == 'fabric') {
+    apply from: rootProject.file('legacy-gradle8/gradle/fabric.gradle')
+}
+
+// The legacy build relies on Stonecutter's per-node preprocessing. Wire it like
+// the main build so `:1.20.1` (non-active node) also compiles chiseled sources.
+afterEvaluate {
+    def setupChiseled = tasks.named('setupChiseledBuild')
+    tasks.withType(JavaCompile).configureEach { dependsOn(setupChiseled) }
+    tasks.withType(ProcessResources).configureEach { t ->
+        if (t.name != 'generateModMetadata') {
+            t.dependsOn(setupChiseled)
+        }
+    }
+    tasks.matching { t ->
+        def n = t.name
+        n.startsWith('run') || n.startsWith('prepare') || n.contains('Client') || n.contains('Server')
+    }.configureEach { t ->
+        try {
+            t.dependsOn(setupChiseled)
+        } catch (Throwable ignored) {
+        }
+    }
+
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = "file://${project.projectDir}/repo"
+        }
+    }
+}

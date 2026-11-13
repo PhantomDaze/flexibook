@@ -3,7 +3,10 @@ plugins {
 }
 
 // Default IDE/configuration node only; build tasks preprocess each node independently.
-stonecutter active "26.1.2"
+// The legacy 1.20.1 build (-c settings.legacy.gradle.kts) has a different node set,
+// so its driver passes -Pstonecutter.active=1.20.1-fabric.
+val activeNode = providers.gradleProperty("stonecutter.active").orNull ?: "26.1.2"
+stonecutter active activeNode
 
 // Chiseled multi-version build (SC 0.6 API).
 // NOTE: chiseledBuild visits every node in ONE Gradle daemon. That is fine for the
@@ -18,14 +21,13 @@ stonecutter.registerChiseled(tasks.register("chiseledBuild", stonecutter.chisele
 //   JAVA_HOME=<jdk21> ./gradlew buildPassA
 //   JAVA_HOME=<jdk25> ./gradlew buildPassB
 val passANodes = listOf(
-    "1.20.1", "1.20.1-fabric", "1.21.1", "1.21.1-fabric",
-    "1.21.4", "1.21.4-fabric", "1.21.11-fabric"
+    "1.21.1", "1.21.1-fabric", "1.21.4", "1.21.4-fabric", "1.21.11-fabric"
 )
 val passBNodes = listOf("26.1.2", "26.1.2-fabric", "26.2", "26.2-fabric")
 
 tasks.register("buildPassA") {
     group = "project"
-    description = "Build the 7 Java 17/21 nodes (run with JAVA_HOME=<jdk21>)"
+    description = "Build the 5 Java 21 nodes (run with JAVA_HOME=<jdk21>; 1.20.1 lives in legacy-gradle8)"
     dependsOn(passANodes.map { ":$it:build" })
 }
 tasks.register("buildPassB") {
