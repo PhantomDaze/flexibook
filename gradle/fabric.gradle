@@ -6,8 +6,13 @@ def loaderVer = project.findProperty('loader_version') ?: project.ext.loader_ver
 def fabricApi = project.findProperty('fabric_api_version') ?: project.ext.fabric_api_version
 def modId = project.findProperty('mod_id') ?: project.ext.mod_id
 // Smoke timings can be overridden from the CLI (smokeAllClients forwards them).
-def smokeReadSeconds = (project.findProperty('flexibook.autoSmoke.readSeconds') ?: '10').toString()
-def smokeTimeoutSeconds = (project.findProperty('flexibook.autoSmoke.timeoutSeconds') ?: '180').toString()
+// 统一属性名 flexibook.autoSmoke*，同时接受旧名 flexibook.smokeTest*。
+def smokeProp = { String unified, String legacy, String fallback ->
+    def v = project.findProperty(unified) ?: project.findProperty(legacy)
+    return v == null ? fallback : v.toString()
+}
+def smokeReadSeconds = smokeProp('flexibook.autoSmoke.readSeconds', 'flexibook.smokeTest.readSeconds', '10')
+def smokeTimeoutSeconds = smokeProp('flexibook.autoSmoke.timeoutSeconds', 'flexibook.smokeTest.timeoutSeconds', '300')
 def javaVer = project.ext.javaVer as Integer
 // MC 26.x ships Mojang-named (unobfuscated); use Loom NoRemap plugin path.
 def unobfuscatedMc = mc.toString().startsWith('26.')
