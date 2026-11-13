@@ -10,6 +10,11 @@
       </option>
       <option name="taskNames">
         <list>
+          <option value=":1.21.1:test" />
+          <option value=":1.21.1-fabric:test" />
+          <option value=":1.21.4:test" />
+          <option value=":1.21.4-fabric:test" />
+          <option value=":1.21.11-fabric:test" />
           <option value=":26.1.2:test" />
           <option value=":26.1.2-fabric:test" />
           <option value=":26.2:test" />

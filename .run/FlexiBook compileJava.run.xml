@@ -10,6 +10,11 @@
       </option>
       <option name="taskNames">
         <list>
+          <option value=":1.21.1:compileJava" />
+          <option value=":1.21.1-fabric:compileJava" />
+          <option value=":1.21.4:compileJava" />
+          <option value=":1.21.4-fabric:compileJava" />
+          <option value=":1.21.11-fabric:compileJava" />
           <option value=":26.1.2:compileJava" />
           <option value=":26.1.2-fabric:compileJava" />
           <option value=":26.2:compileJava" />
