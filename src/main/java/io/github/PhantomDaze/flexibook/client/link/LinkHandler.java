@@ -25,33 +25,32 @@ public final class LinkHandler {
 
     public static void handle(LinkAction action, Screen parent) {
         Minecraft mc = Minecraft.getInstance();
-        switch (action) {
-            case LinkAction.None ignored -> {
-            }
-            case LinkAction.CommandId cmd -> {
-                Consumer<LinkActionRegistry.ActionContext> handler = LinkActionRegistry.get(cmd.id());
-                if (handler == null) {
-                    if (mc.player != null) {
-                        //? if >=26.1.2 {
-                        mc.player.sendOverlayMessage(Component.translatable("flexibook.link.unknown_action", cmd.id()));
-                        //?} else {
-                        /*mc.player.displayClientMessage(Component.translatable("flexibook.link.unknown_action", cmd.id()), true);
-                        *///?}
-                    }
-                    FlexiBookMod.LOGGER.warn("Blocked unregistered FlexiBook command action: {}", cmd.id());
-                    return;
+        if (action instanceof LinkAction.None) {
+            // no-op
+        } else if (action instanceof LinkAction.CommandId cmd) {
+            Consumer<LinkActionRegistry.ActionContext> handler = LinkActionRegistry.get(cmd.id());
+            if (handler == null) {
+                if (mc.player != null) {
+                    //? if >=26.1.2 {
+                    mc.player.sendOverlayMessage(Component.translatable("flexibook.link.unknown_action", cmd.id()));
+                    //?} else {
+                    /*mc.player.displayClientMessage(Component.translatable("flexibook.link.unknown_action", cmd.id()), true);
+                    *///?}
                 }
-                handler.accept((key, args) -> {
-                    if (mc.player != null) {
-                        //? if >=26.1.2 {
-                        mc.player.sendSystemMessage(Component.translatable(key, args));
-                        //?} else {
-                        /*mc.player.displayClientMessage(Component.translatable(key, args), false);
-                        *///?}
-                    }
-                });
+                FlexiBookMod.LOGGER.warn("Blocked unregistered FlexiBook command action: {}", cmd.id());
+                return;
             }
-            case LinkAction.Url url -> openUrl(mc, parent, url.url());
+            handler.accept((key, args) -> {
+                if (mc.player != null) {
+                    //? if >=26.1.2 {
+                    mc.player.sendSystemMessage(Component.translatable(key, args));
+                    //?} else {
+                    /*mc.player.displayClientMessage(Component.translatable(key, args), false);
+                    *///?}
+                }
+            });
+        } else if (action instanceof LinkAction.Url url) {
+            openUrl(mc, parent, url.url());
         }
     }
 

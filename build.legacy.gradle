@@ -87,19 +87,12 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    // Shared sources (main base) use pattern-matching switch on sealed types,
-    // which is preview on Java 17. TODO(source-port): replace with instanceof
-    // so released 1.20.1 jars do not need --enable-preview at runtime.
-    if (javaVer < 21) {
-        options.compilerArgs += ['--enable-preview']
-    }
+    // Shared sources use only finalized Java 17 syntax (no preview features),
+    // so released 1.20.1 jars run on a stock JRE without --enable-preview.
 }
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
-    if (javaVer < 21) {
-        jvmArgs += ['--enable-preview']
-    }
 }
 
 dependencies {

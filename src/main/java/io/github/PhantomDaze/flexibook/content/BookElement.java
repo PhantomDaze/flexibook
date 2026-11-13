@@ -98,29 +98,27 @@ public sealed interface BookElement permits
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, BookElement value) {
-            switch (value) {
-                case Heading heading -> {
-                    buf.writeByte(1);
-                    Heading.STREAM_CODEC.encode(buf, heading);
-                }
-                case Paragraph paragraph -> {
-                    buf.writeByte(2);
-                    Paragraph.STREAM_CODEC.encode(buf, paragraph);
-                }
-                case LineBreak ignored -> buf.writeByte(3);
-                case Divider ignored -> buf.writeByte(4);
-                case Image image -> {
-                    buf.writeByte(5);
-                    Image.STREAM_CODEC.encode(buf, image);
-                }
-                case Bullet bullet -> {
-                    buf.writeByte(6);
-                    Bullet.STREAM_CODEC.encode(buf, bullet);
-                }
-                case Box box -> {
-                    buf.writeByte(7);
-                    Box.STREAM_CODEC.encode(buf, box);
-                }
+            if (value instanceof Heading heading) {
+                buf.writeByte(1);
+                Heading.STREAM_CODEC.encode(buf, heading);
+            } else if (value instanceof Paragraph paragraph) {
+                buf.writeByte(2);
+                Paragraph.STREAM_CODEC.encode(buf, paragraph);
+            } else if (value instanceof LineBreak) {
+                buf.writeByte(3);
+            } else if (value instanceof Divider) {
+                buf.writeByte(4);
+            } else if (value instanceof Image image) {
+                buf.writeByte(5);
+                Image.STREAM_CODEC.encode(buf, image);
+            } else if (value instanceof Bullet bullet) {
+                buf.writeByte(6);
+                Bullet.STREAM_CODEC.encode(buf, bullet);
+            } else if (value instanceof Box box) {
+                buf.writeByte(7);
+                Box.STREAM_CODEC.encode(buf, box);
+            } else {
+                throw new IllegalArgumentException("unhandled BookElement: " + value);
             }
         }
     };

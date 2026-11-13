@@ -98,17 +98,11 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    // Sealed-type pattern switches are preview on Java 17 (1.20.1); final on 21.
-    if (javaVer < 21) {
-        options.compilerArgs += ['--enable-preview']
-    }
+    // Shared sources stay on finalized Java 17 syntax; no node needs preview flags.
 }
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
-    if (javaVer < 21) {
-        jvmArgs += ['--enable-preview']
-    }
 }
 
 dependencies {
