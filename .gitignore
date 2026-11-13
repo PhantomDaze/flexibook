@@ -103,5 +103,9 @@ coverage/
 *.swo
 *~
 /.playwright-mcp/
-/dev/smoke/resourcepacks/*
-/dev/smoke/book.txt
+
+### Smoke fixtures (tracked) ###
+# dev/smoke/book.txt and dev/smoke/resourcepacks/ are committed so a clean
+# clone can run the client smoke. Only generated copies are ignored, via the
+# global `run/` and `*.log` rules above.
+/dev/smoke/.cache/

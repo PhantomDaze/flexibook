@@ -1,0 +1,5 @@
+# FlexiBook auto-smoke book id (first non-empty, non-# line wins)
+
+# demo              — built-in ExampleBooks.demoGuide()
+# fieldnotes:journal — sample pack / classpath book
+note:note11
