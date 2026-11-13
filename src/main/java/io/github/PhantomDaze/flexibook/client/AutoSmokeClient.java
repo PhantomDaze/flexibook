@@ -101,6 +101,7 @@ public final class AutoSmokeClient {
     private static long startedAtMs = -1L;
     private static long readingStartedAtMs = -1L;
     private static int titleStableTicks;
+    private static String lastTitleScreenSignature;
     private static int worldStableTicks;
     private static int packsStableTicks;
     private static boolean createRequested;
@@ -139,6 +140,8 @@ public final class AutoSmokeClient {
         }
 
         if (now - startedAtMs > TIMEOUT_SECONDS * 1000L) {
+            // 诊断：1.20.1 Forge 曾在此超时但看不到屏幕内容，打印实际类名便于定位。
+            logTimeoutDiagnostics(mc);
             fail("timed out after " + TIMEOUT_SECONDS + "s in phase " + phase);
             return;
         }
@@ -154,12 +157,14 @@ public final class AutoSmokeClient {
     private static void tick(Minecraft mc, long now) {
         switch (phase) {
             case WAIT_TITLE -> {
+                Screen screen = currentScreen(mc);
+                Object overlay = currentOverlay(mc);
+                logTitleScreenChanges(screen, overlay);
                 // Overlay (resource reload) or non-title screens still bootstrapping.
-                if (currentOverlay(mc) != null) {
+                if (overlay != null) {
                     titleStableTicks = 0;
                     return;
                 }
-                Screen screen = currentScreen(mc);
                 if (screen instanceof TitleScreen) {
                     titleStableTicks++;
                     // a few ticks on title so sound/assets settle
@@ -569,6 +574,81 @@ public final class AutoSmokeClient {
                 || screen instanceof GenericMessageScreen
                 //?}
                 ;
+    }
+
+    /**
+     * 记录 WAIT_TITLE 期间实际出现的 screen/overlay 类名（只在变化时输出），
+     * 便于在 Forge 1.20.1 等“看得到游戏却认不出 TitleScreen”的环境里定位问题。
+     */
+    private static void logTitleScreenChanges(Screen screen, Object overlay) {
+        String signature = describe(screen) + " | " + describe(overlay);
+        if (!signature.equals(lastTitleScreenSignature)) {
+            lastTitleScreenSignature = signature;
+            LOGGER.info("WAIT_TITLE: screen={} overlay={}", describe(screen), describe(overlay));
+        }
+    }
+
+    /** 超时瞬间打印完整状态，避免只有一句 "timed out" 无从排查。 */
+    private static void logTimeoutDiagnostics(Minecraft mc) {
+        LOGGER.error(
+                "timeout diagnostics: phase={} screen={} overlay={} level={} player={} titleStableTicks={}",
+                phase,
+                describe(currentScreen(mc)),
+                describe(currentOverlay(mc)),
+                mc.level == null ? "null" : mc.level.getClass().getName(),
+                mc.player == null ? "null" : mc.player.getClass().getName(),
+                titleStableTicks);
+        logScreenDetails(currentScreen(mc));
+    }
+
+    /**
+     * 反射打印当前 Screen 的实例字段。用于 Forge 的 LoadingErrorScreen 这类
+     * 只在界面上展示错误、不写日志的屏幕（例如 mod 加载 warning/error 列表）。
+     * 反射失败只记日志，不影响 smoke 流程。
+     */
+    private static void logScreenDetails(Screen screen) {
+        if (screen == null) {
+            return;
+        }
+        LOGGER.error("screen details: {}", screen.getClass().getName());
+        for (java.lang.reflect.Field field : screen.getClass().getDeclaredFields()) {
+            try {
+                if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
+                field.setAccessible(true);
+                Object value = field.get(screen);
+                LOGGER.error("  {} = {}", field.getName(), value);
+                if (value instanceof Iterable<?> iterable) {
+                    int index = 0;
+                    for (Object item : iterable) {
+                        LOGGER.error("    [{}] {}", index++, describeItem(item));
+                        if (index >= 10) {
+                            LOGGER.error("    ... (truncated)");
+                            break;
+                        }
+                    }
+                }
+            } catch (Throwable t) {
+                LOGGER.error("  {} = <unreadable: {}>", field.getName(), t.toString());
+            }
+        }
+    }
+
+    private static String describeItem(Object item) {
+        if (item == null) {
+            return "null";
+        }
+        try {
+            java.lang.reflect.Method format = item.getClass().getMethod("formatToString");
+            return String.valueOf(format.invoke(item));
+        } catch (Throwable ignored) {
+            return String.valueOf(item);
+        }
+    }
+
+    private static String describe(Object value) {
+        return value == null ? "null" : value.getClass().getName();
     }
 
     private static Screen currentScreen(Minecraft mc) {
