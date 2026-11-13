@@ -55,21 +55,28 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', modId
         }
 
-        // MC 1.21.4+ / NeoForge 26.x: legacy type "data" was split into clientData + serverData.
-        // Using the old data() helper makes prepareDataRun fail IDE sync:
-        //   "Trying to prepare unknown run: data. Available run types: [client, clientData, ...]"
-        clientData {
-            clientData()
-            programArguments.addAll '--mod', modId, '--all',
-                    '--output', file('src/generated/resources/').absolutePath,
-                    '--existing', file('src/main/resources/').absolutePath
-        }
-
-        serverData {
-            serverData()
-            programArguments.addAll '--mod', modId, '--all',
-                    '--output', file('src/generated/resources/').absolutePath,
-                    '--existing', file('src/main/resources/').absolutePath
+        // MC 1.21.4+ split data gen into clientData/serverData (MDG RunModel).
+        // 1.21.3 and earlier still use the combined data() run type.
+        // Ported from java21 (16b990e): without this, :1.21.1 data runs fail.
+        def dataArgs = ['--mod', modId, '--all',
+                '--output', file('src/generated/resources/').absolutePath,
+                '--existing', file('src/main/resources/').absolutePath]
+        def dataMc = (project.findProperty('minecraft_version') ?: project.ext.minecraft_version).toString()
+        def useCombinedData = dataMc ==~ /^1\.(20(\.\d+)?|21(\.[0-3])?)$/
+        if (useCombinedData) {
+            data {
+                data()
+                programArguments.addAll dataArgs
+            }
+        } else {
+            clientData {
+                clientData()
+                programArguments.addAll dataArgs
+            }
+            serverData {
+                serverData()
+                programArguments.addAll dataArgs
+            }
         }
 
         configureEach {

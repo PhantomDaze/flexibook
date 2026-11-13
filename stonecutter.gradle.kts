@@ -5,15 +5,42 @@ plugins {
 // Default IDE/configuration node only; build tasks preprocess each node independently.
 stonecutter active "26.1.2"
 
-// Chiseled multi-version build (SC 0.6 API)
+// Chiseled multi-version build (SC 0.6 API).
+// NOTE: chiseledBuild visits every node in ONE Gradle daemon. That is fine for the
+// configuration/compile graph, but the 26.x nodes need a JDK25 daemon while
+// 1.20.1/1.21.x need JDK21 — use scripts/build-all.sh for real two-pass builds.
 stonecutter.registerChiseled(tasks.register("chiseledBuild", stonecutter.chiseled) {
     group = "project"
     ofTask("build")
 })
 
+// Two-pass build meta tasks (JVM selection still comes from JAVA_HOME):
+//   JAVA_HOME=<jdk21> ./gradlew buildPassA
+//   JAVA_HOME=<jdk25> ./gradlew buildPassB
+val passANodes = listOf(
+    "1.20.1", "1.20.1-fabric", "1.21.1", "1.21.1-fabric",
+    "1.21.4", "1.21.4-fabric", "1.21.11-fabric"
+)
+val passBNodes = listOf("26.1.2", "26.1.2-fabric", "26.2", "26.2-fabric")
+
+tasks.register("buildPassA") {
+    group = "project"
+    description = "Build the 7 Java 17/21 nodes (run with JAVA_HOME=<jdk21>)"
+    dependsOn(passANodes.map { ":$it:build" })
+}
+tasks.register("buildPassB") {
+    group = "project"
+    description = "Build the 4 Java 25 nodes (run with JAVA_HOME=<jdk25>)"
+    dependsOn(passBNodes.map { ":$it:build" })
+}
+
 /**
  * Sequential client smoke: NeoForge/Fabric × 26.1.2/26.2.
  * Each client is started with flexibook.autoSmoke (create world → demo book → read 10s → quit).
+ *
+ * TODO(unified-smoke): this is the pre-merge main-branch task (26.x only).
+ * The next task must merge the java21 AutoSmokeClient ≥1.21.4 conditions (16b990e)
+ * and the 1.20.1 book.txt/resourcepack sync (da16b22) into one pass-grouped task set.
  */
 tasks.register("autoSmokeClients") {
     group = "verification"

@@ -28,7 +28,16 @@ stonecutter {
     kotlinController = true
     centralScript = "build.gradle"
     shared {
-        // java25 toolchain branch — NeoForge and Fabric nodes under versions/
+        // 11 version nodes (union of main / 1.20.1 / java21).
+        // Pass A — Java 17/21 toolchains (JDK21 daemon):
+        vers("1.20.1", "1.20.1")
+        vers("1.20.1-fabric", "1.20.1")
+        vers("1.21.1", "1.21.1")
+        vers("1.21.1-fabric", "1.21.1")
+        vers("1.21.4", "1.21.4")
+        vers("1.21.4-fabric", "1.21.4")
+        vers("1.21.11-fabric", "1.21.11")
+        // Pass B — Java 25 toolchain (JDK25 daemon):
         vers("26.1.2", "26.1.2")
         vers("26.1.2-fabric", "26.1.2")
         vers("26.2", "26.2")

@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         // Always on classpath; only applied when mod_loader=forge
-        classpath 'net.minecraftforge.gradle:ForgeGradle:6.0.36'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:6.0.54'
     }
 }
 
@@ -227,8 +227,11 @@ afterEvaluate {
     def chiseledTestJava = file("${buildDir}/chiseledSrc/test/java")
     def chiseledTestRes = file("${buildDir}/chiseledSrc/test/resources")
 
-    sourceSets.main.java.setSrcDirs([chiseledMainJava])
-    sourceSets.main.resources.setSrcDirs([chiseledMainRes])
+    // Node-local sources are an explicit extension point for loader/version
+    // adapters (e.g. versions/1.21.4/src/main/java/.../BookScreenFactory.java).
+    // Chiseled shared sources come first so a node-local duplicate never wins.
+    sourceSets.main.java.setSrcDirs([chiseledMainJava, file('src/main/java')])
+    sourceSets.main.resources.setSrcDirs([chiseledMainRes, file('src/main/resources')])
     // Generated mod metadata (mods.toml / fabric.mod.json) still required.
     sourceSets.main.resources.srcDir(tasks.named('generateModMetadata'))
     def genRes = file('src/generated/resources')
@@ -236,8 +239,8 @@ afterEvaluate {
         sourceSets.main.resources.srcDir(genRes)
     }
 
-    sourceSets.test.java.setSrcDirs([chiseledTestJava])
-    sourceSets.test.resources.setSrcDirs([chiseledTestRes])
+    sourceSets.test.java.setSrcDirs([chiseledTestJava, file('src/test/java')])
+    sourceSets.test.resources.setSrcDirs([chiseledTestRes, file('src/test/resources')])
 }
 
 publishing {
