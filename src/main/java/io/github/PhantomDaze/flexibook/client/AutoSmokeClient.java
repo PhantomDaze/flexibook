@@ -15,8 +15,14 @@ import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.Difficulty;
-//? if <1.20.2 {
+//? if >=1.21.11 && <26.1.2 {
+/*import net.minecraft.world.level.gamerules.GameRules;
+*///?}
+//? if <1.21.11 {
 /*import net.minecraft.world.level.GameRules;
+*///?}
+//? if >=1.21.4 && <26.1.2 {
+/*import net.minecraft.world.flag.FeatureFlagSet;
 *///?}
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -207,20 +213,34 @@ public final class AutoSmokeClient {
                     return;
                 }
                 deleteWorldIfPresent(mc);
+                //? if >=26.1.2 {
                 LevelSettings settings = new LevelSettings(
                         "FlexiBook Smoke",
                         GameType.CREATIVE,
-                        //? if >=1.21.4 {
                         new LevelSettings.DifficultySettings(Difficulty.PEACEFUL, false, false),
-                        //?} else {
-                        /*false,
-                        Difficulty.PEACEFUL,
-                        *///?}
                         true,
-                        //? if <1.20.2 {
-                        /*new GameRules(),
-                        *///?}
                         WorldDataConfiguration.DEFAULT);
+                //?}
+                //? if >=1.21.4 && <26.1.2 {
+                /*LevelSettings settings = new LevelSettings(
+                        "FlexiBook Smoke",
+                        GameType.CREATIVE,
+                        false,
+                        Difficulty.PEACEFUL,
+                        true,
+                        new GameRules(FeatureFlagSet.of()),
+                        WorldDataConfiguration.DEFAULT);
+                *///?}
+                //? if <1.21.4 {
+                /*LevelSettings settings = new LevelSettings(
+                        "FlexiBook Smoke",
+                        GameType.CREATIVE,
+                        false,
+                        Difficulty.PEACEFUL,
+                        true,
+                        new GameRules(),
+                        WorldDataConfiguration.DEFAULT);
+                *///?}
                 mc.createWorldOpenFlows().createFreshLevel(
                         WORLD_ID,
                         settings,

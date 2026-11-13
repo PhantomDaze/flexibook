@@ -19,14 +19,14 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 *///?}
 
-//? if fabric && >=1.21.2 {
+//? if fabric && >=26.1.2 {
 /*import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 
-//? if fabric && <1.21.2 {
+//? if fabric && <26.1.2 {
 /*import io.github.PhantomDaze.flexibook.util.FlexiBookIds;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
@@ -64,7 +64,7 @@ public final class ModCreativeTabs {
                     .build());
     *///?}
 
-    //? if fabric && >=1.21.2 {
+    //? if fabric && >=26.1.2 {
     /*public static CreativeModeTab FLEXIBOOK_TAB;
 
     public static void register() {
@@ -82,7 +82,7 @@ public final class ModCreativeTabs {
     }
     *///?}
 
-    //? if fabric && <1.21.2 {
+    //? if fabric && <26.1.2 {
     /*public static CreativeModeTab FLEXIBOOK_TAB;
 
     public static void register() {
