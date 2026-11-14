@@ -49,24 +49,24 @@ jobs:
     timeout-minutes: 90
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # 同一次 job 里安装两个 JDK：最后一个会把 JAVA_HOME 指向 JDK25，
       # 两个都通过 JAVA_HOME_21_X64 / JAVA_HOME_25_X64 暴露给后续 step。
       - name: Set up JDK 21 (Pass A daemon + toolchain)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "21"
 
       - name: Set up JDK 25 (Pass B daemon + toolchain)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "25"
 
       - name: Cache Gradle (both Plan B Gradle versions)
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -83,7 +83,7 @@ jobs:
         run: JAVA_HOME="$JAVA_HOME_25_X64" ./gradlew buildPassB --console=plain --stacktrace
 
       - name: Upload main jars (9)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: flexibook-jars-main
           path: |
@@ -97,23 +97,23 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # JDK21 作为 Gradle 8.14.3 daemon；JDK17 是 1.20.1 节点的 toolchain。
       - name: Set up JDK 21 (Gradle daemon)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "21"
 
       - name: Set up JDK 17 (toolchain)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Cache Gradle (both Plan B Gradle versions)
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -142,7 +142,7 @@ jobs:
             :1.20.1-fabric:build --console=plain --stacktrace
 
       - name: Upload legacy jars (2)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: flexibook-jars-legacy
           path: |
