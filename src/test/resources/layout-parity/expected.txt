@@ -1,0 +1,2135 @@
+scenario all-elements pages=2 search=
+page 0 elements=19 clicks=1
+  T|0.000|0.000|1.350|Heading One|77.000|9.000|false|true,false,false,-,flexibook:default|none
+  T|0.000|18.900|1.000|The quick brown fox jumps |156.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.900|1.000|over the lazy dog. |114.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|36.900|1.000|Bold|28.000|9.000|false|true,false,false,-,flexibook:default|none
+  T|0.000|45.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.900|1.000|Italic|36.000|9.000|false|false,true,false,-,flexibook:default|none
+  T|0.000|63.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|72.900|1.000|Under|30.000|9.000|false|false,false,true,-,flexibook:default|none
+  T|0.000|81.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|90.900|1.000|Color|30.000|9.000|false|false,false,false,0xcc5500,flexibook:default|none
+  T|0.000|99.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|108.900|1.000|Link|24.000|9.000|false|false,false,false,-,flexibook:default|cmd:flexibook:say_hi
+  T|0.000|117.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.900|1.000|Second paragraph with a |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.900|1.000|colored run.|72.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.900|1.000|Custom font run.|96.000|9.000|false|false,false,false,-,mymod:fancy|none
+  T|0.000|165.900|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|165.900|1.000|A bullet item|78.000|9.000|false|false,false,false,-,flexibook:default|none
+  C|0.000|108.900|24.000|9.000|cmd:flexibook:say_hi|Link
+page 1 elements=8 clicks=0
+  T|0.000|0.000|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|0.000|1.000|literal bullet text|114.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|16.500|1.000|160.000|6.000
+  I|0.000|25.500|1.000|flexibook:textures/gui/icon.png|48|48|parity.tip
+  I|0.000|76.500|1.000|flexibook:textures/gui/icon.png|160|64|
+  T|0.000|143.500|1.150|Heading Two|77.000|9.000|false|true,false,false,-,flexibook:default|none
+  T|0.000|159.600|1.000|boxed body text|90.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|171.600|1.000|nested box body|90.000|9.000|false|false,false,false,-,flexibook:default|none
+scenario all-elements-search pages=2 search=bold
+page 0 elements=19 clicks=1
+  T|0.000|0.000|1.350|Heading One|77.000|9.000|false|true,false,false,-,flexibook:default|none
+  T|0.000|18.900|1.000|The quick brown fox jumps |156.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.900|1.000|over the lazy dog. |114.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|36.900|1.000|Bold|28.000|9.000|true|true,false,false,-,flexibook:default|none
+  T|0.000|45.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.900|1.000|Italic|36.000|9.000|false|false,true,false,-,flexibook:default|none
+  T|0.000|63.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|72.900|1.000|Under|30.000|9.000|false|false,false,true,-,flexibook:default|none
+  T|0.000|81.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|90.900|1.000|Color|30.000|9.000|false|false,false,false,0xcc5500,flexibook:default|none
+  T|0.000|99.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|108.900|1.000|Link|24.000|9.000|false|false,false,false,-,flexibook:default|cmd:flexibook:say_hi
+  T|0.000|117.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.900|1.000|Second paragraph with a |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.900|1.000|colored run.|72.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.900|1.000| |6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.900|1.000|Custom font run.|96.000|9.000|false|false,false,false,-,mymod:fancy|none
+  T|0.000|165.900|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|165.900|1.000|A bullet item|78.000|9.000|false|false,false,false,-,flexibook:default|none
+  C|0.000|108.900|24.000|9.000|cmd:flexibook:say_hi|Link
+page 1 elements=8 clicks=0
+  T|0.000|0.000|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|0.000|1.000|literal bullet text|114.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|16.500|1.000|160.000|6.000
+  I|0.000|25.500|1.000|flexibook:textures/gui/icon.png|48|48|parity.tip
+  I|0.000|76.500|1.000|flexibook:textures/gui/icon.png|160|64|
+  T|0.000|143.500|1.150|Heading Two|77.000|9.000|false|true,false,false,-,flexibook:default|none
+  T|0.000|159.600|1.000|boxed body text|90.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|171.600|1.000|nested box body|90.000|9.000|false|false,false,false,-,flexibook:default|none
+scenario long-document pages=17 search=
+page 0 elements=20 clicks=0
+  T|0.000|0.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|36.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|48.000|1.000|160.000|6.000
+  T|0.000|57.000|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|57.000|1.000|bullet 0|48.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|69.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|117.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|165.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+page 1 elements=19 clicks=0
+  T|0.000|0.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|114.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|162.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 2 elements=19 clicks=0
+  T|0.000|0.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|39.000|1.000|160.000|6.000
+  T|0.000|48.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|75.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|84.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|114.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|123.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|132.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|162.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|171.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 3 elements=19 clicks=0
+  T|0.000|0.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|12.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|60.000|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|60.000|1.000|bullet 11|54.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|72.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|81.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|90.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|99.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|108.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|120.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|129.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|138.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|147.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|156.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|168.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 4 elements=19 clicks=0
+  T|0.000|0.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|39.000|1.000|160.000|6.000
+  T|0.000|48.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|75.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|84.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|114.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|123.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|132.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|162.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|171.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 5 elements=19 clicks=0
+  T|0.000|0.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|12.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|60.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|69.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|108.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|117.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|156.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|165.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+page 6 elements=20 clicks=0
+  T|0.000|0.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|21.000|1.000|160.000|6.000
+  T|0.000|30.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|78.000|1.000|bullet 22|54.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|90.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|99.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|108.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|117.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|138.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|147.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|156.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|165.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 7 elements=19 clicks=0
+  T|0.000|0.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|36.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|75.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|84.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|114.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|123.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|132.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|162.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|171.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 8 elements=19 clicks=0
+  T|0.000|0.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|12.000|1.000|160.000|6.000
+  T|0.000|21.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|69.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|117.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|165.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+page 9 elements=20 clicks=0
+  T|0.000|0.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|78.000|1.000|bullet 33|54.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|90.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|99.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|108.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|117.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|138.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|147.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|156.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|165.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 10 elements=19 clicks=0
+  D|0.000|0.000|1.000|160.000|6.000
+  T|0.000|9.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|36.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|75.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|84.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|93.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|114.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|123.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|132.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|141.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|162.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|171.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+page 11 elements=19 clicks=0
+  T|0.000|0.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|69.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|117.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|165.000|1.000|160.000|6.000
+  T|0.000|174.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 12 elements=20 clicks=0
+  T|0.000|0.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|75.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|87.000|1.000|bullet 44|54.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|99.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|108.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|117.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|147.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|156.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|165.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 13 elements=19 clicks=0
+  T|0.000|0.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|12.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|60.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|69.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|108.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|117.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|156.000|1.000|160.000|6.000
+  T|0.000|165.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+page 14 elements=19 clicks=0
+  T|0.000|0.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|114.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|144.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|153.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|162.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+page 15 elements=20 clicks=0
+  T|0.000|0.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|75.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|87.000|1.000|bullet 55|54.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|99.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|108.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|117.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|147.000|1.000|160.000|6.000
+  T|0.000|156.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|165.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|174.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+page 16 elements=12 clicks=0
+  T|0.000|0.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|9.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|69.000|1.000|Long body sentence used |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|78.000|1.000|to exercise wrapping and |150.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|87.000|1.000|pagination. It keeps |126.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.000|1.000|going with enough words |144.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|105.000|1.000|to force several lines. |144.000|9.000|false|false,false,false,-,flexibook:default|none
+scenario long-document-narrow pages=67 search=
+page 0 elements=24 clicks=0
+  T|0.000|0.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 1 elements=25 clicks=0
+  T|0.000|0.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|12.600|0.600|19.000|3.600
+  T|0.000|18.000|0.600|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|18.000|0.600|bu|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|23.400|0.600|ll|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|28.800|0.600|et|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|34.200|0.600|0|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|41.400|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|46.800|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|52.200|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.600|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|63.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 2 elements=24 clicks=0
+  T|0.000|0.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 3 elements=24 clicks=0
+  T|0.000|0.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 4 elements=24 clicks=0
+  T|0.000|0.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|7.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|12.600|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|18.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|23.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+page 5 elements=24 clicks=0
+  T|0.000|0.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|18.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|23.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 6 elements=24 clicks=0
+  T|0.000|0.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 7 elements=24 clicks=0
+  T|0.000|0.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 8 elements=24 clicks=0
+  T|0.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|29.000|50.400|0.600|19.000|3.600
+  T|29.000|55.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 9 elements=24 clicks=0
+  T|0.000|0.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+page 10 elements=24 clicks=0
+  T|0.000|0.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 11 elements=24 clicks=0
+  T|0.000|0.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|12.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 12 elements=24 clicks=0
+  T|0.000|0.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 13 elements=25 clicks=0
+  T|0.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|34.200|0.600|bu|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|39.600|0.600|ll|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|45.000|0.600|et|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|50.400|0.600|11|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|63.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 14 elements=24 clicks=0
+  T|0.000|0.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 15 elements=24 clicks=0
+  T|0.000|0.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|12.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|18.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|23.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+page 16 elements=24 clicks=0
+  T|0.000|0.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|29.000|23.400|0.600|19.000|3.600
+  T|29.000|28.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 17 elements=24 clicks=0
+  T|0.000|0.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 18 elements=24 clicks=0
+  T|0.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 19 elements=24 clicks=0
+  T|0.000|0.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 20 elements=24 clicks=0
+  T|0.000|0.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 21 elements=24 clicks=0
+  T|0.000|0.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|7.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|12.600|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 22 elements=24 clicks=0
+  T|0.000|0.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 23 elements=24 clicks=0
+  T|0.000|0.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+page 24 elements=24 clicks=0
+  T|0.000|0.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|39.600|0.600|19.000|3.600
+  T|0.000|45.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 25 elements=25 clicks=0
+  T|0.000|0.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|55.800|0.600|bu|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|61.200|0.600|ll|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|0.000|0.600|et|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|5.400|0.600|22|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|12.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|18.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|23.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+page 26 elements=24 clicks=0
+  T|0.000|0.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|23.400|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+page 27 elements=24 clicks=0
+  T|0.000|0.000|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 28 elements=24 clicks=0
+  T|0.000|0.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+page 29 elements=24 clicks=0
+  T|0.000|0.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 30 elements=24 clicks=0
+  T|0.000|0.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+page 31 elements=24 clicks=0
+  T|0.000|0.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 32 elements=24 clicks=0
+  T|0.000|0.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|12.600|0.600|19.000|3.600
+  T|0.000|18.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 33 elements=24 clicks=0
+  T|0.000|0.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+page 34 elements=24 clicks=0
+  T|0.000|0.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 35 elements=24 clicks=0
+  T|0.000|0.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 36 elements=24 clicks=0
+  T|0.000|0.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 37 elements=25 clicks=0
+  T|0.000|0.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|7.200|0.600|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|7.200|0.600|bu|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|12.600|0.600|ll|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|18.000|0.600|et|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|23.400|0.600|33|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|30.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|36.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|41.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|46.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|52.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|57.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|63.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 38 elements=24 clicks=0
+  T|0.000|0.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 39 elements=24 clicks=0
+  T|0.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|29.000|50.400|0.600|19.000|3.600
+  T|29.000|55.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 40 elements=24 clicks=0
+  T|0.000|0.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+page 41 elements=24 clicks=0
+  T|0.000|0.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 42 elements=24 clicks=0
+  T|0.000|0.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|12.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 43 elements=24 clicks=0
+  T|0.000|0.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 44 elements=24 clicks=0
+  T|0.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 45 elements=24 clicks=0
+  T|0.000|0.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 46 elements=24 clicks=0
+  T|0.000|0.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 47 elements=24 clicks=0
+  T|0.000|0.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|29.000|0.000|0.600|19.000|3.600
+  T|29.000|5.400|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+page 48 elements=24 clicks=0
+  T|0.000|0.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|18.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|23.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 49 elements=25 clicks=0
+  T|0.000|0.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|28.800|0.600|bu|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|34.200|0.600|ll|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|39.600|0.600|et|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|45.000|0.600|44|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|52.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|57.600|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|63.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 50 elements=24 clicks=0
+  T|0.000|0.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 51 elements=24 clicks=0
+  T|0.000|0.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 52 elements=24 clicks=0
+  T|0.000|0.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|7.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|12.600|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 53 elements=24 clicks=0
+  T|0.000|0.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|18.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 54 elements=24 clicks=0
+  T|0.000|0.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+page 55 elements=24 clicks=0
+  T|0.000|0.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|39.600|0.600|19.000|3.600
+  T|0.000|45.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 56 elements=24 clicks=0
+  T|0.000|0.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 57 elements=24 clicks=0
+  T|0.000|0.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 58 elements=24 clicks=0
+  T|0.000|0.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|12.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|18.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|23.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+page 59 elements=24 clicks=0
+  T|0.000|0.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|23.400|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|28.800|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+page 60 elements=24 clicks=0
+  T|0.000|0.000|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|34.200|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|39.600|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|50.400|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|55.800|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|61.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 61 elements=25 clicks=0
+  T|0.000|0.000|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|45.000|0.600|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|45.000|0.600|bu|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|50.400|0.600|ll|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|55.800|0.600|et|12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|39.000|61.200|0.600|55|12.000|9.000|false|false,false,false,-,flexibook:default|none
+page 62 elements=24 clicks=0
+  T|0.000|0.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|48.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|54.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|59.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 63 elements=24 clicks=0
+  T|0.000|0.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|12.600|0.600|19.000|3.600
+  T|0.000|18.000|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|23.400|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+page 64 elements=24 clicks=0
+  T|0.000|0.000|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|28.800|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|34.200|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+page 65 elements=24 clicks=0
+  T|0.000|0.000|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.600|0.600|Long |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|45.000|0.600|body |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|50.400|0.600|sente|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|55.800|0.600|nce |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|61.200|0.600|used |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|0.000|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|5.400|0.600|exerc|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|10.800|0.600|ise |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|16.200|0.600|wrapp|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|21.600|0.600|ing |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|27.000|0.600|and |24.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|32.400|0.600|pagin|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|37.800|0.600|ation|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|43.200|0.600|. It |30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|48.600|0.600|keeps|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|54.000|0.600|going|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|29.000|59.400|0.600|with |30.000|9.000|false|false,false,false,-,flexibook:default|none
+page 66 elements=9 clicks=0
+  T|0.000|0.000|0.600|enoug|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|5.400|0.600|h |12.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|10.800|0.600|words|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|16.200|0.600|to |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|21.600|0.600|force|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.000|0.600|sever|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|32.400|0.600|al |18.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|37.800|0.600|lines|30.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|43.200|0.600|. |12.000|9.000|false|false,false,false,-,flexibook:default|none
+scenario cjk pages=3 search=
+page 0 elements=19 clicks=0
+  T|0.000|0.000|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|8.280|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|19.320|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.600|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|38.640|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|46.920|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.960|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.240|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|77.280|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|85.560|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.600|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|104.880|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|115.920|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|124.200|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.240|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|143.520|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|154.560|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|162.840|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|173.880|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+page 1 elements=19 clicks=0
+  T|0.000|0.000|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|11.040|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|19.320|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|30.360|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|38.640|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|49.680|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.960|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|69.000|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|77.280|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|88.320|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|96.600|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|107.640|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|115.920|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|126.960|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|135.240|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|146.280|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|154.560|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|165.600|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|173.880|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+page 2 elements=10 clicks=0
+  T|0.000|0.000|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|8.280|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|19.320|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.600|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|38.640|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|46.920|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|57.960|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|66.240|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|77.280|0.920|这是一个用于布局差分测试的中文段落，包|171.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|85.560|0.920|含标点符号，并且长度足够触发自动换行。|171.000|9.000|false|false,false,false,-,flexibook:default|none
+scenario custom-font pages=1 search=
+page 0 elements=5 clicks=0
+  T|0.000|0.000|1.000|The quick brown fox jumps |156.000|9.000|false|false,false,false,-,mymod:fancy|none
+  T|0.000|9.000|1.000|over the lazy dog. |114.000|9.000|false|false,false,false,-,mymod:fancy|none
+  T|0.000|21.000|1.150|Heading Two|77.000|9.000|false|true,false,false,-,mymod:fancy|none
+  T|0.000|37.100|1.000|plain|30.000|9.000|false|false,false,false,-,mymod:fancy|none
+  T|0.000|46.100|1.000|over|24.000|9.000|false|false,false,false,-,mymod:fancy|none
+scenario nested-box pages=1 search=
+page 0 elements=6 clicks=0
+  T|0.000|0.000|1.350|Heading One|77.000|9.000|false|true,false,false,-,flexibook:default|none
+  T|0.000|18.900|1.000|The quick brown fox jumps |156.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|27.900|1.000|over the lazy dog. |114.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|0.000|39.900|1.000|•|6.000|9.000|false|false,false,false,-,flexibook:default|none
+  T|10.000|39.900|1.000|deep bullet|66.000|9.000|false|false,false,false,-,flexibook:default|none
+  D|0.000|51.900|1.000|160.000|6.000
