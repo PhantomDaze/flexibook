@@ -174,8 +174,21 @@ public class AdaptiveBookScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        // 合并前各分支在此显式绘制书页背景；1.20.1 的 Screen.render 不会调用 renderBackground。
+        renderBookBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
         drawPageContent(graphics, mouseX, mouseY);
+    }
+    *///?}
+
+    //? if >=1.21 && <26.1.2 {
+    /*private void renderBookBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+    }
+    *///?}
+    //? if <1.21 {
+    /*private void renderBookBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(graphics);
     }
     *///?}
 
