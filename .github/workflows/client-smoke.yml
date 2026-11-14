@@ -1,24 +1,24 @@
-# FlexiBook 客户端 smoke CI（默认不阻塞）
+# FlexiBook 客户端 smoke CI（阻塞门禁）
 #
-# ⚠️ 重要：本 workflow 尚未在 GitHub Actions 上实际验证过。
-#    GitHub 托管 runner 没有 GPU，Minecraft 只能使用 Mesa llvmpipe 软件 OpenGL。
-#    软件渲染很可能在 WAIT_TITLE / WAIT_WORLD 阶段超时（900s 也不一定够），
-#    或直接因 GL 能力不足崩溃。因此本 job 默认 continue-on-error: true，不阻塞 PR。
-#    推荐改用带 GPU 的 self-hosted runner：把 runs-on 换成
-#      runs-on: [self-hosted, gpu]
-#    （文件下方已给出注释掉的示例）。更换后建议把 continue-on-error 改为 false。
+# 托管 runner（ubuntu-latest）没有 GPU，Minecraft 走 xvfb + Mesa llvmpipe
+# 软件 OpenGL。该组合已在 GitHub Actions 上实测通过：Pass A 全部 5 个节点 PASS，
+# 每节点 48–72s，远低于 900s 的 AutoSmoke 超时阈值，无 GL/GLFW 失败；日志中仅有
+# OpenAL/语音库缺失的非致命噪音。因此本 job 是阻塞门禁（continue-on-error: false），
+# smoke 失败会让 workflow 变红。
+# 如改用带 GPU 的 self-hosted runner，可把 runs-on 换成
+#   runs-on: [self-hosted, gpu]
+# （文件下方保留了注释掉的示例，作为备选而非必需）。
 #
 # 只跑主构建的 Pass A（1.21.x 五节点）和可选 Pass B（26.x 四节点）：
 #   - 不跑 Pass L（1.20.1）：legacy 构建需要 ForgeGradle 额外联网/暖缓存，
 #     且 legacy 构建本身更慢，不适合托管 runner 的短 job。
-#   - smoke 任务会用子 Gradle 进程逐个节点启动客户端；本机实测 Pass A ~3 分钟，
-#     软件渲染下请预留更长时间（timeout-minutes: 120）。
+#   - smoke 任务会用子 Gradle 进程逐个节点启动客户端；CI 实测整个 job 6m39s
+#     （含 checkout/JDK/依赖准备），timeout-minutes: 120 有充足余量。
 #
 # 触发：
 #   - workflow_dispatch：手动触发，可选 pass-a / pass-a+b。
 #   - workflow_run：build 工作流成功后触发（只跑 Pass A）。
-#     注意：workflow_run 需要本文件存在于默认分支上才会触发；首次上线前
-#     只能手动 workflow_dispatch 验证。
+#     注意：workflow_run 需要本文件存在于默认分支（当前为 unified）上才会触发。
 
 name: client-smoke
 
@@ -51,13 +51,13 @@ concurrency:
 jobs:
   client-smoke:
     name: client smoke (xvfb + llvmpipe)
-    # GitHub 托管 runner：无 GPU，软件渲染，未实测，可能超时。
+    # GitHub 托管 runner：无 GPU，走 xvfb + Mesa llvmpipe 软件渲染（已实测可跑通）。
     runs-on: ubuntu-latest
-    # 推荐（带 GPU 的 self-hosted runner）：
+    # 备选（带 GPU 的 self-hosted runner）：
     # runs-on: [self-hosted, gpu]
     timeout-minutes: 120
-    # 默认不阻塞：托管 runner 上软件渲染很可能失败，先观察日志再决定是否收紧。
-    continue-on-error: true
+    # 阻塞门禁：Pass A 在托管 runner 上已实测 5/5 节点 PASS，smoke 失败应让 CI 变红。
+    continue-on-error: false
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
