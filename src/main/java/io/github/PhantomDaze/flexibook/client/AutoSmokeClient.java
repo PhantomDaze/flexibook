@@ -321,6 +321,25 @@ public final class AutoSmokeClient {
                     fail("AdaptiveBookScreen did not open");
                     return;
                 }
+                AdaptiveBookScreen screen = (AdaptiveBookScreen) currentScreen(mc);
+                java.util.List<io.github.PhantomDaze.flexibook.layout.RenderedPage> pages = screenPages(screen);
+                if (pages.isEmpty() || pages.get(0).elements().isEmpty()) {
+                    fail("book rendered no pages/elements");
+                    return;
+                }
+                LOGGER.info("book open → {} page(s) / {} element(s) on page 0",
+                        pages.size(), pages.get(0).elements().size());
+                if (pages.size() > 1) {
+                    int before = screenPageIndex(screen);
+                    changeScreenPage(screen, 1);
+                    int after = screenPageIndex(screen);
+                    if (after == before) {
+                        fail("page turn did not advance page index");
+                        return;
+                    }
+                    changeScreenPage(screen, -1);
+                    LOGGER.info("page turn verified ({} -> {}, back to {})", before, after, screenPageIndex(screen));
+                }
                 readingStartedAtMs = now;
                 phase = Phase.READING;
                 LOGGER.info("book open → reading for {}s", READ_SECONDS);
@@ -649,6 +668,38 @@ public final class AutoSmokeClient {
 
     private static String describe(Object value) {
         return value == null ? "null" : value.getClass().getName();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static java.util.List<io.github.PhantomDaze.flexibook.layout.RenderedPage> screenPages(
+            AdaptiveBookScreen screen) {
+        try {
+            java.lang.reflect.Field f = AdaptiveBookScreen.class.getDeclaredField("pages");
+            f.setAccessible(true);
+            return (java.util.List<io.github.PhantomDaze.flexibook.layout.RenderedPage>) f.get(screen);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("cannot read AdaptiveBookScreen.pages", e);
+        }
+    }
+
+    private static int screenPageIndex(AdaptiveBookScreen screen) {
+        try {
+            java.lang.reflect.Field f = AdaptiveBookScreen.class.getDeclaredField("pageIndex");
+            f.setAccessible(true);
+            return f.getInt(screen);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("cannot read AdaptiveBookScreen.pageIndex", e);
+        }
+    }
+
+    private static void changeScreenPage(AdaptiveBookScreen screen, int delta) {
+        try {
+            java.lang.reflect.Method m = AdaptiveBookScreen.class.getDeclaredMethod("changePage", int.class);
+            m.setAccessible(true);
+            m.invoke(screen, delta);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("cannot call AdaptiveBookScreen.changePage", e);
+        }
     }
 
     private static Screen currentScreen(Minecraft mc) {
