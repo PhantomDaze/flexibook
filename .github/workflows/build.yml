@@ -22,7 +22,7 @@
 #     find ~/.gradle/caches/forge_gradle -type f -exec touch {} +
 #   刷新 mtime；MDG 的 manifest 下载没有离线开关，断网时只能复用已生成的 artifacts。
 #
-# 注意：本 workflow 尚未在 GitHub Actions 上实际运行过（本机无法验证 CI）。
+# 状态：本 workflow 已在 GitHub Actions 上首次运行并全绿（build 4m03s）。
 
 name: build
 
@@ -75,12 +75,61 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-g9.6.1-g8.14.3-main-
 
-      # buildPassA/B 依赖每个节点的 :build，build 已包含 test（9 节点共 649 tests）。
+      # buildPassA/B 依赖每个节点的 :build，build 已包含 test（9 节点共 531 tests；
+      # 与 legacy 2 节点合计 649 tests，下方统计 step 会打印实际数字）。
       - name: Build + test Pass A — 1.21.x (JDK 21)
         run: JAVA_HOME="$JAVA_HOME_21_X64" ./gradlew buildPassA --console=plain --stacktrace
 
       - name: Build + test Pass B — 26.x (JDK 25)
         run: JAVA_HOME="$JAVA_HOME_25_X64" ./gradlew buildPassB --console=plain --stacktrace
+
+      # 解析 Gradle 生成的 JUnit XML 并打印每节点用例数。
+      # if: always() 保证测试失败时也能看到统计；解析失败只发 warning，不让 job 变红。
+      - name: Report test totals — main
+        if: always()
+        run: |
+          python3 - <<'PYEOF'
+          import glob
+          import sys
+          import xml.etree.ElementTree as ET
+          from collections import defaultdict
+
+          pattern = 'versions/*/build/test-results/test/*.xml'
+          files = sorted(glob.glob(pattern))
+          if not files:
+              print(f'::warning::No JUnit XML found at {pattern} (tests may not have run)')
+              sys.exit(0)
+
+          per_node = defaultdict(lambda: [0, 0, 0, 0])
+          parse_errors = []
+          for path in files:
+              node = path.split('/')[1]
+              try:
+                  root = ET.parse(path).getroot()
+              except Exception as exc:
+                  parse_errors.append(f'{path}: {exc}')
+                  continue
+              values = [int(root.get(k, 0) or 0) for k in ('tests', 'failures', 'errors', 'skipped')]
+              for i, v in enumerate(values):
+                  per_node[node][i] += v
+
+          header = f"{'node':24} {'tests':>7} {'failures':>9} {'errors':>7} {'skipped':>8}"
+          print(header)
+          print('-' * len(header))
+          total = [0, 0, 0, 0]
+          for node in sorted(per_node):
+              c = per_node[node]
+              print(f'{node:24} {c[0]:7} {c[1]:9} {c[2]:7} {c[3]:8}')
+              for i, v in enumerate(c):
+                  total[i] += v
+          print('-' * len(header))
+          summary = 'TOTAL (' + str(len(per_node)) + ' nodes)'
+          print(f'{summary:24} {total[0]:7} {total[1]:9} {total[2]:7} {total[3]:8}')
+
+          for msg in parse_errors:
+              print(f'::warning::Failed to parse JUnit XML {msg}')
+          sys.exit(0)
+          PYEOF
 
       - name: Upload main jars (9)
         uses: actions/upload-artifact@v7
@@ -140,6 +189,54 @@ jobs:
             -Pstonecutter.active=1.20.1-fabric \
             -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64 \
             :1.20.1-fabric:build --console=plain --stacktrace
+
+      # 解析 Gradle 生成的 JUnit XML 并打印每节点用例数。
+      # if: always() 保证测试失败时也能看到统计；解析失败只发 warning，不让 job 变红。
+      - name: Report test totals — legacy
+        if: always()
+        run: |
+          python3 - <<'PYEOF'
+          import glob
+          import sys
+          import xml.etree.ElementTree as ET
+          from collections import defaultdict
+
+          pattern = 'versions/*/build/test-results/test/*.xml'
+          files = sorted(glob.glob(pattern))
+          if not files:
+              print(f'::warning::No JUnit XML found at {pattern} (tests may not have run)')
+              sys.exit(0)
+
+          per_node = defaultdict(lambda: [0, 0, 0, 0])
+          parse_errors = []
+          for path in files:
+              node = path.split('/')[1]
+              try:
+                  root = ET.parse(path).getroot()
+              except Exception as exc:
+                  parse_errors.append(f'{path}: {exc}')
+                  continue
+              values = [int(root.get(k, 0) or 0) for k in ('tests', 'failures', 'errors', 'skipped')]
+              for i, v in enumerate(values):
+                  per_node[node][i] += v
+
+          header = f"{'node':24} {'tests':>7} {'failures':>9} {'errors':>7} {'skipped':>8}"
+          print(header)
+          print('-' * len(header))
+          total = [0, 0, 0, 0]
+          for node in sorted(per_node):
+              c = per_node[node]
+              print(f'{node:24} {c[0]:7} {c[1]:9} {c[2]:7} {c[3]:8}')
+              for i, v in enumerate(c):
+                  total[i] += v
+          print('-' * len(header))
+          summary = 'TOTAL (' + str(len(per_node)) + ' nodes)'
+          print(f'{summary:24} {total[0]:7} {total[1]:9} {total[2]:7} {total[3]:8}')
+
+          for msg in parse_errors:
+              print(f'::warning::Failed to parse JUnit XML {msg}')
+          sys.exit(0)
+          PYEOF
 
       - name: Upload legacy jars (2)
         uses: actions/upload-artifact@v7
