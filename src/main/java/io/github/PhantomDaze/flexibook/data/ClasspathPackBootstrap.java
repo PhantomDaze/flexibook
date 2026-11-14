@@ -29,10 +29,24 @@ import java.nio.charset.StandardCharsets;
 public final class ClasspathPackBootstrap {
     private ClasspathPackBootstrap() {}
 
+    /** All jars ship these samples; load every one so server-side {@code /flexibook give} matches the creative tab / resource pack. */
+    public static void loadBundledSamples() {
+        loadFieldNotesSample();
+        loadDemoGuideSample();
+    }
+
+    @Deprecated
     public static void loadFieldNotesSample() {
         loadTheme("fieldnotes", "parchment");
         loadContent("fieldnotes", "journal");
         loadBook("fieldnotes", "journal");
+    }
+
+    public static void loadDemoGuideSample() {
+        loadTheme("flexibook", "default");
+        loadTheme("flexibook", "contain");
+        loadContent("flexibook", "demo_guide");
+        loadBook("flexibook", "demo_guide");
     }
 
     public static void loadTheme(String ns, String path) {

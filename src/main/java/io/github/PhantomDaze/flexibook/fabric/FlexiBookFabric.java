@@ -25,7 +25,7 @@ public final class FlexiBookFabric implements ModInitializer {
                 FlexiBookCommands.register(dispatcher));
 
         FlexiBookAPI.registerDefaultActions();
-        ClasspathPackBootstrap.loadFieldNotesSample();
+        ClasspathPackBootstrap.loadBundledSamples();
         FlexiBookMod.LOGGER.info("FlexiBook (Fabric) initialized");
     }
 }

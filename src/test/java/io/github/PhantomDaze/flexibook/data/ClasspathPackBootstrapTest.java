@@ -50,4 +50,24 @@ class ClasspathPackBootstrapTest {
         AdaptiveBookContent content = FlexiBookAPI.resolveBook(journal);
         assertFalse(content.isEmpty(), "fieldnotes:journal 的正文必须能从 classpath 内容解析");
     }
+
+    @Test
+    void bundledSamplesRegisterDemoGuideAndJournal() {
+        ClasspathPackBootstrap.loadBundledSamples();
+
+        Identifier demo = FlexiBookIds.of("flexibook", "demo_guide");
+        Identifier journal = FlexiBookIds.of("fieldnotes", "journal");
+
+        assertTrue(BookDefinitionRegistry.isRegistered(demo),
+                "demo_guide 必须从 classpath 注册（与创意标签/资源包保持一致）");
+        assertTrue(BookDefinitionRegistry.isRegistered(journal),
+                "fieldnotes:journal 必须从 classpath 注册");
+
+        AdaptiveBookContent demoContent = FlexiBookAPI.resolveBook(demo);
+        assertFalse(demoContent.isEmpty(), "demo_guide 正文必须能从 classpath 内容解析");
+
+        AdaptiveBookContent journalContent = FlexiBookAPI.resolveBook(journal);
+        assertFalse(journalContent.isEmpty(), "fieldnotes:journal 正文必须能从 classpath 内容解析");
+    }
+
 }

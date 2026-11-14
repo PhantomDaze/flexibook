@@ -46,7 +46,7 @@ public class FlexiBookMod {
         event.enqueueWork(() -> {
             FlexiBookAPI.registerDefaultActions();
             BookThemeRegistry.bootstrap();
-            io.github.PhantomDaze.flexibook.data.ClasspathPackBootstrap.loadFieldNotesSample();
+            io.github.PhantomDaze.flexibook.data.ClasspathPackBootstrap.loadBundledSamples();
         });
         LOGGER.info("FlexiBook initialized");
     }
@@ -64,7 +64,7 @@ public class FlexiBookMod {
         event.enqueueWork(() -> {
             FlexiBookAPI.registerDefaultActions();
             BookThemeRegistry.bootstrap();
-            io.github.PhantomDaze.flexibook.data.ClasspathPackBootstrap.loadFieldNotesSample();
+            io.github.PhantomDaze.flexibook.data.ClasspathPackBootstrap.loadBundledSamples();
         });
         LOGGER.info("FlexiBook initialized");
     }
