@@ -109,3 +109,7 @@ coverage/
 # clone can run the client smoke. Only generated copies are ignored, via the
 # global `run/` and `*.log` rules above.
 /dev/smoke/.cache/
+
+### Task planning / archived docs (local tracking records, not deliverables) ###
+docs/plan/
+docs/archive/
