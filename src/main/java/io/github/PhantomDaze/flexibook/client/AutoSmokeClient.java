@@ -4,7 +4,10 @@ import io.github.PhantomDaze.flexibook.api.FlexiBookAPI;
 import io.github.PhantomDaze.flexibook.client.screen.AdaptiveBookScreen;
 import io.github.PhantomDaze.flexibook.client.theme.BookDefinitionRegistry;
 import io.github.PhantomDaze.flexibook.data.ExampleBooks;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Screenshot;
 //? if >=1.20.2 {
 import net.minecraft.client.gui.screens.GenericMessageScreen;
 //?}
@@ -13,6 +16,7 @@ import net.minecraft.client.gui.screens.ProgressScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.Difficulty;
 //? if >=1.21.11 && <26.1.2 {
@@ -37,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
@@ -76,15 +81,25 @@ public final class AutoSmokeClient {
     private static final String PROP_TIMEOUT_SECONDS = "flexibook.autoSmoke.timeoutSeconds";
     private static final String PROP_PACKS_DIR = "flexibook.autoSmoke.resourcePacksDir";
     private static final String PROP_SMOKE_DIR = "flexibook.autoSmoke.dir";
+    // Deterministic screenshot mode (dev only): writes <prefix>-page0.png / <prefix>-page1.png.
+    private static final String PROP_SCREENSHOT_DIR = "flexibook.autoSmoke.screenshotDir";
+    private static final String PROP_SCREENSHOT_PREFIX = "flexibook.autoSmoke.screenshotPrefix";
+    private static final String PROP_SCREENSHOT_SETTLE_TICKS = "flexibook.autoSmoke.screenshotSettleTicks";
     private static final String WORLD_ID = "flexibook_auto_smoke";
     // Used by the pre-1.21.4 WorldOptions constructor.
     private static final long WORLD_SEED = 1L;
     private static final String DEFAULT_BOOK = "demo";
     private static final String BOOK_FILE_NAME = "book.txt";
 
-    private static final boolean ENABLED = Boolean.parseBoolean(System.getProperty(PROP_ENABLE, "false"));
-    private static final int READ_SECONDS = Math.max(1, Integer.getInteger(PROP_READ_SECONDS, 10));
-    private static final int TIMEOUT_SECONDS = Math.max(30, Integer.getInteger(PROP_TIMEOUT_SECONDS, 180));
+    private static final boolean ENABLED = Boolean.parseBoolean(propOrEnv(PROP_ENABLE, "FLEXIBOOK_AUTOSMOKE", "false"));
+    private static final int READ_SECONDS = Math.max(1, intPropOrEnv(PROP_READ_SECONDS, "FLEXIBOOK_AUTOSMOKE_READ_SECONDS", 10));
+    private static final int TIMEOUT_SECONDS = Math.max(30, intPropOrEnv(PROP_TIMEOUT_SECONDS, "FLEXIBOOK_AUTOSMOKE_TIMEOUT_SECONDS", 180));
+    // Settling frames before each capture: let font atlas / textures / animations finish.
+    private static final int SETTLE_TICKS = Math.max(5, intPropOrEnv(PROP_SCREENSHOT_SETTLE_TICKS, "FLEXIBOOK_SCREENSHOT_SETTLE_TICKS", 30));
+    private static final int SHOT_TIMEOUT_TICKS = 400;
+    private static final Path SCREENSHOT_DIR = resolveScreenshotDir();
+    private static final String SCREENSHOT_PREFIX = propOrEnv(PROP_SCREENSHOT_PREFIX, "FLEXIBOOK_SCREENSHOT_PREFIX", "book");
+    private static final boolean SCREENSHOTS_ENABLED = SCREENSHOT_DIR != null;
 
     private enum Phase {
         WAIT_TITLE,
@@ -94,6 +109,10 @@ public final class AutoSmokeClient {
         WAIT_WORLD,
         OPEN_BOOK,
         READING,
+        SHOT_SETTLE_0,
+        SHOT_WAIT_0,
+        SHOT_SETTLE_1,
+        SHOT_WAIT_1,
         FINISHED
     }
 
@@ -107,6 +126,10 @@ public final class AutoSmokeClient {
     private static boolean createRequested;
     private static boolean packsApplied;
     private static String failReason;
+    private static boolean worldStateApplied;
+    private static int shotTicks;
+    private static int shotWaitTicks;
+    private static int pendingShots;
 
     private AutoSmokeClient() {}
 
@@ -250,7 +273,9 @@ public final class AutoSmokeClient {
                         WORLD_ID,
                         settings,
                         //? if >=1.21.4 {
-                        WorldOptions.testWorldWithRandomSeed(),
+                        SCREENSHOTS_ENABLED
+                                ? new WorldOptions(WORLD_SEED, false, false)
+                                : WorldOptions.testWorldWithRandomSeed(),
                         //?} else {
                         /*new WorldOptions(WORLD_SEED, false, false),
                         *///?}
@@ -283,6 +308,10 @@ public final class AutoSmokeClient {
                 // Prefer fully closed UI (in-game), allow a couple ticks if a toast remains.
                 worldStableTicks++;
                 if (worldStableTicks >= 20) {
+                    if (SCREENSHOTS_ENABLED && !worldStateApplied) {
+                        applyDeterministicWorldState(mc);
+                        worldStateApplied = true;
+                    }
                     phase = Phase.OPEN_BOOK;
                     LOGGER.info(
                             "in world as {} → opening book '{}'",
@@ -340,9 +369,15 @@ public final class AutoSmokeClient {
                     changeScreenPage(screen, -1);
                     LOGGER.info("page turn verified ({} -> {}, back to {})", before, after, screenPageIndex(screen));
                 }
-                readingStartedAtMs = now;
-                phase = Phase.READING;
-                LOGGER.info("book open → reading for {}s", READ_SECONDS);
+                if (SCREENSHOTS_ENABLED) {
+                    shotTicks = 0;
+                    phase = Phase.SHOT_SETTLE_0;
+                    LOGGER.info("book open → screenshots enabled, settling {} ticks before page 0", SETTLE_TICKS);
+                } else {
+                    readingStartedAtMs = now;
+                    phase = Phase.READING;
+                    LOGGER.info("book open → reading for {}s", READ_SECONDS);
+                }
             }
             case READING -> {
                 if (!(currentScreen(mc) instanceof AdaptiveBookScreen)) {
@@ -350,6 +385,51 @@ public final class AutoSmokeClient {
                     return;
                 }
                 if (now - readingStartedAtMs >= READ_SECONDS * 1000L) {
+                    pass();
+                }
+            }
+            case SHOT_SETTLE_0 -> {
+                if (!(currentScreen(mc) instanceof AdaptiveBookScreen)) {
+                    fail("book screen closed before page 0 screenshot");
+                    return;
+                }
+                if (++shotTicks >= SETTLE_TICKS) {
+                    captureScreenshot(mc, "page0");
+                    shotWaitTicks = 0;
+                    phase = Phase.SHOT_WAIT_0;
+                }
+            }
+            case SHOT_WAIT_0 -> {
+                if (++shotWaitTicks > SHOT_TIMEOUT_TICKS) {
+                    fail("page 0 screenshot did not complete");
+                    return;
+                }
+                if (pendingShots == 0 && shotWaitTicks >= 2) {
+                    AdaptiveBookScreen screen = (AdaptiveBookScreen) currentScreen(mc);
+                    changeScreenPage(screen, 1);
+                    shotTicks = 0;
+                    phase = Phase.SHOT_SETTLE_1;
+                    LOGGER.info("page 0 screenshot done → page 1");
+                }
+            }
+            case SHOT_SETTLE_1 -> {
+                if (!(currentScreen(mc) instanceof AdaptiveBookScreen)) {
+                    fail("book screen closed before page 1 screenshot");
+                    return;
+                }
+                if (++shotTicks >= SETTLE_TICKS) {
+                    captureScreenshot(mc, "page1");
+                    shotWaitTicks = 0;
+                    phase = Phase.SHOT_WAIT_1;
+                }
+            }
+            case SHOT_WAIT_1 -> {
+                if (++shotWaitTicks > SHOT_TIMEOUT_TICKS) {
+                    fail("page 1 screenshot did not complete");
+                    return;
+                }
+                if (pendingShots == 0 && shotWaitTicks >= 2) {
+                    LOGGER.info("screenshots complete → {}", SCREENSHOT_DIR);
                     pass();
                 }
             }
@@ -377,16 +457,25 @@ public final class AutoSmokeClient {
         }
 
         Path gamePacksDir = mc.getResourcePackDirectory();
+        // Gradle 的 syncSmokeResourcePacks 会把包直接放进 run/resourcepacks；此时
+        // smokeDir 与 gamePacksDir 是同一个目录，复制会自我递归并抛 NoSuchFileException。
+        boolean packsAlreadyInPlace = smokeDir.toAbsolutePath().normalize()
+                .equals(gamePacksDir.toAbsolutePath().normalize());
         try {
             Files.createDirectories(gamePacksDir);
             for (String name : packFileNames) {
                 Path src = smokeDir.resolve(name);
                 Path dst = gamePacksDir.resolve(name);
+                if (packsAlreadyInPlace) {
+                    LOGGER.info("smoke pack already in game dir: {}", dst);
+                    continue;
+                }
                 copyPackEntry(src, dst);
                 LOGGER.info("synced smoke pack '{}' → {}", name, dst);
             }
         } catch (IOException e) {
-            fail("failed syncing smoke resource packs: " + e.getMessage());
+            LOGGER.error("failed syncing smoke resource packs", e);
+            fail("failed syncing smoke resource packs: " + e);
             return false;
         }
 
@@ -446,7 +535,9 @@ public final class AutoSmokeClient {
 
     private static void copyPackEntry(Path src, Path dst) throws IOException {
         if (Files.isDirectory(src)) {
-            if (Files.exists(dst)) {
+            // 不能跟随链接判断存在性：损坏的符号链接 exists=false，但 createDirectories 会报
+            // FileAlreadyExistsException。这里按链接本身判断并先删除。
+            if (Files.exists(dst, LinkOption.NOFOLLOW_LINKS)) {
                 deleteRecursively(dst);
             }
             copyDirectory(src, dst);
@@ -511,6 +602,34 @@ public final class AutoSmokeClient {
         return resolveSmokeDir().resolve(BOOK_FILE_NAME);
     }
 
+    /** System property first, then an optional environment variable. */
+    private static String propOrEnv(String property, String env, String fallback) {
+        String value = System.getProperty(property, "").trim();
+        if (value.isEmpty() && env != null) {
+            value = System.getenv().getOrDefault(env, "").trim();
+        }
+        return value.isEmpty() ? fallback : value;
+    }
+
+    private static int intPropOrEnv(String property, String env, int fallback) {
+        String value = propOrEnv(property, env, "");
+        if (value.isEmpty()) {
+            return fallback;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            LOGGER.warn("invalid integer '{}' for {} — using {}", value, property, fallback);
+            return fallback;
+        }
+    }
+
+    /** {@code null} unless screenshot mode is requested. */
+    private static Path resolveScreenshotDir() {
+        String dir = propOrEnv(PROP_SCREENSHOT_DIR, "FLEXIBOOK_SCREENSHOT_DIR", "");
+        return dir.isEmpty() ? null : Path.of(dir).toAbsolutePath().normalize();
+    }
+
     /**
      * Prefer {@code flexibook.autoSmoke.dir}; else walk up from {@code user.dir} for
      * {@code dev/smoke} (repo root or {@code versions/&lt;node&gt;}).
@@ -521,17 +640,21 @@ public final class AutoSmokeClient {
             return Path.of(prop).toAbsolutePath().normalize();
         }
         Path dir = Path.of(System.getProperty("user.dir", ".")).toAbsolutePath().normalize();
-        for (int i = 0; i < 8 && dir != null; i++) {
+        // 先找规范的 dev/smoke（仓库根或 versions/<node>），再退回 run 目录本身。
+        // 否则 run/ 里的 resourcepacks/ 会让解析结果变成 run 自己。
+        for (int i = 0; i < 8 && dir != null; i++, dir = dir.getParent()) {
             Path candidate = dir.resolve("dev").resolve("smoke");
             if (Files.isDirectory(candidate)) {
                 return candidate;
             }
+        }
+        dir = Path.of(System.getProperty("user.dir", ".")).toAbsolutePath().normalize();
+        for (int i = 0; i < 8 && dir != null; i++, dir = dir.getParent()) {
             // Also accept a directory that already is the smoke root (has book.txt or resourcepacks/).
             if (Files.isRegularFile(dir.resolve(BOOK_FILE_NAME))
                     || Files.isDirectory(dir.resolve("resourcepacks"))) {
                 return dir;
             }
-            dir = dir.getParent();
         }
         return Path.of("dev", "smoke").toAbsolutePath().normalize();
     }
@@ -584,6 +707,89 @@ public final class AutoSmokeClient {
             return ItemStack.EMPTY;
         }
         return FlexiBookAPI.createBookFromDefinition(id);
+    }
+
+    /**
+     * Freeze the parts of the world scene that would otherwise differ between runs:
+     * daylight/weather cycles, mob spawning, random ticks, fire, and weather.
+     * Uses the integrated server's command dispatcher; failures are non-fatal.
+     */
+    private static void applyDeterministicWorldState(Minecraft mc) {
+        MinecraftServer server = mc.getSingleplayerServer();
+        if (server == null) {
+            LOGGER.warn("no integrated server available; skipping deterministic world setup");
+            return;
+        }
+        String[] commands = {
+                "gamerule doDaylightCycle false",
+                "gamerule doWeatherCycle false",
+                "gamerule doMobSpawning false",
+                "gamerule randomTickSpeed 0",
+                "gamerule doFireTick false",
+                "gamerule mobGriefing false",
+                "time set 6000",
+                "weather clear",
+                "kill @e[type=!player]",
+                // 固定相机：站在固定位置的方块上，抬头看天。书页打开后单人游戏会暂停实体，
+                // 因此相机不再移动；纯天空背景也让书页外区域逐像素稳定。
+                "setblock 0 199 0 minecraft:stone",
+                "tp @p 0.5 200 0.5 0 -90",
+        };
+        for (String command : commands) {
+            try {
+                server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+            } catch (Throwable t) {
+                LOGGER.warn("deterministic world setup command '{}' failed: {}", command, t.toString());
+            }
+        }
+        LOGGER.info("deterministic world state applied (time 6000, clear, cycles off)");
+    }
+
+    /** Captures the render target currently holding the last completed frame. */
+    private static void captureScreenshot(Minecraft mc, String pageLabel) {
+        Path path = SCREENSHOT_DIR.resolve(SCREENSHOT_PREFIX + "-" + pageLabel + ".png");
+        try {
+            Files.createDirectories(SCREENSHOT_DIR);
+        } catch (IOException e) {
+            fail("could not create screenshot dir " + SCREENSHOT_DIR + ": " + e);
+            return;
+        }
+        pendingShots++;
+        RenderTarget target = mainRenderTarget(mc);
+        LOGGER.info("capturing {} ({}x{} window, target {}x{})", path,
+                mc.getWindow().getWidth(), mc.getWindow().getHeight(), target.width, target.height);
+        //? if >=1.21.11 {
+        Screenshot.takeScreenshot(target, image -> saveScreenshot(image, path));
+        //?} else {
+        /*NativeImage image = Screenshot.takeScreenshot(target);
+        saveScreenshot(image, path);
+        *///?}
+    }
+
+    /** 26.2 把主渲染目标移到了 GameRenderer#mainRenderTarget。 */
+    private static RenderTarget mainRenderTarget(Minecraft mc) {
+        //? if >=26.2 {
+        /*return mc.gameRenderer.mainRenderTarget();
+        *///?} else {
+        return mc.getMainRenderTarget();
+        //?}
+    }
+
+    private static void saveScreenshot(NativeImage image, Path path) {
+        try {
+            image.writeToFile(path);
+            LOGGER.info("screenshot written: {} ({}x{})", path, image.getWidth(), image.getHeight());
+            System.out.println("[FlexiBook AutoSmoke] SHOT " + path);
+        } catch (IOException e) {
+            fail("screenshot write failed for " + path + ": " + e);
+        } finally {
+            try {
+                image.close();
+            } catch (Throwable ignored) {
+                // best-effort release
+            }
+            pendingShots--;
+        }
     }
 
     private static boolean isLoadingScreen(Screen screen) {
@@ -738,7 +944,9 @@ public final class AutoSmokeClient {
 
     private static void pass() {
         phase = Phase.FINISHED;
-        LOGGER.info("PASS — book stayed open for {}s", READ_SECONDS);
+        LOGGER.info(SCREENSHOTS_ENABLED
+                ? "PASS — screenshots captured for {} (page0/page1)"
+                : "PASS — book stayed open for {}s", SCREENSHOTS_ENABLED ? SCREENSHOT_PREFIX : READ_SECONDS);
         // Distinct marker for orchestrator scripts / CI log scraping.
         System.out.println("[FlexiBook AutoSmoke] PASS");
         Minecraft.getInstance().stop();
