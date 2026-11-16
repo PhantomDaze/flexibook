@@ -16,7 +16,9 @@
 #     （含 checkout/JDK/依赖准备），timeout-minutes: 120 有充足余量。
 #
 # 触发：
-#   - workflow_dispatch：手动触发，可选 pass-a / pass-a+b。
+#   - workflow_dispatch：手动触发，可选 pass-a / pass-b / pass-a+b。
+#     pass-b 只跑 26.x 四节点（约 4 分钟），用于单独验证 Java 25 线；
+#     默认仍是 pass-a，workflow_run 自动触发也只跑 Pass A，门禁时间不增加。
 #   - workflow_run：build 工作流成功后触发（只跑 Pass A）。
 #     注意：workflow_run 需要本文件存在于默认分支（当前为 unified）上才会触发。
 
@@ -32,6 +34,7 @@ on:
         type: choice
         options:
           - pass-a
+          - pass-b
           - pass-a+b
       read_seconds:
         description: "Seconds to keep the book open (AutoSmoke readSeconds)"
@@ -99,6 +102,8 @@ jobs:
       # JDK21 环境变量（见 stonecutter.gradle.kts 的 smokeJdk），这里显式指向
       # setup-java 安装的 JDK21。软件渲染较慢，timeoutSeconds 放大到 900。
       - name: Smoke Pass A — 1.21.x (JDK21, xvfb + llvmpipe)
+        # pass-b 单独调度时跳过 Pass A，避免把 26.x 验证拖成完整门禁。
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.passes != 'pass-b'
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
         run: |
@@ -112,7 +117,9 @@ jobs:
               --console=plain
 
       - name: Smoke Pass B — 26.x (JDK25, xvfb + llvmpipe)
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.passes == 'pass-a+b'
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          (github.event.inputs.passes == 'pass-a+b' || github.event.inputs.passes == 'pass-b')
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
         run: |
