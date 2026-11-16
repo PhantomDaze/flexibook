@@ -174,7 +174,8 @@ public class AdaptiveBookScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        // 合并前各分支在此显式绘制书页背景；1.20.1 的 Screen.render 不会调用 renderBackground。
+        // 1.20.1 的 Screen.render 不会调用 renderBackground，必须显式绘制；
+        // 1.21.x 由 renderBookBackground 的空实现避免重复叠加（见下）。
         renderBookBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
         drawPageContent(graphics, mouseX, mouseY);
@@ -182,8 +183,9 @@ public class AdaptiveBookScreen extends Screen {
     *///?}
 
     //? if >=1.21 && <26.1.2 {
-    /*private void renderBookBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+    /*// 1.20.2+ 的 Screen.render（1.21.11 起为 renderWithTooltipAndSubtitles）已经调用
+    // renderBackground；这里再调一次会让背景暗层叠加两次，与合并前分支不一致（R3）。
+    private void renderBookBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
     }
     *///?}
     //? if <1.21 {
@@ -376,7 +378,10 @@ public class AdaptiveBookScreen extends Screen {
         Component title = content.title().resolve();
         title = title.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int titleX = leftPos + (theme.bookTexWidth() - font.width(title)) / 2;
-        graphics.drawString(font, title, titleX, topPos + theme.titleOffsetY(), theme.pageTextColor(), false);
+        // 主题色通常不带 alpha（如 0x3F3F3F）；1.21.11 起透明 alpha 会被新文本管线当真，
+        // 必须补 0xFF 才能显示（与旧分支及 26.x 路径一致）。
+        graphics.drawString(font, title, titleX, topPos + theme.titleOffsetY(),
+                0xFF000000 | (theme.pageTextColor() & 0xFFFFFF), false);
 
         int contentX = leftPos + theme.contentLeft();
         int contentY = topPos + theme.contentTop() + theme.contentOffsetY();
@@ -397,8 +402,9 @@ public class AdaptiveBookScreen extends Screen {
         Component pageComp = Component.translatable("flexibook.screen.page", pageIndex + 1, Math.max(1, pages.size()));
         pageComp = pageComp.copy().withStyle(McFonts.withFont(Style.EMPTY, bookFont));
         int pageLabelX = leftPos + (theme.bookTexWidth() - font.width(pageComp)) / 2;
+        int pageLabelColor = 0xFF000000 | (theme.pageTextColor() & 0xFFFFFF);
         graphics.drawString(font, pageComp, pageLabelX,
-                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), theme.pageTextColor(), false);
+                topPos + theme.bookTexHeight() - theme.pageLabelInsetY(), pageLabelColor, false);
     }
 
     private void renderElement(GuiGraphics graphics, RenderedElement el, int originX, int originY) {
