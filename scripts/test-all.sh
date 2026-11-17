@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Run the local equivalent of the old GitHub CI: unit tests on all 11 nodes,
+# Run the local equivalent of the old GitHub CI: unit tests on all 13 nodes,
 # then print a per-node JUnit summary. Optionally run the client smoke.
 #
 #   Pass L (Gradle 8.14.3, JDK21): 1.20.1 Forge/Fabric     — 2 nodes
 #   Pass A (Gradle 9.6.1, JDK21): 1.21.x                   — 5 nodes
-#   Pass B (Gradle 9.6.1, JDK25): 26.x                     — 4 nodes
+#   Pass B (Gradle 9.6.1, JDK25): 26.x                     — 6 nodes
 #
 # Usage:
 #   bash scripts/test-all.sh                  # unit tests only
@@ -22,7 +22,7 @@ JDK25="${JDK25:-/usr/lib/jvm/java-25-openjdk}"
 
 LEGACY_NODES=(1.20.1 1.20.1-fabric)
 PASS_A_NODES=(1.21.1 1.21.1-fabric 1.21.4 1.21.4-fabric 1.21.11-fabric)
-PASS_B_NODES=(26.1.2 26.1.2-fabric 26.2 26.2-fabric)
+PASS_B_NODES=(26.1.2 26.1.2-fabric 26.2 26.2-fabric 26.3 26.3-fabric)
 ALL_NODES=("${LEGACY_NODES[@]}" "${PASS_A_NODES[@]}" "${PASS_B_NODES[@]}")
 
 RUN_TESTS=1

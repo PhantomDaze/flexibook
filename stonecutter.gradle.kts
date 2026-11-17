@@ -6,7 +6,7 @@ plugins {
 // Node sets
 //
 // One root controller serves BOTH builds: the main settings (Gradle 9.6.1,
-// 9 nodes) and the legacy settings (Gradle 8.14.3, 1.20.1 Forge/Fabric).
+// 13 nodes) and the legacy settings (Gradle 8.14.3, 1.20.1 Forge/Fabric).
 // Tasks are only registered when their node projects exist in the current
 // settings file, so both invocations configure cleanly.
 //
@@ -18,7 +18,7 @@ val legacyNodes = listOf("1.20.1", "1.20.1-fabric")
 val passANodes = listOf(
     "1.21.1", "1.21.1-fabric", "1.21.4", "1.21.4-fabric", "1.21.11-fabric"
 )
-val passBNodes = listOf("26.1.2", "26.1.2-fabric", "26.2", "26.2-fabric")
+val passBNodes = listOf("26.1.2", "26.1.2-fabric", "26.2", "26.2-fabric", "26.3", "26.3-fabric")
 val allNodes = legacyNodes + passANodes + passBNodes
 
 fun hasNode(project: org.gradle.api.Project, node: String): Boolean =
@@ -55,7 +55,7 @@ if (passANodes.all { hasNode(project, it) }) {
 if (passBNodes.all { hasNode(project, it) }) {
     tasks.register("buildPassB") {
         group = "project"
-        description = "Build the 4 Java 25 nodes (run with JAVA_HOME=<jdk25>)"
+        description = "Build the 6 Java 25 nodes (run with JAVA_HOME=<jdk25>)"
         dependsOn(passBNodes.map { ":$it:build" })
     }
 }
@@ -218,7 +218,7 @@ if (passBNodes.all { hasNode(project, it) }) {
     registerSmokeSequence(
         project,
         "smokeAllClientsPassB",
-        "Run clientAutoSmoke on the 4 Java 25 nodes (JDK25), sequentially",
+        "Run clientAutoSmoke on the 6 Java 25 nodes (JDK25), sequentially",
         legacy = false,
         nodes = passBNodes,
         javaHome = smokeJdk25
@@ -226,20 +226,20 @@ if (passBNodes.all { hasNode(project, it) }) {
 }
 
 /**
- * One command for all 11 nodes: Pass L → Pass A → Pass B.
+ * One command for all 13 nodes: Pass L → Pass A → Pass B.
  * In the main build every node runs in a child Gradle invocation with its own
  * JAVA_HOME. In the legacy build only Pass L exists and runs in-process.
  */
 if (mainInThisBuild) {
     tasks.register("smokeAllClients") {
         group = "verification"
-        description = "Run the client smoke on all 11 nodes: legacy 1.20.1 (JDK21) → 1.21.x (JDK21) → 26.x (JDK25)"
+        description = "Run the client smoke on all 13 nodes: legacy 1.20.1 (JDK21) → 1.21.x (JDK21) → 26.x (JDK25)"
         doLast {
             legacyNodes.forEach { node -> runSmokeGradle(project, true, node, smokeJdk21) }
             passANodes.forEach { node -> runSmokeGradle(project, false, node, smokeJdk21) }
             passBNodes.forEach { node -> runSmokeGradle(project, false, node, smokeJdk25) }
             project.logger.lifecycle("")
-            project.logger.lifecycle("smokeAllClients: all 11 nodes completed")
+            project.logger.lifecycle("smokeAllClients: all 13 nodes completed")
         }
     }
 } else {
@@ -258,7 +258,7 @@ if (passBNodes.all { hasNode(project, it) }) {
     registerSmokeSequence(
         project,
         "autoSmokeClients",
-        "Alias: clientAutoSmoke on the 4 NeoForge/Fabric 26.x nodes (JDK25)",
+        "Alias: clientAutoSmoke on the original 4 NeoForge/Fabric 26.x nodes (JDK25)",
         legacy = false,
         nodes = listOf("26.1.2", "26.2", "26.1.2-fabric", "26.2-fabric"),
         javaHome = smokeJdk25
