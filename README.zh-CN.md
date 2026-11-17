@@ -79,13 +79,33 @@
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk   # 或 java-25-openjdk / java-17-openjdk
 ```
 
-### NeoForm 26.3-1 补丁（仅 26.3 节点）
+### NeoForm 26.3-1 补丁（仅 26.3 NeoForge 节点）
 
-- **症状**：构建 26.3 NeoForge 节点时 `createMinecraftArtifacts` 失败，javac 报 `HolderSet` 覆盖 `contents()` 时降低访问权限（attempting to assign weaker access privileges）。
-- **原因**：NeoForm 配置 `26.3-1` 的产物缺陷。26.3 只有这一个 NeoForm 配置，无法通过更换 NeoForge 版本来规避。**这是上游问题，不是本模组的缺陷。**
-- **处理**：执行 `bash scripts/patch-neoform-263.sh`。脚本会把缺失的补丁追加进缓存的 `neoform-26.3-1.zip`，并先把原 zip 备份为 `<zip>.orig`。脚本是幂等的；`--check` 只检查状态、不修改任何东西。
-- **影响面**：只影响从源码构建 26.3 NeoForge 节点的人；已发布的 jar 不受影响；26.1.2 / 26.2 等其他节点不受影响。
-- **何时移除**：NeoForm 发布修复版（如 `26.3-2`）或 NeoForge 更换 baseline 后，可删除本脚本及本节说明。
+**症状**：`:26.3:build` 在 `createMinecraftArtifacts` 重编译反编译源码时失败：
+
+```text
+error: contents() in <anonymous net.minecraft.core.HolderSet$1> cannot override contents() in net.minecraft.core.HolderSet.Named
+  attempting to assign weaker access privileges; was public
+...
+Node action for recompile failed
+```
+
+**原因**：NeoForm 配置 `26.3-1`——26.3 唯一的 NeoForm 配置，所有 NeoForge `26.3.0.x` 版本都依赖它——把 `emptyNamed()` 匿名子类里的 `HolderSet.Named#contents()` 生成为 `protected`，而 javac 在 classpath 上看到的官方 class 文件声明为 `public`。换 NeoForge 版本无效。**这是 NeoForm 上游问题，不是本模组的缺陷。**
+
+**处理**：把缺失的 NeoForm 补丁注入缓存制品：
+
+```bash
+bash scripts/patch-neoform-263.sh          # 打补丁；先把 zip 备份为 neoform-26.3-1.zip.orig
+bash scripts/patch-neoform-263.sh --check  # 只检查，不写任何文件
+```
+
+脚本是幂等的（按补丁字节内容判断），只在首次修改前备份（已存在的 `.orig` 不会被覆盖），并用 `unzip -t` 校验归档。可用 `GRADLE_USER_HOME` / `NEOFORM_ZIP` 覆盖定位。
+
+**全新机器**上还没有这个 zip：先跑一次构建（会下载 NeoForm，然后在上面同样的位置失败），再执行本脚本，然后重新构建。`scripts/build-all.sh` 与 `scripts/test-all.sh` 会在 Pass B 之前运行 `--check`，未打补丁时停止并给出上述命令；它们**不会**自行修改你的 Gradle 缓存。（`26.3-fabric` 不使用 NeoForm，但 Pass B 同时包含两个 26.3 节点，所以按整趟检查。）
+
+**影响面**：只影响在全新 Gradle 缓存上从源码构建 26.3 NeoForge 节点的人。已发布的 jar 只构建一次，不受影响；其他节点使用不同的 NeoForm 配置，也不受影响。
+
+**何时移除**：NeoForm 发布修复版配置（如 `26.3-2`）或 NeoForge 为 26.3 更换 baseline 后，在干净缓存上不跑本脚本也能 `:26.3:build` 成功时，即可删除 `scripts/patch-neoform-263.sh` 及本节。
 
 ## 构建
 
