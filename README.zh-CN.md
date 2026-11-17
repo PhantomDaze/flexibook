@@ -1,6 +1,6 @@
 # FlexiBook
 
-**Minecraft 1.20.1 → 26.2 的自适应排版成书模组，支持 Forge / NeoForge / Fabric。**
+**Minecraft 1.20.1 → 26.3 的自适应排版成书模组，支持 Forge / NeoForge / Fabric。**
 
 使用 DataComponent（1.20.1 走传统 NBT）+ 客户端布局引擎 + `AdaptiveBookScreen`，在保留“书”交互的前提下支持：
 
@@ -24,7 +24,7 @@
 
 ## 分支
 
-`unified` 是**唯一的开发分支**：一份共享 `src/` + `versions/` 下的 **11 个版本节点**，由 Stonecutter 预处理。
+`unified` 是**唯一的开发分支**：一份共享 `src/` + `versions/` 下的 **13 个版本节点**，由 Stonecutter 预处理。
 
 旧的按 JDK 划分的分支（`main`、`1.20.1`、`java21`、`java25`）仅作为历史快照保留，不要在其上开发。
 
@@ -45,12 +45,14 @@
 | `26.1.2-fabric` | 26.1.2 | Fabric 0.19.3 | 25 | main |
 | `26.2` | 26.2 | NeoForge 26.2.0.41-beta | 25 | main |
 | `26.2-fabric` | 26.2 | Fabric 0.19.3 | 25 | main |
+| `26.3` | 26.3 | NeoForge 26.3.0.110 | 25 | main |
+| `26.3-fabric` | 26.3 | Fabric 0.19.3 | 25 | main |
 
 ### Plan B：两套 Gradle 构建
 
-11 个节点被拆到两套 Gradle 构建，因为加载器要求的 Gradle 版本互不兼容：
+13 个节点被拆到两套 Gradle 构建，因为加载器要求的 Gradle 版本互不兼容：
 
-- **主构建** — Gradle **9.6.1** + ModDevGradle **2.0.143** + Loom **1.17.17**，9 个节点（`1.21.x`、`26.x`）。
+- **主构建** — Gradle **9.6.1** + ModDevGradle **2.0.143** + Loom **1.17.17**，11 个节点（`1.21.x`、`26.x`）。
 - **legacy 构建** — Gradle **8.14.3** + ForgeGradle **6.0.54** + Loom **1.13.6**，2 个节点（`1.20.1`、`1.20.1-fabric`），通过 `legacy-gradle8/gradlew` + `-c settings.legacy.gradle.kts` 驱动。
 
 根因：ForgeGradle 6 的 `MCPRuntime.ExecuteFunction` 在 Gradle 9.6.1 / 8.14.5 上以 `project services has been closed` 失败——只有 8.14.3 还能完成冷的 artifact 生成；反过来 Loom 1.17.17 声明 plugin `api-version` 9.5.0，无法在 Gradle 8 上加载。因此同一份源码树配两个 wrapper、两个 settings 文件。
@@ -122,10 +124,10 @@ smoke 会启动真实客户端：启用 smoke 资源包 → 创建创造世界 �
 # 单趟
 ./gradlew smokeAllClientsPassL   # 1.20.1 Forge/Fabric，legacy-gradle8，JDK21
 ./gradlew smokeAllClientsPassA   # 1.21.x 五节点，JDK21
-./gradlew smokeAllClientsPassB   # 26.x 四节点，JDK25
+./gradlew smokeAllClientsPassB   # 26.x 六节点，JDK25
 
 # 兼容别名（旧 IDE 配置仍可用）
-./gradlew autoSmokeClients        # 26.x 四节点
+./gradlew autoSmokeClients        # 原 26.1.2/26.2 四节点
 ./gradlew autoSmokeAllClients     # 1.21.x 五节点
 ./gradlew smokeTestAllClients     # 1.20.1 两节点
 ```
@@ -192,7 +194,7 @@ bash scripts/test-all.sh --smoke-only
 
 ## smoke 状态与已知限制
 
-- **11 个节点全部通过本机客户端 smoke**（Pass L、Pass A、Pass B）。
+- **13 个节点全部通过本机客户端 smoke**（Pass L、Pass A、Pass B）。
 - 此前的 1.20.1 Forge `WAIT_TITLE` 超时根因是 Forge 的 mod 加载警告：缺少 `pack.mcmeta` 时 Forge 会显示 `LoadingErrorScreen`（“failed to load a valid ResourcePackInfo”）而不是 `TitleScreen`。legacy 构建现在为 1.20.1 节点生成 `pack.mcmeta`；`AutoSmokeClient` 也会打印实际的 `screen`/`overlay` 类名（超时时还会反射打印 screen 字段）便于后续排查。
 
 ## 游戏内

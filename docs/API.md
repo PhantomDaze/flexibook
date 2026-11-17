@@ -1,7 +1,7 @@
 # FlexiBook API Reference
 
 API / data / markup guide for other mods and datapack authors.  
-Version: `flexibook` **1.0.0** · Minecraft **26.2 / 26.1.2 / 1.21.4 / 1.21.1** (NeoForge) · **1.20.1** (Forge).
+Version: `flexibook` **1.0.0** · Minecraft **26.3 / 26.2 / 26.1.2 / 1.21.4 / 1.21.1** (NeoForge) · **1.20.1** (Forge).
 
 **中文:** [`API.zh-CN.md`](./API.zh-CN.md).
 
@@ -600,7 +600,7 @@ AdaptiveBookScreen click ClickArea
 | Registry name | Notes |
 |---------------|--------|
 | Item `flexibook:flexi_book` | `ModItems.FLEXI_BOOK`, `stacksTo(1)` |
-| **26.2 / 26.1.2 / 1.21.4 / 1.21.1** Component `flexibook:adaptive_book_content` | `ModDataComponents.ADAPTIVE_BOOK_CONTENT` |
+| **26.3 / 26.2 / 26.1.2 / 1.21.4 / 1.21.1** Component `flexibook:adaptive_book_content` | `ModDataComponents.ADAPTIVE_BOOK_CONTENT` |
 | **1.20.1** NBT key `flexibook:content` | Same DFU `AdaptiveBookContent.CODEC` via `NbtOps` |
 | Creative tab `flexibook` | Blank book + Demo Guide |
 

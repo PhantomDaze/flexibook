@@ -1,7 +1,7 @@
 # FlexiBook 调用文档
 
 面向其他模组与数据包作者的 **API / 数据 / 标签** 说明。  
-实现版本：`flexibook` **1.0.0** · Minecraft **26.2 / 26.1.2 / 1.21.4 / 1.21.1**（NeoForge）· **1.20.1**（Forge）。
+实现版本：`flexibook` **1.0.0** · Minecraft **26.3 / 26.2 / 26.1.2 / 1.21.4 / 1.21.1**（NeoForge）· **1.20.1**（Forge）。
 
 **English:** [`API.md`](./API.md)（默认）。
 
@@ -600,7 +600,7 @@ AdaptiveBookScreen 点击 ClickArea
 | 注册名 | 说明 |
 |--------|------|
 | 物品 `flexibook:flexi_book` | `ModItems.FLEXI_BOOK`，`stacksTo(1)` |
-| **26.2 / 26.1.2 / 1.21.4 / 1.21.1** 组件 `flexibook:adaptive_book_content` | `ModDataComponents.ADAPTIVE_BOOK_CONTENT` |
+| **26.3 / 26.2 / 26.1.2 / 1.21.4 / 1.21.1** 组件 `flexibook:adaptive_book_content` | `ModDataComponents.ADAPTIVE_BOOK_CONTENT` |
 | **1.20.1** NBT 键 `flexibook:content` | 同一套 DFU `AdaptiveBookContent.CODEC` + `NbtOps` |
 | 创造栏 `flexibook` | 空白书 + Demo Guide |
 

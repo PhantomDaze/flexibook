@@ -1,6 +1,6 @@
 # FlexiBook
 
-Adaptive layout books for **Minecraft 1.20.1 → 26.2** on **Forge / NeoForge / Fabric**.
+Adaptive layout books for **Minecraft 1.20.1 → 26.3** on **Forge / NeoForge / Fabric**.
 
 Custom DataComponents (or legacy NBT on 1.20.1), a client layout engine and `AdaptiveBookScreen`, keeping a book-like interaction while supporting:
 
@@ -24,7 +24,7 @@ Custom DataComponents (or legacy NBT on 1.20.1), a client layout engine and `Ada
 
 ## Branches
 
-`unified` is the **only development branch**. It contains one shared `src/` tree and **11 version nodes** under `versions/`, preprocessed by Stonecutter.
+`unified` is the **only development branch**. It contains one shared `src/` tree and **13 version nodes** under `versions/`, preprocessed by Stonecutter.
 
 The old per-JDK branches (`main`, `1.20.1`, `java21`, `java25`) are kept only as history snapshots; do not develop on them.
 
@@ -45,12 +45,14 @@ Every node compiles the same shared source tree. `mod_version = 1.0.1`.
 | `26.1.2-fabric` | 26.1.2 | Fabric 0.19.3 | 25 | main |
 | `26.2` | 26.2 | NeoForge 26.2.0.41-beta | 25 | main |
 | `26.2-fabric` | 26.2 | Fabric 0.19.3 | 25 | main |
+| `26.3` | 26.3 | NeoForge 26.3.0.110 | 25 | main |
+| `26.3-fabric` | 26.3 | Fabric 0.19.3 | 25 | main |
 
 ### Plan B: two Gradle builds
 
-The 11 nodes are split across two Gradle builds because the loaders demand incompatible Gradle versions:
+The 13 nodes are split across two Gradle builds because the loaders demand incompatible Gradle versions:
 
-- **Main build** — Gradle **9.6.1** + ModDevGradle **2.0.143** + Loom **1.17.17**, 9 nodes (`1.21.x`, `26.x`).
+- **Main build** — Gradle **9.6.1** + ModDevGradle **2.0.143** + Loom **1.17.17**, 11 nodes (`1.21.x`, `26.x`).
 - **Legacy build** — Gradle **8.14.3** + ForgeGradle **6.0.54** + Loom **1.13.6**, 2 nodes (`1.20.1`, `1.20.1-fabric`), driven by `legacy-gradle8/gradlew` with `-c settings.legacy.gradle.kts`.
 
 Root cause: ForgeGradle 6's `MCPRuntime.ExecuteFunction` fails with `project services has been closed` on Gradle 9.6.1 / 8.14.5 — only 8.14.3 still completes the cold artifact generation. Conversely Loom 1.17.17 declares plugin `api-version` 9.5.0 and cannot load on Gradle 8. Hence one shared source tree, two wrappers, two settings files.
@@ -94,7 +96,7 @@ JAVA_HOME=/usr/lib/jvm/java-21-openjdk legacy-gradle8/gradlew \
     -Pstonecutter.active=1.20.1-fabric \
     :1.20.1:build --console=plain --stacktrace
 
-# Everything (11 nodes, three JVM passes)
+# Everything (13 nodes, three JVM passes)
 bash scripts/build-all.sh          # override JDK21=... / JDK25=... if needed
 ```
 
@@ -116,16 +118,16 @@ Loaders differ per node as expected (`META-INF/mods.toml` for Forge, `META-INF/n
 The harness launches a real client, enables the smoke resource packs, creates a creative world, opens a book and keeps it open for N seconds. Each run ends with `[FlexiBook AutoSmoke] PASS` or `[FlexiBook AutoSmoke] FAIL: …`; the Gradle smoke tasks fail on the FAIL marker even when the game process exits 0.
 
 ```bash
-# All 11 nodes (Pass L → A → B, each pass with its own JAVA_HOME)
+# All 13 nodes (Pass L → A → B, each pass with its own JAVA_HOME)
 ./gradlew smokeAllClients
 
 # One pass at a time
 ./gradlew smokeAllClientsPassL   # 1.20.1 Forge/Fabric, legacy-gradle8, JDK21
 ./gradlew smokeAllClientsPassA   # 1.21.x five nodes, JDK21
-./gradlew smokeAllClientsPassB   # 26.x four nodes, JDK25
+./gradlew smokeAllClientsPassB   # 26.x six nodes, JDK25
 
 # Compatibility aliases (old IDE configs still work)
-./gradlew autoSmokeClients        # 26.x four nodes
+./gradlew autoSmokeClients        # original 26.1.2/26.2 four nodes
 ./gradlew autoSmokeAllClients     # 1.21.x five nodes
 ./gradlew smokeTestAllClients     # 1.20.1 two nodes
 ```
@@ -162,8 +164,8 @@ Reason: on 1.20.2+ a clean `run/` directory opens the accessibility onboarding s
 Automatic GitHub CI is **disabled** — pushes and pull requests no longer start a workflow. Daily testing runs locally:
 
 ```bash
-bash scripts/test-all.sh            # unit tests on all 11 nodes + JUnit summary
-bash scripts/test-all.sh --smoke    # the above, then the client smoke on all 11 nodes
+bash scripts/test-all.sh            # unit tests on all 13 nodes + JUnit summary
+bash scripts/test-all.sh --smoke    # the above, then the client smoke on all 13 nodes
 bash scripts/test-all.sh --smoke-only
 ```
 
@@ -180,7 +182,7 @@ Both workflows are kept for occasional server-side runs and can **only** be star
 
 | Workflow | Trigger | Contents |
 |----------|---------|----------|
-| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | manual | `build-main` (JDK21+25, Gradle 9.6.1, 9 nodes) and `build-legacy` (JDK21 daemon + JDK17 toolchain, Gradle 8.14.3, 2 nodes); uploads the 11 jars |
+| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | manual | `build-main` (JDK21+25, Gradle 9.6.1, 11 nodes) and `build-legacy` (JDK21 daemon + JDK17 toolchain, Gradle 8.14.3, 2 nodes); uploads the 13 jars |
 | [`.github/workflows/client-smoke.yml`](./.github/workflows/client-smoke.yml) | manual (inputs `passes`, `read_seconds`) | Pass A (1.21.x) and optionally Pass B (26.x) via `xvfb-run` + Mesa llvmpipe |
 
 Notes:
@@ -192,7 +194,7 @@ Notes:
 
 ## Smoke status and limitations
 
-- **All 11 nodes pass the local client smoke** (Pass L, Pass A, Pass B).
+- **All 13 nodes pass the local client smoke** (Pass L, Pass A, Pass B).
 - The former 1.20.1 Forge `WAIT_TITLE` timeout was caused by a Forge mod-loading warning: without a `pack.mcmeta`, Forge shows `LoadingErrorScreen` ("failed to load a valid ResourcePackInfo") instead of `TitleScreen`. The legacy build now generates `pack.mcmeta` for the 1.20.1 nodes; `AutoSmokeClient` also logs the actual `screen`/`overlay` classes (and, on timeout, the screen's fields) for future diagnosis.
 
 ## In-game
@@ -295,7 +297,7 @@ Escape: `\[` `\]`.
 
 ## v1 scope
 
-**Done:** DataComponent (legacy NBT on 1.20.1), dual storage (elements or rawMarkup), TagParser, adaptive layout + cache, single-page Screen, Builder, bilingual sample book, search, data-driven themes (default + contain + JSON reload), built-in `flexibook:default` unihex (same ZIP as editor), standalone editor with Unihex preview, pack export/import, `/flexibook give|list`, multi-version build (11 nodes), client smoke harness.
+**Done:** DataComponent (legacy NBT on 1.20.1), dual storage (elements or rawMarkup), TagParser, adaptive layout + cache, single-page Screen, Builder, bilingual sample book, search, data-driven themes (default + contain + JSON reload), built-in `flexibook:default` unihex (same ZIP as editor), standalone editor with Unihex preview, pack export/import, `/flexibook give|list`, multi-version build (13 nodes), client smoke harness.
 
 **Not in v1 / simplified:**
 

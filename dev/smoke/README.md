@@ -29,6 +29,6 @@ and the smoke harness would wait forever for the title screen.
 
 ## Gradle entry points
 
-- `./gradlew smokeAllClients` — all 11 nodes, three JVM passes.
+- `./gradlew smokeAllClients` — all 13 nodes, three JVM passes.
 - `./gradlew smokeAllClientsPassL|PassA|PassB` — one pass at a time.
 - `./gradlew syncSmokeResourcePacks syncSmokeBookId` — refresh node run dirs.
