@@ -79,6 +79,14 @@
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk   # 或 java-25-openjdk / java-17-openjdk
 ```
 
+### NeoForm 26.3-1 补丁（仅 26.3 节点）
+
+- **症状**：构建 26.3 NeoForge 节点时 `createMinecraftArtifacts` 失败，javac 报 `HolderSet` 覆盖 `contents()` 时降低访问权限（attempting to assign weaker access privileges）。
+- **原因**：NeoForm 配置 `26.3-1` 的产物缺陷。26.3 只有这一个 NeoForm 配置，无法通过更换 NeoForge 版本来规避。**这是上游问题，不是本模组的缺陷。**
+- **处理**：执行 `bash scripts/patch-neoform-263.sh`。脚本会把缺失的补丁追加进缓存的 `neoform-26.3-1.zip`，并先把原 zip 备份为 `<zip>.orig`。脚本是幂等的；`--check` 只检查状态、不修改任何东西。
+- **影响面**：只影响从源码构建 26.3 NeoForge 节点的人；已发布的 jar 不受影响；26.1.2 / 26.2 等其他节点不受影响。
+- **何时移除**：NeoForm 发布修复版（如 `26.3-2`）或 NeoForge 更换 baseline 后，可删除本脚本及本节说明。
+
 ## 构建
 
 ```bash

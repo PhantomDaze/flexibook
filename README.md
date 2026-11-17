@@ -79,6 +79,14 @@ There is **no hard-coded `org.gradle.java.home`**. The Gradle daemon JVM comes f
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk   # or java-25-openjdk / java-17-openjdk
 ```
 
+### NeoForm 26.3-1 workaround (26.3 nodes only)
+
+- **Symptom**: building the 26.3 NeoForge node fails in `createMinecraftArtifacts`, with javac reporting that `HolderSet` overrides `contents()` with weaker access privileges.
+- **Cause**: a defect in the artifacts produced by NeoForm configuration `26.3-1`, the only NeoForm config for 26.3, so it cannot be avoided by switching NeoForge versions. **This is an upstream problem, not a defect in this mod.**
+- **Fix**: run `bash scripts/patch-neoform-263.sh`. It appends the missing patch to the cached `neoform-26.3-1.zip`, first backing the original up as `<zip>.orig`. The script is idempotent; `--check` only reports status without modifying anything.
+- **Impact**: only affects people building the 26.3 NeoForge node from source. Published jars are unaffected, and other nodes (26.1.2 / 26.2, etc.) are unaffected.
+- **Removal**: once NeoForm ships a fixed config (e.g. `26.3-2`) or NeoForge changes its baseline, this script and this note can be deleted.
+
 ## Build
 
 ```bash
