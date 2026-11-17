@@ -5,6 +5,9 @@
 #   Pass A (Gradle 9.6.1, JDK21): 1.21.x                   — 5 nodes
 #   Pass B (Gradle 9.6.1, JDK25): 26.x                     — 6 nodes
 #
+# Pass B needs the NeoForm 26.3-1 HolderSet patch; this script only checks for it
+# and asks you to run scripts/patch-neoform-263.sh (it never edits your cache).
+#
 # Pass L uses settings.legacy.gradle.kts / build.legacy.gradle through the
 # legacy-gradle8 wrapper: ForgeGradle 6 cannot run on Gradle 9 (MCPRuntime
 # touches closed project services), and Gradle 8.14.5 broke its cold artifact
@@ -29,6 +32,40 @@ for home in "$JDK21" "$JDK25"; do
         exit 2
     fi
 done
+
+# NeoForm 26.3-1 的 HolderSet 补丁是 Pass B 的前置条件。这里只检查、不修改用户
+# 的 Gradle 缓存；未打补丁时给出明确指引并非零退出。
+preflight_neoform_263() {
+    local rc=0
+    echo ""
+    echo "========== NeoForm 26.3-1 preflight =========="
+    bash scripts/patch-neoform-263.sh --check || rc=$?
+    case "$rc" in
+        0) ;;
+        2)
+            echo "note: neoform-26.3-1.zip is not in the Gradle cache yet."
+            echo "      The first Pass B build will download it and is expected to fail in"
+            echo "      :26.3:createMinecraftArtifacts. Then run"
+            echo "        bash scripts/patch-neoform-263.sh"
+            echo "      and rerun this script."
+            ;;
+        3)
+            echo "" >&2
+            echo "ERROR: NeoForm 26.3-1 in the Gradle cache lacks the HolderSet patch." >&2
+            echo "       NeoForge 26.3 builds will fail in :26.3:createMinecraftArtifacts." >&2
+            echo "" >&2
+            echo "       Run this first (it backs up the cached zip as neoform-26.3-1.zip.orig):" >&2
+            echo "" >&2
+            echo "         bash scripts/patch-neoform-263.sh" >&2
+            echo "" >&2
+            exit 1
+            ;;
+        *)
+            echo "error: NeoForm 26.3-1 preflight failed (exit $rc)" >&2
+            exit 1
+            ;;
+    esac
+}
 
 build_node() {
     local home="$1" node="$2"
@@ -62,6 +99,8 @@ run_pass() {
         build_node "$home" "$node"
     done
 }
+
+preflight_neoform_263
 
 for node in "${LEGACY_NODES[@]}"; do
     build_legacy_node "$JDK21" "$node"
