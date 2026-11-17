@@ -9,6 +9,9 @@ import io.github.PhantomDaze.flexibook.client.theme.BookDefinitionRegistry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+//? if >=26.3 {
+import net.minecraft.util.Prediction;
+//?}
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -80,7 +83,11 @@ public final class FlexiBookCommands {
         }
         ItemStack stack = FlexiBookAPI.createBookFromDefinition(bookId);
         if (!player.getInventory().add(stack)) {
+            //? if >=26.3 {
+            /*player.drop(stack, false, Prediction.PREDICTED);
+            *///?} else {
             player.drop(stack, false);
+            //?}
         }
         source.sendSuccess(
                 () -> {

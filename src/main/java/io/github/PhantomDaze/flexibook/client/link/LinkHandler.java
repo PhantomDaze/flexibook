@@ -12,6 +12,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+//? if >=26.3 {
+import com.mojang.blaze3d.Blaze3D;
+
+import java.net.URI;
+//?}
 
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -66,20 +71,32 @@ public final class LinkHandler {
             }
             return;
         }
+        //? if >=26.3 {
+        /*// 26.3 移除了 Util.OS#openUri 与 String 版 ConfirmLinkScreen 构造器，
+        // 改为 Blaze3D.openUri(URI) + URI 构造器。
+        URI uri = URI.create(url);
+        mc.setScreenAndShow(new ConfirmLinkScreen(confirmed -> {
+            if (confirmed) {
+                Blaze3D.openUri(uri);
+            }
+            mc.setScreenAndShow(parent);
+        }, uri, true));
+        *///?} else {
         //? if >=26.2 {
-        /*mc.setScreenAndShow(new ConfirmLinkScreen(confirmed -> {
+        mc.setScreenAndShow(new ConfirmLinkScreen(confirmed -> {
             if (confirmed) {
                 Util.getPlatform().openUri(url);
             }
             mc.setScreenAndShow(parent);
         }, url, true));
-        *///?} else {
-        mc.setScreen(new ConfirmLinkScreen(confirmed -> {
+        //?} else {
+        /*mc.setScreen(new ConfirmLinkScreen(confirmed -> {
             if (confirmed) {
                 Util.getPlatform().openUri(url);
             }
             mc.setScreen(parent);
         }, url, true));
+        *///?}
         //?}
     }
 }
