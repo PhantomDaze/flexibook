@@ -157,18 +157,35 @@ Before every client run, `prepareSmokeOptions` ensures the node's `run/options.t
 
 Reason: on 1.20.2+ a clean `run/` directory opens the accessibility onboarding screen on first launch instead of `TitleScreen`. The smoke harness waits for `TitleScreen` in `WAIT_TITLE`, so without this line it waits forever. (Verified on 1.21.4: 29 s PASS with the line, timeout without it.)
 
-## CI
+## Testing (local)
 
-| Workflow | Blocking | Contents |
-|----------|----------|----------|
-| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | **yes** (push / PR) | `build-main` (JDK21+25, Gradle 9.6.1, 9 nodes) and `build-legacy` (JDK21 daemon + JDK17 toolchain, Gradle 8.14.3, 2 nodes); uploads the 11 jars |
-| [`.github/workflows/client-smoke.yml`](./.github/workflows/client-smoke.yml) | no (`continue-on-error: true`) | Pass A (1.21.x) via `xvfb-run` + Mesa llvmpipe; Pass B optional on manual dispatch |
+Automatic GitHub CI is **disabled** — pushes and pull requests no longer start a workflow. Daily testing runs locally:
 
-**The client-smoke workflow has not been verified on GitHub Actions.** Hosted runners have no GPU; Minecraft under software OpenGL may time out or fail. The workflow carries `continue-on-error: true` and a commented `runs-on: [self-hosted, gpu]` example. Pass L is intentionally excluded (extra ForgeGradle network/cache requirements and a longer legacy build).
+```bash
+bash scripts/test-all.sh            # unit tests on all 11 nodes + JUnit summary
+bash scripts/test-all.sh --smoke    # the above, then the client smoke on all 11 nodes
+bash scripts/test-all.sh --smoke-only
+```
 
-CI notes:
+`test-all.sh` mirrors what the former CI did:
 
-- ForgeGradle needs `piston-meta.mojang.com`; NeoForge MDG/NFRT downloads `version_manifest_v2.json` on every `createMinecraftArtifacts`. Hosted CI has network, so this is fine.
+- Runs `:node:test` on every node in three JVM passes — legacy 1.20.1 (Gradle 8.14.3, JDK21), Pass A 1.21.x (Gradle 9.6.1, JDK21), Pass B 26.x (Gradle 9.6.1, JDK25).
+- Parses `versions/*/build/test-results/test/*.xml` and prints `tests / failures / errors / skipped` per node plus a total; exits non-zero on any failure, error or missing node.
+- `--smoke` needs a display: an active desktop session (`DISPLAY` set) or `xvfb-run` installed (the script then runs under `xvfb-run -a`). It never skips silently.
+- JDKs can be overridden with `JDK21=... JDK25=...`.
+
+## GitHub workflows (manual only)
+
+Both workflows are kept for occasional server-side runs and can **only** be started with `workflow_dispatch` (Actions → *Run workflow*):
+
+| Workflow | Trigger | Contents |
+|----------|---------|----------|
+| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | manual | `build-main` (JDK21+25, Gradle 9.6.1, 9 nodes) and `build-legacy` (JDK21 daemon + JDK17 toolchain, Gradle 8.14.3, 2 nodes); uploads the 11 jars |
+| [`.github/workflows/client-smoke.yml`](./.github/workflows/client-smoke.yml) | manual (inputs `passes`, `read_seconds`) | Pass A (1.21.x) and optionally Pass B (26.x) via `xvfb-run` + Mesa llvmpipe |
+
+Notes:
+
+- ForgeGradle needs `piston-meta.mojang.com`; NeoForge MDG/NFRT downloads `version_manifest_v2.json` on every `createMinecraftArtifacts`. Have network available (applies equally to a local `test-all.sh` run).
 - For offline local runs, warm the ForgeGradle cache and refresh its 1-hour etag TTL:
   `find ~/.gradle/caches/forge_gradle -type f -exec touch {} +`
 - MDG's manifest download has no offline switch; without network, reuse already-generated artifacts.
@@ -177,7 +194,6 @@ CI notes:
 
 - **All 11 nodes pass the local client smoke** (Pass L, Pass A, Pass B).
 - The former 1.20.1 Forge `WAIT_TITLE` timeout was caused by a Forge mod-loading warning: without a `pack.mcmeta`, Forge shows `LoadingErrorScreen` ("failed to load a valid ResourcePackInfo") instead of `TitleScreen`. The legacy build now generates `pack.mcmeta` for the 1.20.1 nodes; `AutoSmokeClient` also logs the actual `screen`/`overlay` classes (and, on timeout, the screen's fields) for future diagnosis.
-- The client-smoke CI workflow is experimental and unverified on GitHub Actions (see above).
 
 ## In-game
 

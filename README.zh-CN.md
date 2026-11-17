@@ -157,18 +157,35 @@ dev/smoke/
 
 原因：1.20.2+ 的干净 `run/` 首次启动会先显示无障碍引导屏而不是 `TitleScreen`，smoke 在 `WAIT_TITLE` 等标题屏会一直等下去。实测 1.21.4：加该行后 29 秒 PASS，不加则超时。
 
-## CI
+## 本地测试
 
-| 工作流 | 阻塞 | 内容 |
+GitHub 自动 CI 已**停用**：push / PR 不再启动任何 workflow。日常测试在本地跑：
+
+```bash
+bash scripts/test-all.sh            # 11 节点单元测试 + JUnit 汇总
+bash scripts/test-all.sh --smoke    # 先跑单元测试，再跑全部 11 节点客户端 smoke
+bash scripts/test-all.sh --smoke-only
+```
+
+`test-all.sh` 等价于原 CI 做的事：
+
+- 按三趟 JVM 对每个节点跑 `:node:test`——legacy 1.20.1（Gradle 8.14.3，JDK21）、Pass A 1.21.x（Gradle 9.6.1，JDK21）、Pass B 26.x（Gradle 9.6.1，JDK25）。
+- 解析 `versions/*/build/test-results/test/*.xml`，逐节点打印 `tests / failures / errors / skipped` 并给出总计；有失败、错误或节点缺失则返回非零。
+- `--smoke` 需要显示环境：桌面会话（已设 `DISPLAY`）或已安装 `xvfb-run`（脚本会自动改用 `xvfb-run -a`）。不会静默跳过。
+- JDK 可用 `JDK21=... JDK25=...` 覆盖。
+
+## GitHub workflow（仅手动）
+
+两个 workflow 保留用于偶尔在服务端跑一次，**只能**通过 `workflow_dispatch` 启动（Actions → *Run workflow*）：
+
+| 工作流 | 触发 | 内容 |
 |--------|------|------|
-| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | **是**（push / PR） | `build-main`（JDK21+25，Gradle 9.6.1，9 节点）与 `build-legacy`（JDK21 daemon + JDK17 toolchain，Gradle 8.14.3，2 节点）；上传 11 个 jar |
-| [`.github/workflows/client-smoke.yml`](./.github/workflows/client-smoke.yml) | 否（`continue-on-error: true`） | 通过 `xvfb-run` + Mesa llvmpipe 跑 Pass A（1.21.x）；手动触发时可加 Pass B |
+| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | 手动 | `build-main`（JDK21+25，Gradle 9.6.1，9 节点）与 `build-legacy`（JDK21 daemon + JDK17 toolchain，Gradle 8.14.3，2 节点）；上传 11 个 jar |
+| [`.github/workflows/client-smoke.yml`](./.github/workflows/client-smoke.yml) | 手动（参数 `passes`、`read_seconds`） | 通过 `xvfb-run` + Mesa llvmpipe 跑 Pass A（1.21.x），可选 Pass B（26.x） |
 
-**客户端 smoke 工作流尚未在 GitHub Actions 上验证。** 托管 runner 无 GPU，Minecraft 走软件 OpenGL 很可能超时或失败。该 workflow 带 `continue-on-error: true`，并提供注释掉的 `runs-on: [self-hosted, gpu]` 示例。Pass L 被有意排除（legacy 构建需要额外的 ForgeGradle 网络/缓存，耗时也更长）。
+备注：
 
-CI 备注：
-
-- ForgeGradle 需要 `piston-meta.mojang.com`；NeoForge MDG/NFRT 每次 `createMinecraftArtifacts` 都会下载 `version_manifest_v2.json`。托管 CI 有网，正常。
+- ForgeGradle 需要 `piston-meta.mojang.com`；NeoForge MDG/NFRT 每次 `createMinecraftArtifacts` 都会下载 `version_manifest_v2.json`。请保证有网（本地跑 `test-all.sh` 同理）。
 - 本地离线复跑需暖缓存并刷新 ForgeGradle 的 1 小时 etag TTL：
   `find ~/.gradle/caches/forge_gradle -type f -exec touch {} +`
 - MDG 的 manifest 下载没有离线开关；断网时只能复用已生成的 artifacts。
@@ -177,7 +194,6 @@ CI 备注：
 
 - **11 个节点全部通过本机客户端 smoke**（Pass L、Pass A、Pass B）。
 - 此前的 1.20.1 Forge `WAIT_TITLE` 超时根因是 Forge 的 mod 加载警告：缺少 `pack.mcmeta` 时 Forge 会显示 `LoadingErrorScreen`（“failed to load a valid ResourcePackInfo”）而不是 `TitleScreen`。legacy 构建现在为 1.20.1 节点生成 `pack.mcmeta`；`AutoSmokeClient` 也会打印实际的 `screen`/`overlay` 类名（超时时还会反射打印 screen 字段）便于后续排查。
-- 客户端 smoke CI 工作流是实验性的，未在 GitHub Actions 上验证（见上）。
 
 ## 游戏内
 
