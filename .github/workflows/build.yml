@@ -1,4 +1,9 @@
-# FlexiBook CI — Plan B 双构建（阻塞型）
+# FlexiBook 构建 workflow（仅手动触发）
+#
+# 自动 CI 已停用：不再由 push / pull_request 触发。日常测试请本地运行
+#   bash scripts/test-all.sh
+# （11 节点单元测试 + JUnit 汇总；--smoke 可选跑客户端 smoke）。
+# 本 workflow 仅保留作需要时手动触发（workflow_dispatch）。
 #
 # 结构
 #   build-main    Gradle 9.6.1 + MDG 2.0.143 + Loom 1.17.17 —— 9 个节点
@@ -22,14 +27,12 @@
 #     find ~/.gradle/caches/forge_gradle -type f -exec touch {} +
 #   刷新 mtime；MDG 的 manifest 下载没有离线开关，断网时只能复用已生成的 artifacts。
 #
-# 状态：本 workflow 已在 GitHub Actions 上首次运行并全绿（build 4m03s）。
+# 状态：曾在本仓库运行并全绿（build 4m03s）；自动触发已停用，仅手动使用。
 
 name: build
 
 on:
-  push:
-    branches: [unified, main]
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read

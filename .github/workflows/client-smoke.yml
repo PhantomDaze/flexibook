@@ -1,26 +1,17 @@
-# FlexiBook 客户端 smoke CI（阻塞门禁）
+# FlexiBook 客户端 smoke workflow（仅手动触发）
 #
-# 托管 runner（ubuntu-latest）没有 GPU，Minecraft 走 xvfb + Mesa llvmpipe
-# 软件 OpenGL。该组合已在 GitHub Actions 上实测通过：Pass A 全部 5 个节点 PASS，
-# 每节点 48–72s，远低于 900s 的 AutoSmoke 超时阈值，无 GL/GLFW 失败；日志中仅有
-# OpenAL/语音库缺失的非致命噪音。因此本 job 是阻塞门禁（continue-on-error: false），
-# smoke 失败会让 workflow 变红。
-# 如改用带 GPU 的 self-hosted runner，可把 runs-on 换成
-#   runs-on: [self-hosted, gpu]
-# （文件下方保留了注释掉的示例，作为备选而非必需）。
+# 自动 CI 已停用：不再由 build 工作流成功后（workflow_run）或任何 push 触发。
+# 日常测试请本地运行：
+#   bash scripts/test-all.sh            # 单元测试
+#   bash scripts/test-all.sh --smoke    # 单元测试 + 全部 11 节点客户端 smoke
+# 本地 smoke 需要显示环境：桌面会话（DISPLAY 已设置）或 xvfb-run -a。
+# 本 workflow 仅保留作需要时手动触发（workflow_dispatch），在本机不便时使用。
 #
 # 只跑主构建的 Pass A（1.21.x 五节点）和可选 Pass B（26.x 四节点）：
 #   - 不跑 Pass L（1.20.1）：legacy 构建需要 ForgeGradle 额外联网/暖缓存，
 #     且 legacy 构建本身更慢，不适合托管 runner 的短 job。
-#   - smoke 任务会用子 Gradle 进程逐个节点启动客户端；CI 实测整个 job 6m39s
-#     （含 checkout/JDK/依赖准备），timeout-minutes: 120 有充足余量。
 #
-# 触发：
-#   - workflow_dispatch：手动触发，可选 pass-a / pass-b / pass-a+b。
-#     pass-b 只跑 26.x 四节点（约 4 分钟），用于单独验证 Java 25 线；
-#     默认仍是 pass-a，workflow_run 自动触发也只跑 Pass A，门禁时间不增加。
-#   - workflow_run：build 工作流成功后触发（只跑 Pass A）。
-#     注意：workflow_run 需要本文件存在于默认分支（当前为 unified）上才会触发。
+# 手动触发参数：pass-a / pass-b / pass-a+b，默认 pass-a。
 
 name: client-smoke
 
@@ -40,9 +31,6 @@ on:
         description: "Seconds to keep the book open (AutoSmoke readSeconds)"
         required: false
         default: "10"
-  workflow_run:
-    workflows: ["build"]
-    types: [completed]
 
 permissions:
   contents: read
@@ -59,17 +47,11 @@ jobs:
     # 备选（带 GPU 的 self-hosted runner）：
     # runs-on: [self-hosted, gpu]
     timeout-minutes: 120
-    # 阻塞门禁：Pass A 在托管 runner 上已实测 5/5 节点 PASS，smoke 失败应让 CI 变红。
+    # 手动触发时 smoke 失败应让 workflow 变红。
     continue-on-error: false
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          # workflow_run 要检出触发 build 的那个 commit，而不是默认分支 HEAD。
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
 
       - name: Set up JDK 21 (Pass A)
         uses: actions/setup-java@v6
@@ -103,7 +85,7 @@ jobs:
       # setup-java 安装的 JDK21。软件渲染较慢，timeoutSeconds 放大到 900。
       - name: Smoke Pass A — 1.21.x (JDK21, xvfb + llvmpipe)
         # pass-b 单独调度时跳过 Pass A，避免把 26.x 验证拖成完整门禁。
-        if: github.event_name != 'workflow_dispatch' || github.event.inputs.passes != 'pass-b'
+        if: github.event.inputs.passes != 'pass-b'
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
         run: |
@@ -118,8 +100,8 @@ jobs:
 
       - name: Smoke Pass B — 26.x (JDK25, xvfb + llvmpipe)
         if: >-
-          github.event_name == 'workflow_dispatch' &&
-          (github.event.inputs.passes == 'pass-a+b' || github.event.inputs.passes == 'pass-b')
+          github.event.inputs.passes == 'pass-a+b' ||
+          github.event.inputs.passes == 'pass-b'
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
         run: |
