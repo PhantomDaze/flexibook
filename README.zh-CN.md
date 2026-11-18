@@ -57,6 +57,26 @@
 
 根因：ForgeGradle 6 的 `MCPRuntime.ExecuteFunction` 在 Gradle 9.6.1 / 8.14.5 上以 `project services has been closed` 失败——只有 8.14.3 还能完成冷的 artifact 生成；反过来 Loom 1.17.17 声明 plugin `api-version` 9.5.0，无法在 Gradle 8 上加载。因此同一份源码树配两个 wrapper、两个 settings 文件。
 
+### 新增 / 退役版本节点
+
+不要手工改 8 处以上的注册点，用这两个脚本。每次改动先用 `--dry-run` 预览（不写任何文件）：
+
+```bash
+# 新增节点（可同时建 loader 对）：校验 MC 版本、推断 Java toolchain、
+# 从 Maven 解析 loader 版本，然后更新 versions/<node>/gradle.properties、
+# settings*.gradle.kts、Pass 数组、.run/ IDE 配置和两份 README。
+bash scripts/add-node.sh 26.4 --dry-run
+bash scripts/add-node.sh 26.4
+bash scripts/add-node.sh 26.4 --loaders fabric
+bash scripts/add-node.sh 1.21.5 --legacy        # legacy-gradle8 中的 Forge/Fabric
+
+# 退役节点（pass 变空 / 最后一个 loader / 最后一个 JDK 时默认拒绝，需 --force）
+bash scripts/drop-node.sh 26.2 --dry-run
+bash scripts/drop-node.sh 26.2
+```
+
+`add-node.sh` 默认拒绝 snapshot、pre-release 与 rc（需 `--allow-non-release`）；两个脚本都幂等：节点已存在且内容逐字节一致时，重跑 `add-node.sh` 不会做任何事。退役 `26.3` 只会提示 NeoForm 预检，不会改动 `scripts/patch-neoform-263.sh`。脚本**不会**自动执行 `git commit` / `git push`，结束时只打印建议的 git 命令。
+
 ## 环境要求
 
 - **JDK 21**：所有 `1.20.1` / `1.21.x` 任务的 Gradle daemon。
@@ -124,7 +144,7 @@ JAVA_HOME=/usr/lib/jvm/java-21-openjdk legacy-gradle8/gradlew \
     -Pstonecutter.active=1.20.1-fabric \
     :1.20.1:build --console=plain --stacktrace
 
-# 全量（11 节点，三趟 JVM）；可覆盖 JDK21=... / JDK25=...
+# 全量（13 节点，三趟 JVM）；可覆盖 JDK21=... / JDK25=...
 bash scripts/build-all.sh
 ```
 
@@ -146,7 +166,7 @@ versions/<node>/build/libs/flexibook-1.0.1+<mc>-sources.jar  # 源码
 smoke 会启动真实客户端：启用 smoke 资源包 → 创建创造世界 → 打开一本书并保持 N 秒。每次运行以 `[FlexiBook AutoSmoke] PASS` 或 `[FlexiBook AutoSmoke] FAIL: …` 结束；即使游戏进程以 0 退出，Gradle 任务也会因 FAIL 标记而失败。
 
 ```bash
-# 全部 11 节点（Pass L → A → B，每趟使用各自的 JAVA_HOME）
+# 全部 13 节点（Pass L → A → B，每趟使用各自的 JAVA_HOME）
 ./gradlew smokeAllClients
 
 # 单趟
@@ -192,8 +212,8 @@ dev/smoke/
 GitHub 自动 CI 已**停用**：push / PR 不再启动任何 workflow。日常测试在本地跑：
 
 ```bash
-bash scripts/test-all.sh            # 11 节点单元测试 + JUnit 汇总
-bash scripts/test-all.sh --smoke    # 先跑单元测试，再跑全部 11 节点客户端 smoke
+bash scripts/test-all.sh            # 13 节点单元测试 + JUnit 汇总
+bash scripts/test-all.sh --smoke    # 先跑单元测试，再跑全部 13 节点客户端 smoke
 bash scripts/test-all.sh --smoke-only
 ```
 
@@ -210,7 +230,7 @@ bash scripts/test-all.sh --smoke-only
 
 | 工作流 | 触发 | 内容 |
 |--------|------|------|
-| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | 手动 | `build-main`（JDK21+25，Gradle 9.6.1，9 节点）与 `build-legacy`（JDK21 daemon + JDK17 toolchain，Gradle 8.14.3，2 节点）；上传 11 个 jar |
+| [`.github/workflows/build.yml`](./.github/workflows/build.yml) | 手动 | `build-main`（JDK21+25，Gradle 9.6.1，11 节点）与 `build-legacy`（JDK21 daemon + JDK17 toolchain，Gradle 8.14.3，2 节点）；上传 13 个 jar |
 | [`.github/workflows/client-smoke.yml`](./.github/workflows/client-smoke.yml) | 手动（参数 `passes`、`read_seconds`） | 通过 `xvfb-run` + Mesa llvmpipe 跑 Pass A（1.21.x），可选 Pass B（26.x） |
 
 备注：
@@ -325,7 +345,7 @@ ItemStack stack = FlexiBookAPI.createBookFromDefinition(
 
 ## v1 范围与非目标
 
-**已做**：DataComponent（1.20.1 为传统 NBT）、双形态存储（elements 或 rawMarkup）、TagParser、自适应 layout + 缓存、单页 Screen、Builder、示例书双语、搜索、可注册数据驱动主题（默认 + contain 示例 + JSON 重载）、内置书字体 `flexibook:default`（unihex，与编辑器同一 ZIP）、独立编辑器 Unihex 预览、资源包导出/导入、`/flexibook give|list`、多版本构建（11 节点）、客户端 smoke harness。
+**已做**：DataComponent（1.20.1 为传统 NBT）、双形态存储（elements 或 rawMarkup）、TagParser、自适应 layout + 缓存、单页 Screen、Builder、示例书双语、搜索、可注册数据驱动主题（默认 + contain 示例 + JSON 重载）、内置书字体 `flexibook:default`（unihex，与编辑器同一 ZIP）、独立编辑器 Unihex 预览、资源包导出/导入、`/flexibook give|list`、多版本构建（13 节点）、客户端 smoke harness。
 
 **未做 / 简化**：
 

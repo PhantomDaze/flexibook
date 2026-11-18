@@ -57,6 +57,27 @@ The 13 nodes are split across two Gradle builds because the loaders demand incom
 
 Root cause: ForgeGradle 6's `MCPRuntime.ExecuteFunction` fails with `project services has been closed` on Gradle 9.6.1 / 8.14.5 — only 8.14.3 still completes the cold artifact generation. Conversely Loom 1.17.17 declares plugin `api-version` 9.5.0 and cannot load on Gradle 8. Hence one shared source tree, two wrappers, two settings files.
 
+### Adding / retiring version nodes
+
+Use the two scripts instead of editing the eight-plus registration points by hand. Preview every change with `--dry-run` first — it writes nothing:
+
+```bash
+# Add a node (or a loader pair): validates the Minecraft version, infers the
+# Java toolchain, resolves loader versions from Maven, then updates
+# versions/<node>/gradle.properties, settings*.gradle.kts, the Pass arrays,
+# .run/ IDE configs and both READMEs.
+bash scripts/add-node.sh 26.4 --dry-run
+bash scripts/add-node.sh 26.4
+bash scripts/add-node.sh 26.4 --loaders fabric
+bash scripts/add-node.sh 1.21.5 --legacy        # Forge/Fabric in legacy-gradle8
+
+# Retire a node (refuses empty passes / last loader / last JDK unless --force)
+bash scripts/drop-node.sh 26.2 --dry-run
+bash scripts/drop-node.sh 26.2
+```
+
+`add-node.sh` refuses snapshots, pre-releases and release candidates unless `--allow-non-release` is given, and both scripts are idempotent: re-running `add-node.sh` for an already-present, byte-identical node is a no-op. Retiring `26.3` only prints a reminder about the NeoForm preflight; it does not touch `scripts/patch-neoform-263.sh`. The scripts **never** run `git commit` or `git push` — they print the suggested git commands when they finish.
+
 ## Requirements
 
 - **JDK 21** for the Gradle daemon of all `1.20.1` / `1.21.x` work.
