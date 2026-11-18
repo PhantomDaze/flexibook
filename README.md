@@ -76,7 +76,7 @@ bash scripts/drop-node.sh 26.2 --dry-run
 bash scripts/drop-node.sh 26.2
 ```
 
-`add-node.sh` refuses snapshots, pre-releases and release candidates unless `--allow-non-release` is given, and both scripts are idempotent: re-running `add-node.sh` for an already-present, byte-identical node is a no-op. Retiring `26.3` only prints a reminder about the NeoForm preflight; it does not touch `scripts/patch-neoform-263.sh`. The scripts **never** run `git commit` or `git push` — they print the suggested git commands when they finish.
+`add-node.sh` refuses snapshots, pre-releases and release candidates unless `--allow-non-release` is given, and both scripts are idempotent: re-running `add-node.sh` for an already-present, byte-identical node is a no-op. Retiring `26.3` only prints a reminder about the NeoForm preflight; it does not touch `scripts/patch-neoform.sh`. The scripts **never** run `git commit` or `git push` — they print the suggested git commands when they finish.
 
 ## Requirements
 
@@ -100,9 +100,9 @@ There is **no hard-coded `org.gradle.java.home`**. The Gradle daemon JVM comes f
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk   # or java-25-openjdk / java-17-openjdk
 ```
 
-### NeoForm 26.3-1 workaround (26.3 NeoForge node only)
+### NeoForm 26.2-2 / 26.3-1 workaround (26.2 and 26.3 NeoForge nodes)
 
-**Symptom.** `:26.3:build` fails in `createMinecraftArtifacts` while recompiling the decompiled sources:
+**Symptom.** `:26.2:build` or `:26.3:build` fails in `createMinecraftArtifacts` while recompiling the decompiled sources:
 
 ```text
 error: contents() in <anonymous net.minecraft.core.HolderSet$1> cannot override contents() in net.minecraft.core.HolderSet.Named
@@ -111,22 +111,23 @@ error: contents() in <anonymous net.minecraft.core.HolderSet$1> cannot override 
 Node action for recompile failed
 ```
 
-**Cause.** NeoForm configuration `26.3-1` — the only NeoForm config for 26.3, used by every NeoForge `26.3.0.x` release — emits `HolderSet.Named#contents()` as `protected` in the anonymous subclass created by `emptyNamed()`, while the official class file that javac sees on the classpath declares it `public`. Switching NeoForge versions does not help. **This is an upstream NeoForm problem, not a FlexiBook defect.**
+**Cause.** NeoForm configurations `26.2-2` (used by NeoForge `26.2.0.95` and later) and `26.3-1` (every NeoForge `26.3.0.x` release) emit `HolderSet.Named#contents()` as `protected` in the anonymous subclass created by `emptyNamed()`, while the official class file that javac sees on the classpath declares it `public`. Switching NeoForge versions within the same line does not help. **This is an upstream NeoForm problem, not a FlexiBook defect.**
 
 **Fix.** Inject the missing NeoForm patch into the cached artifact:
 
 ```bash
-bash scripts/patch-neoform-263.sh          # apply; backs up the zip as neoform-26.3-1.zip.orig
-bash scripts/patch-neoform-263.sh --check  # report only, never writes
+bash scripts/patch-neoform.sh               # apply to every known config (26.2-2 and 26.3-1)
+bash scripts/patch-neoform.sh --config 26.2-2   # apply to one config (repeatable)
+bash scripts/patch-neoform.sh --check       # report only, never writes
 ```
 
-The script is idempotent (it compares the patch bytes), backs up the zip once (an existing `.orig` is never overwritten), and verifies the archive with `unzip -t`. `GRADLE_USER_HOME` and `NEOFORM_ZIP` override the lookup.
+The generated `HolderSet.java.patch` is byte-for-byte identical for both configs — only the `protected` → `public` line and its unchanged context — so one embedded patch serves both; the script checks its sha256 before writing. It is idempotent (it compares the patch bytes), backs up each zip once (an existing `.orig` is never overwritten), appends the entry at the byte level so existing archive entries keep their exact headers, and verifies the archive with `unzip -t`. `GRADLE_USER_HOME` and `NEOFORM_ZIP` override the lookup (`NEOFORM_ZIP` requires exactly one `--config`). `scripts/patch-neoform-263.sh` is kept as a thin compatibility wrapper for `--config 26.3-1`.
 
-On a **fresh machine** the zip does not exist yet: run a build once (it downloads NeoForm, then fails as above), run the script, and build again. `scripts/build-all.sh` and `scripts/test-all.sh` run `--check` before Pass B and stop with the command above if the patch is missing; they never modify your Gradle cache on their own. (`26.3-fabric` does not use NeoForm, but both 26.3 nodes are in Pass B, so the check covers the whole pass.)
+On a **fresh machine** the zips do not exist yet: run a build once (it downloads NeoForm, then fails as above), run the script, and build again. `scripts/build-all.sh` and `scripts/test-all.sh` run `--check` before Pass B and stop with the command above if a patch is missing; they never modify your Gradle cache on their own. (`26.2-fabric` / `26.3-fabric` do not use NeoForm, but the NeoForge nodes are in Pass B, so the check covers the whole pass.)
 
-**Impact.** Anyone building the 26.3 NeoForge node from source with a fresh Gradle cache. Published jars are built once and are unaffected; every other node uses a different NeoForm config and is unaffected.
+**Impact.** Anyone building a 26.2 or 26.3 NeoForge node from source with a fresh Gradle cache. Published jars are built once and are unaffected; other nodes use different NeoForm configs and are unaffected.
 
-**Removal.** Delete `scripts/patch-neoform-263.sh` and this section once NeoForm publishes a fixed config (e.g. `26.3-2`) or NeoForge moves 26.3 to a fixed baseline, and `:26.3:build` succeeds on a clean cache without the script.
+**Removal.** Delete `scripts/patch-neoform.sh` (and the compatibility wrapper), the preflight in `build-all.sh` / `test-all.sh`, and this section once NeoForm publishes fixed configs (e.g. `26.2-3` / `26.3-2`) or NeoForge moves both lines to fixed baselines, and `:26.2:build` / `:26.3:build` succeed on a clean cache without the script.
 
 ## Build
 

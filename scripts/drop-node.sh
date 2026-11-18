@@ -458,9 +458,9 @@ def main():
     if props.get("minecraft_version") == "26.3" and not any(
         props_after[n].get("minecraft_version") == "26.3" for n in final_nodes
     ):
-        note("26.3 关联 scripts/patch-neoform-263.sh 与 build-all.sh/test-all.sh 里的 "
-             "preflight_neoform_263 预检。所有 26.3 节点都将被删除；请考虑一并处理该预检与补丁脚本"
-             "（本脚本不会自动修改）。")
+        note("26.3 关联 scripts/patch-neoform.sh 的 NeoForm 26.3-1 配置与 "
+             "build-all.sh/test-all.sh 里的 preflight_neoform 预检。所有 26.3 节点都将被删除；"
+             "请考虑一并处理该预检与补丁脚本（本脚本不会自动修改）。")
 
     if opts["dry"]:
         print("\n--dry-run：未删除/修改任何文件。")

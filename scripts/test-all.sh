@@ -6,8 +6,8 @@
 #   Pass A (Gradle 9.6.1, JDK21): 1.21.x                   — 5 nodes
 #   Pass B (Gradle 9.6.1, JDK25): 26.x                     — 6 nodes
 #
-# Pass B needs the NeoForm 26.3-1 HolderSet patch; this script only checks for it
-# and asks you to run scripts/patch-neoform-263.sh (it never edits your cache).
+# Pass B needs the NeoForm 26.2-2 / 26.3-1 HolderSet patch; this script only checks
+# for it and asks you to run scripts/patch-neoform.sh (it never edits your cache).
 #
 # Usage:
 #   bash scripts/test-all.sh                  # unit tests only
@@ -52,35 +52,35 @@ for home in "$JDK21" "$JDK25"; do
     fi
 done
 
-# NeoForm 26.3-1 的 HolderSet 补丁是 Pass B（26.x 测试 / smoke）的前置条件。
+# NeoForm 26.2-2 / 26.3-1 的 HolderSet 补丁是 Pass B（26.x 测试 / smoke）的前置条件。
 # 只检查、不修改用户的 Gradle 缓存；未打补丁时给出明确指引并非零退出。
-preflight_neoform_263() {
+preflight_neoform() {
     local rc=0
     echo ""
-    echo "========== NeoForm 26.3-1 preflight =========="
-    bash scripts/patch-neoform-263.sh --check || rc=$?
+    echo "========== NeoForm 26.2-2 / 26.3-1 preflight =========="
+    bash scripts/patch-neoform.sh --check || rc=$?
     case "$rc" in
         0) ;;
         2)
-            echo "note: neoform-26.3-1.zip is not in the Gradle cache yet."
-            echo "      The first Pass B build will download it and is expected to fail in"
-            echo "      :26.3:createMinecraftArtifacts. Then run"
-            echo "        bash scripts/patch-neoform-263.sh"
+            echo "note: one or more NeoForm 26.2-2 / 26.3-1 zips are not in the Gradle cache yet."
+            echo "      The first Pass B build will download them and is expected to fail in"
+            echo "      :26.2:createMinecraftArtifacts or :26.3:createMinecraftArtifacts. Then run"
+            echo "        bash scripts/patch-neoform.sh"
             echo "      and rerun this script."
             ;;
         3)
             echo "" >&2
-            echo "ERROR: NeoForm 26.3-1 in the Gradle cache lacks the HolderSet patch." >&2
-            echo "       NeoForge 26.3 tests and smoke will fail in :26.3:createMinecraftArtifacts." >&2
+            echo "ERROR: a NeoForm 26.2-2 / 26.3-1 zip in the Gradle cache lacks the HolderSet patch." >&2
+            echo "       NeoForge 26.2/26.3 tests and smoke will fail in createMinecraftArtifacts." >&2
             echo "" >&2
-            echo "       Run this first (it backs up the cached zip as neoform-26.3-1.zip.orig):" >&2
+            echo "       Run this first (each modified zip is backed up as <zip>.orig):" >&2
             echo "" >&2
-            echo "         bash scripts/patch-neoform-263.sh" >&2
+            echo "         bash scripts/patch-neoform.sh" >&2
             echo "" >&2
             exit 1
             ;;
         *)
-            echo "error: NeoForm 26.3-1 preflight failed (exit $rc)" >&2
+            echo "error: NeoForm 26.x preflight failed (exit $rc)" >&2
             exit 1
             ;;
     esac
@@ -228,7 +228,7 @@ run_smoke() {
 
 # --------------------------------------------------------------------- main
 
-preflight_neoform_263
+preflight_neoform
 
 status=0
 if (( RUN_TESTS )); then

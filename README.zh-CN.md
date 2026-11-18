@@ -75,7 +75,7 @@ bash scripts/drop-node.sh 26.2 --dry-run
 bash scripts/drop-node.sh 26.2
 ```
 
-`add-node.sh` 默认拒绝 snapshot、pre-release 与 rc（需 `--allow-non-release`）；两个脚本都幂等：节点已存在且内容逐字节一致时，重跑 `add-node.sh` 不会做任何事。退役 `26.3` 只会提示 NeoForm 预检，不会改动 `scripts/patch-neoform-263.sh`。脚本**不会**自动执行 `git commit` / `git push`，结束时只打印建议的 git 命令。
+`add-node.sh` 默认拒绝 snapshot、pre-release 与 rc（需 `--allow-non-release`）；两个脚本都幂等：节点已存在且内容逐字节一致时，重跑 `add-node.sh` 不会做任何事。退役 `26.3` 只会提示 NeoForm 预检，不会改动 `scripts/patch-neoform.sh`。脚本**不会**自动执行 `git commit` / `git push`，结束时只打印建议的 git 命令。
 
 ## 环境要求
 
@@ -99,9 +99,9 @@ bash scripts/drop-node.sh 26.2
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk   # 或 java-25-openjdk / java-17-openjdk
 ```
 
-### NeoForm 26.3-1 补丁（仅 26.3 NeoForge 节点）
+### NeoForm 26.2-2 / 26.3-1 补丁（26.2 与 26.3 NeoForge 节点）
 
-**症状**：`:26.3:build` 在 `createMinecraftArtifacts` 重编译反编译源码时失败：
+**症状**：`:26.2:build` 或 `:26.3:build` 在 `createMinecraftArtifacts` 重编译反编译源码时失败：
 
 ```text
 error: contents() in <anonymous net.minecraft.core.HolderSet$1> cannot override contents() in net.minecraft.core.HolderSet.Named
@@ -110,22 +110,23 @@ error: contents() in <anonymous net.minecraft.core.HolderSet$1> cannot override 
 Node action for recompile failed
 ```
 
-**原因**：NeoForm 配置 `26.3-1`——26.3 唯一的 NeoForm 配置，所有 NeoForge `26.3.0.x` 版本都依赖它——把 `emptyNamed()` 匿名子类里的 `HolderSet.Named#contents()` 生成为 `protected`，而 javac 在 classpath 上看到的官方 class 文件声明为 `public`。换 NeoForge 版本无效。**这是 NeoForm 上游问题，不是本模组的缺陷。**
+**原因**：NeoForm 配置 `26.2-2`（NeoForge `26.2.0.95` 起使用）与 `26.3-1`（所有 NeoForge `26.3.0.x` 版本使用）都把 `emptyNamed()` 匿名子类里的 `HolderSet.Named#contents()` 生成为 `protected`，而 javac 在 classpath 上看到的官方 class 文件声明为 `public`。在同一条版本线内换 NeoForge 版本无效。**这是 NeoForm 上游问题，不是本模组的缺陷。**
 
 **处理**：把缺失的 NeoForm 补丁注入缓存制品：
 
 ```bash
-bash scripts/patch-neoform-263.sh          # 打补丁；先把 zip 备份为 neoform-26.3-1.zip.orig
-bash scripts/patch-neoform-263.sh --check  # 只检查，不写任何文件
+bash scripts/patch-neoform.sh                   # 处理所有已知配置（26.2-2 与 26.3-1）
+bash scripts/patch-neoform.sh --config 26.2-2   # 只处理指定配置（可重复指定）
+bash scripts/patch-neoform.sh --check           # 只检查，不写任何文件
 ```
 
-脚本是幂等的（按补丁字节内容判断），只在首次修改前备份（已存在的 `.orig` 不会被覆盖），并用 `unzip -t` 校验归档。可用 `GRADLE_USER_HOME` / `NEOFORM_ZIP` 覆盖定位。
+两个配置产出的 `HolderSet.java.patch` 逐字节相同——只有 `protected` → `public` 一行及其不变的上下文——因此共用同一份内嵌补丁；脚本写入前会校验其 sha256。脚本是幂等的（按补丁字节内容判断），只在首次修改前备份（已存在的 `.orig` 不会被覆盖），以字节级方式追加条目、保证既有条目头部原样不变，并用 `unzip -t` 校验归档。可用 `GRADLE_USER_HOME` / `NEOFORM_ZIP` 覆盖定位（`NEOFORM_ZIP` 要求恰好一个 `--config`）。`scripts/patch-neoform-263.sh` 保留为等价于 `--config 26.3-1` 的薄兼容入口。
 
-**全新机器**上还没有这个 zip：先跑一次构建（会下载 NeoForm，然后在上面同样的位置失败），再执行本脚本，然后重新构建。`scripts/build-all.sh` 与 `scripts/test-all.sh` 会在 Pass B 之前运行 `--check`，未打补丁时停止并给出上述命令；它们**不会**自行修改你的 Gradle 缓存。（`26.3-fabric` 不使用 NeoForm，但 Pass B 同时包含两个 26.3 节点，所以按整趟检查。）
+**全新机器**上还没有这些 zip：先跑一次构建（会下载 NeoForm，然后在上面同样的位置失败），再执行本脚本，然后重新构建。`scripts/build-all.sh` 与 `scripts/test-all.sh` 会在 Pass B 之前运行 `--check`，未打补丁时停止并给出上述命令；它们**不会**自行修改你的 Gradle 缓存。（`26.2-fabric` / `26.3-fabric` 不使用 NeoForm，但同线的 NeoForge 节点在 Pass B 中，所以按整趟检查。）
 
-**影响面**：只影响在全新 Gradle 缓存上从源码构建 26.3 NeoForge 节点的人。已发布的 jar 只构建一次，不受影响；其他节点使用不同的 NeoForm 配置，也不受影响。
+**影响面**：只影响在全新 Gradle 缓存上从源码构建 26.2 / 26.3 NeoForge 节点的人。已发布的 jar 只构建一次，不受影响；其他节点使用不同的 NeoForm 配置，也不受影响。
 
-**何时移除**：NeoForm 发布修复版配置（如 `26.3-2`）或 NeoForge 为 26.3 更换 baseline 后，在干净缓存上不跑本脚本也能 `:26.3:build` 成功时，即可删除 `scripts/patch-neoform-263.sh` 及本节。
+**何时移除**：NeoForm 发布修复版配置（如 `26.2-3` / `26.3-2`）或 NeoForge 为两条线更换 baseline 后，在干净缓存上不跑本脚本也能 `:26.2:build` / `:26.3:build` 成功时，即可删除 `scripts/patch-neoform.sh`（连同兼容入口）、`build-all.sh` / `test-all.sh` 中的预检以及本节。
 
 ## 构建
 
