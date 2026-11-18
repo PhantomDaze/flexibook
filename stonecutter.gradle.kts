@@ -6,7 +6,7 @@ plugins {
 // Node sets
 //
 // One root controller serves BOTH builds: the main settings (Gradle 9.6.1,
-// 13 nodes) and the legacy settings (Gradle 8.14.3, 1.20.1 Forge/Fabric).
+// 11 nodes) and the legacy settings (Gradle 8.14.3, 1.20.1 Forge/Fabric, 2 nodes).
 // Tasks are only registered when their node projects exist in the current
 // settings file, so both invocations configure cleanly.
 //

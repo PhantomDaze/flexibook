@@ -2,11 +2,11 @@
 #
 # 自动 CI 已停用：不再由 push / pull_request 触发。日常测试请本地运行
 #   bash scripts/test-all.sh
-# （11 节点单元测试 + JUnit 汇总；--smoke 可选跑客户端 smoke）。
+# （13 节点单元测试 + JUnit 汇总；--smoke 可选跑客户端 smoke）。
 # 本 workflow 仅保留作需要时手动触发（workflow_dispatch）。
 #
 # 结构
-#   build-main    Gradle 9.6.1 + MDG 2.0.143 + Loom 1.17.17 —— 9 个节点
+#   build-main    Gradle 9.6.1 + MDG 2.0.143 + Loom 1.17.17 —— 11 个节点
 #                 Pass A: 1.21.x（Gradle daemon JDK21，节点 toolchain 21）
 #                 Pass B: 26.x   （Gradle daemon JDK25，节点 toolchain 25）
 #   build-legacy  Gradle 8.14.3 + ForgeGradle 6.0.54 + Loom 1.13.6 —— 2 个节点
@@ -47,7 +47,7 @@ env:
 
 jobs:
   build-main:
-    name: build-main (Gradle 9.6.1, 9 nodes)
+    name: build-main (Gradle 9.6.1, 11 nodes)
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -78,8 +78,8 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-g9.6.1-g8.14.3-main-
 
-      # buildPassA/B 依赖每个节点的 :build，build 已包含 test（9 节点共 531 tests；
-      # 与 legacy 2 节点合计 649 tests，下方统计 step 会打印实际数字）。
+      # buildPassA/B 依赖每个节点的 :build，build 已包含 test（11 节点共 671 tests；
+      # 与 legacy 2 节点合计 793 tests，下方统计 step 会打印实际数字）。
       - name: Build + test Pass A — 1.21.x (JDK 21)
         run: JAVA_HOME="$JAVA_HOME_21_X64" ./gradlew buildPassA --console=plain --stacktrace
 
@@ -174,7 +174,7 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-g9.6.1-g8.14.3-legacy-
 
-      # 两个节点分开跑：build-all.sh 也是按节点独立调用，避免 FG6/Loom 在同一
+      # 两个 legacy 节点分开跑：build-all.sh 也是按节点独立调用，避免 FG6/Loom 在同一
       # Gradle invocation 里互相干扰。JAVA_HOME 决定 daemon JVM，toolchain 17 由
       # org.gradle.java.installations.fromEnv 显式指向 setup-java 安装的 JDK17。
       - name: Build + test :1.20.1 (Forge, legacy-gradle8, Gradle 8.14.3)

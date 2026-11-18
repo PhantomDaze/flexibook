@@ -3,11 +3,11 @@
 # 自动 CI 已停用：不再由 build 工作流成功后（workflow_run）或任何 push 触发。
 # 日常测试请本地运行：
 #   bash scripts/test-all.sh            # 单元测试
-#   bash scripts/test-all.sh --smoke    # 单元测试 + 全部 11 节点客户端 smoke
+#   bash scripts/test-all.sh --smoke    # 单元测试 + 全部 13 节点客户端 smoke
 # 本地 smoke 需要显示环境：桌面会话（DISPLAY 已设置）或 xvfb-run -a。
 # 本 workflow 仅保留作需要时手动触发（workflow_dispatch），在本机不便时使用。
 #
-# 只跑主构建的 Pass A（1.21.x 五节点）和可选 Pass B（26.x 四节点）：
+# 只跑主构建的 Pass A（1.21.x 五节点）和可选 Pass B（26.x 六节点）：
 #   - 不跑 Pass L（1.20.1）：legacy 构建需要 ForgeGradle 额外联网/暖缓存，
 #     且 legacy 构建本身更慢，不适合托管 runner 的短 job。
 #

@@ -28,7 +28,7 @@ stonecutter {
     kotlinController = true
     centralScript = "build.gradle"
     shared {
-        // 13 nodes in the main build. The two Java 17 nodes (1.20.1, 1.20.1-fabric)
+        // 11 nodes in the main build. The two Java 17 nodes (1.20.1, 1.20.1-fabric)
         // live in the nested legacy-gradle8 build: ForgeGradle 6 cannot run on
         // Gradle 9.6.1 (MCPRuntime uses project services after they are closed).
         // Pass A — Java 21 toolchain (JDK21 daemon):
