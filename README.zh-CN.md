@@ -43,7 +43,7 @@
 | `1.21.11-fabric` | 1.21.11 | Fabric 0.19.3 | 21 | main |
 | `26.1.2` | 26.1.2 | NeoForge 26.1.2.93 | 25 | main |
 | `26.1.2-fabric` | 26.1.2 | Fabric 0.19.3 | 25 | main |
-| `26.2` | 26.2 | NeoForge 26.2.0.41-beta | 25 | main |
+| `26.2` | 26.2 | NeoForge 26.2.0.95 | 25 | main |
 | `26.2-fabric` | 26.2 | Fabric 0.19.3 | 25 | main |
 | `26.3` | 26.3 | NeoForge 26.3.0.110 | 25 | main |
 | `26.3-fabric` | 26.3 | Fabric 0.19.3 | 25 | main |
